@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.egovcomm.monitor">
+
+
+    <!-- This app records A/V content from camera and stores it to disk -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.RECORD_VIDEO" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.ACCESS_DOWNLOAD_MANAGER" />
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <!-- Normal Permissions 不需要运行时注册 -->
+    <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+
+    <!-- 不是SDK需要的权限，是示例中的后台唤醒定位需要的权限 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- 需要运行时注册的权限 -->
+    <!-- 用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- 用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- 用于提高GPS定位速度 -->
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+    <!-- 读取缓存数据 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <permission
+        android:name="com.egovcomm.monitor.ftp.FTPService"
+        android:label="ftpservice"
+        android:permissionGroup="string"
+        android:protectionLevel="signature" />
+    <permission
+        android:name="com.egovcomm.monitor.service.MonitorLocationService"
+        android:label="locationservice"
+        android:permissionGroup="string"
+        android:protectionLevel="signature" />
+    <application
+        android:name="com.egovcomm.monitor.common.BaseApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name="com.egovcomm.monitor.activity.WelcomeActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="059cc3a5965f3e31fb1c18fab87c14ee8a1a9c36" />
+        <activity
+            android:name="com.egovcomm.monitor.activity.SigninActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.egovcomm.monitor.activity.MainUserActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.egovcomm.monitor.activity.MainManagerActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.egovcomm.monitor.activity.PhotoCaptureActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar.Fullscreen" >
+        </activity>
+        <activity
+            android:name="com.egovcomm.monitor.activity.PhotoShowActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar.Fullscreen" >
+        </activity>
+        <activity
+            android:name="com.egovcomm.monitor.activity.VideoPlayActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar.Fullscreen" >
+        </activity>
+        <activity
+            android:name="com.egovcomm.monitor.activity.VideoRecordActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar.Fullscreen" >
+        </activity>
+        <activity
+            android:name="com.egovcomm.monitor.activity.MediaDataActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.egovcomm.monitor.activity.MediaListActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.egovcomm.monitor.activity.GroupMediaListActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.egovcomm.monitor.activity.ProfileActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.egovcomm.monitor.activity.SettingActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <service
+            android:name="com.egovcomm.monitor.ftp.FTPService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="com.egovcomm.monitor.ftp.FTPService" >
+            <intent-filter>
+                <action android:name="com.egovcomm.monitor.ftp.FTPService" />
+            </intent-filter>
+        </service>
+
+        <!-- 设置key -->
+        <!-- eclipse测试 ：fe31ef1179371cdb3f6ac02da89d69c3  发布： 012673f15f7eef62ce8229f9bdbc99e5 -->
+        <!-- as测试 ：099a00d0d763bcdd33296ec63123c111  发布： 012673f15f7eef62ce8229f9bdbc99e5 -->
+
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="099a00d0d763bcdd33296ec63123c111" />
+        <!-- 定位需要的服务 -->
+        <service android:name="com.amap.api.location.APSService" >
+        </service>
+        <service
+            android:name="com.egovcomm.monitor.service.MonitorLocationService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="com.egovcomm.monitor.service.MonitorLocationService" >
+            <intent-filter>
+                <action android:name="com.egovcomm.monitor.service.MonitorLocationService" />
+            </intent-filter>
+        </service>
+    </application>
+
+</manifest>

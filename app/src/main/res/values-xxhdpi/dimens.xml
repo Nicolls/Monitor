@@ -1,0 +1,30 @@
+<resources>
+
+    <dimen name="text_size_TopBarTitleText">22sp</dimen>
+    <dimen name="text_size_TopBarRightText">18sp</dimen>
+    <!-- 导航条返回图片的padding大小 -->
+    <dimen name="nav_top_bar_btn_horizontal_padding">13dp</dimen>
+    <dimen name="nav_top_bar_btn_vertical_padding">10dp</dimen>
+    <dimen name="nav_top_bar_btn_drawablePadding">8dp</dimen>
+    <!-- 页面加载圆圈大小 -->
+    <dimen name="common_loading_size">70dp</dimen>
+    <dimen name="common_update_app_nodify_ll_padding">10dp</dimen>
+
+    <!-- custom -->
+    <dimen name="view_top_bar_padding">13dp</dimen>
+    <!-- 上拉加载，下拉刷新 -->
+    <dimen name="pull2refresh_layout_height">60dp</dimen>
+    <dimen name="pull2refresh_layout_text_size">16sp</dimen>
+    <dimen name="pull2refresh_layout_verticalPadding">20dp</dimen>
+    <dimen name="pull2refresh_pull_load_icon_marginLeft">60dp</dimen>
+    <dimen name="pull2refresh_state_icon_marginRight">8dp</dimen>
+    <dimen name="pull2refresh_time_text_padding_vertical">23dp</dimen>
+    <dimen name="pull2refresh_time_text_paddingHorizontal">20dp</dimen>
+    <!-- 弹出框 -->
+    <dimen name="popup_confirm_button_margin">40dp</dimen>
+    <!-- 没有更多数据 -->
+    <dimen name="no_more_data_text_padding">10dp</dimen>
+    <!-- 更新APP -->
+    <dimen name="app_update_nofity_item_margin">5dp</dimen>
+
+</resources>

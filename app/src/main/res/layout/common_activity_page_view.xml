@@ -1,0 +1,42 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:egovcomm="http://schemas.android.com/apk/res/com.egovcomm.monitor"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <include
+        android:id="@+id/nav_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/view_top_bar_custom" />
+
+    <com.egovcomm.monitor.view.SlidingTabLayout
+        android:id="@+id/view_tab_sliding_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <com.egovcomm.monitor.view.TabBarView
+        android:id="@+id/view_tab_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        egovcomm:tab_count="3" >
+    </com.egovcomm.monitor.view.TabBarView>
+
+    <com.egovcomm.monitor.view.CommonViewPager
+        android:id="@+id/view_pager_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+
+        <!-- 这里可以把PagerTabStrip替换成PagerTitleStrip看看效果有何不同 -->
+
+        <android.support.v4.view.PagerTabStrip
+            android:id="@+id/view_pager_view_pagertab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+    </com.egovcomm.monitor.view.CommonViewPager>
+
+</LinearLayout>

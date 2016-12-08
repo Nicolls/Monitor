@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <SurfaceView android:layout_height="match_parent" android:id="@+id/surface" android:layout_width="match_parent"></SurfaceView>
+    <ImageView 
+        android:id="@+id/video_play_im"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+     <ImageView
+                android:id="@+id/view_iv_video_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/video_icon" />
+    
+    <RelativeLayout 
+        android:id="@+id/video_play_bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/monitor_black_70_percent"
+        android:padding="15dp"
+        >
+        <ImageButton 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:src="@drawable/back"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:onClick="onBack"
+            />
+        
+         <ImageButton 
+            android:id="@+id/video_play_pause_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:src="@drawable/video_play_selector"
+            android:layout_centerHorizontal="true"
+            android:onClick="onPlayPause"
+            />
+         
+         
+          <ImageButton 
+              android:id="@+id/view_iv_deleted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:src="@drawable/btn_deleted"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:onClick="onDeleted"
+            />
+        
+    </RelativeLayout>
+</RelativeLayout>    

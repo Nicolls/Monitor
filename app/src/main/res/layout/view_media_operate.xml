@@ -1,0 +1,51 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical" >
+	<View 
+	    android:layout_width="match_parent"
+	    android:layout_height="1px"
+	    android:background="@color/monitor_view_gray"
+	    />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp" 
+        android:paddingRight="10dp" 
+        android:paddingTop="15dp" 
+        android:paddingBottom="15dp" 
+        >
+
+        <CheckBox
+            android:id="@+id/view_operate_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="  全选"
+            android:textSize="20sp"
+            android:layout_centerVertical="true"
+            android:textColor="@color/monitor_text_gray"
+            android:button="@drawable/checkbox_selector" />
+        
+        <Button
+            android:id="@+id/view_operate_deleted"
+            style="@style/ButtonMediaOperate"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="120dp"
+            android:text="删除" />
+
+        <Button
+            android:id="@+id/view_operate_upload"
+            style="@style/ButtonMediaOperate"
+            android:layout_alignParentRight="true"
+            android:text="上传" />
+
+        <Button
+            android:id="@+id/view_operate_cancel"
+            style="@style/ButtonMediaOperate"
+            android:layout_alignParentRight="true"
+            android:text="取消上传" />
+    </RelativeLayout>
+
+</LinearLayout>

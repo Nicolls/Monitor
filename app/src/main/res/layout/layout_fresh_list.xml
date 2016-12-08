@@ -1,0 +1,57 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:egovcomm="http://schemas.android.com/apk/res/com.egovcomm.monitor"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/monitor_view_gray" >
+    <include
+        android:id="@+id/view_search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        layout="@layout/view_search_bar" />
+
+     <include
+        android:id="@+id/view_media_operate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        layout="@layout/view_media_operate"
+        android:visibility="gone" />
+    <View 
+        android:id="@+id/view_line"
+        android:layout_width="match_parent"
+        android:layout_height="1px" 
+        android:layout_below="@id/view_search_bar"
+        android:background="@color/monitor_view_gray"
+        />
+    <com.egovcomm.monitor.view.push2refreshlistview.PullToRefreshLayout
+        android:id="@+id/refresh_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/view_line"
+        android:layout_above="@id/view_media_operate"
+        egovcomm:isCanPull="true"
+        egovcomm:isPullRefreshEnable="true" >
+
+        <include layout="@layout/view_refresh_head" />
+        <!-- 支持所有实现Pullable接口的View -->
+
+        <com.egovcomm.monitor.view.push2refreshlistview.PullableListView
+            android:id="@+id/content_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:divider="@color/monitor_view_gray"
+            android:dividerHeight="@dimen/item_divider_height" />
+
+        <include layout="@layout/view_load_more" />
+    </com.egovcomm.monitor.view.push2refreshlistview.PullToRefreshLayout>
+     <include
+        android:id="@+id/view_no_more_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        layout="@layout/view_no_more_data"
+        android:visibility="gone" />
+</RelativeLayout>

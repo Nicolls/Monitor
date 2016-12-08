@@ -1,0 +1,150 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/item_paddingVertical"
+        android:paddingLeft="@dimen/item_paddingHorizontal"
+        android:paddingRight="@dimen/item_paddingHorizontal"
+        android:paddingTop="@dimen/item_paddingVertical" >
+
+        <CheckBox
+            android:id="@+id/item_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="10dp"
+            android:focusable="false"
+            android:button="@drawable/checkbox_selector" />
+
+        <RelativeLayout
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <com.egovcomm.monitor.view.RecycleImageView
+                android:id="@+id/item_iv_media"
+                android:layout_width="@dimen/item_media_view_width"
+                android:layout_height="@dimen/item_media_view_height"
+                 />
+
+            <ImageView
+                android:id="@+id/item_iv_video_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/video_icon" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/item_name"
+                style="@style/ItemText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="组备注" />
+
+            <TextView
+                android:id="@+id/item_location"
+                style="@style/ItemText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="拍摄地点" />
+
+            <TextView
+                android:id="@+id/item_time"
+                style="@style/ItemText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="创建时间" />
+
+              <TextView
+                    android:id="@+id/item_lng"
+                    style="@style/ItemText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="经度" />
+
+                <TextView
+                    android:id="@+id/item_lat"
+                    style="@style/ItemText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="纬度" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/item_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_marginTop="15dp"
+        android:max="100"
+        android:progress="30"
+        android:progressDrawable="@drawable/progress_bar"
+        android:visibility="visible" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/view_layout_tip"
+        android:orientation="vertical" >
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/monitor_view_gray" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|right"
+            android:orientation="horizontal"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+             >
+
+            <ImageView
+                android:id="@+id/item_iv_tip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/upload_fail" />
+
+            <TextView
+                android:id="@+id/item_tv_tip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="上传失败"
+                android:textColor="@color/black"
+                android:textSize="15sp" />
+
+           <!--  <Button
+                android:id="@+id/item_btn_reupload"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:background="@drawable/corners_green_solid"
+                android:onClick="onResetPassword"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginLeft="100dp"
+                android:text="重新上传"
+                android:textColor="@color/white" /> -->
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
