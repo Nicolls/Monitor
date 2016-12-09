@@ -260,7 +260,7 @@ public class CameraHelper {
 					}
 			        //预览参数图片大小等值也是按默认的值给的，所以无论屏幕如何放置，给的参数都是长－高，也就是CameraSize，所以只要把算得的Size设置给它就可以了
 			        parameters.setPreviewSize(previewSize.width, previewSize.height);
-
+//					parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);//开启方便测试
 			       
 			        
 			        // likewise for the camera object itself.
