@@ -11,6 +11,7 @@ import com.egovcomm.monitor.activity.SigninActivity;
 import com.egovcomm.monitor.activity.WelcomeActivity;
 import com.egovcomm.monitor.model.RspVersion;
 import com.egovcomm.monitor.model.User;
+import com.egovcomm.monitor.model.AppRequest;
 import com.egovcomm.monitor.service.UpdateAPPService;
 
 /**
@@ -99,6 +100,8 @@ public class AppUpdateUtils {
 
     /** 版本更新 */
     private static void updateApk(Activity activity,String downloadUrl, boolean isfinish) {
+		AppRequest ebReq = new AppRequest(downloadUrl);
+		downloadUrl=ebReq.getReqeustURL();
         ToastUtils.toast(activity, activity.getString(R.string.start_download));
         Intent intent = new Intent(UpdateAPPService.class.getName());
         intent.putExtra(UpdateAPPService.INTENT_DOWNLOAD_URL, downloadUrl);
