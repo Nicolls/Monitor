@@ -17,6 +17,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -138,6 +139,7 @@ public class FileUtils {
 		bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
 		return bitmap;
 	}
+
 	
 	/**获取缩略图*/
 	public static Bitmap getMediaThumbnail(Context context,String path,String mediaType) {

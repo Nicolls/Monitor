@@ -53,8 +53,8 @@ public class CameraHelper {
 
 	private static final String TAG=CameraHelper.class.getSimpleName();
 	
-	public static final int SCREEN_PORTRAIT = 1;
-	public static final int SCREEN_LANDSCAPE = 0;
+	public static final int SCREEN_PORTRAIT = 0;
+	public static final int SCREEN_LANDSCAPE = 1;
 	
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	public static final int MEDIA_TYPE_VIDEO = 2;
@@ -82,7 +82,8 @@ public class CameraHelper {
 	 *            The height of the view.
 	 * @return Best match camera preview size to fit in the view.
 	 */
-	public static Size getOptimalPreviewSize(List<Size> sizes, int w, int h) {
+	public static Size getOptimalSize2(String type,List<Size> sizes, int w, int h) {
+		LogUtils.i(TAG, "类型："+type+" 寻找：w-h:"+w+"-"+h);
 		// Use a very small tolerance because we want an exact match.
 		final double ASPECT_TOLERANCE = 0.1;
 		double targetRatio = (double) w / h;
@@ -105,6 +106,7 @@ public class CameraHelper {
 		// fit in the view and
 		// still maintain the aspect ratio.
 		for (Size size : sizes) {
+			LogUtils.i(TAG, "遍历：w-h:"+size.width+"-"+size.height);
 			double ratio = (double) size.width / size.height;
 			if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE)
 				continue;
@@ -125,25 +127,37 @@ public class CameraHelper {
 				}
 			}
 		}
+		LogUtils.i(TAG, type+"最合适的宽度-高度分别是："+optimalSize.width+"-"+optimalSize.height);
 		return optimalSize;
 	}
-	
-	public static Size getOptimalPictureSize(List<Size> sizes, int w, int h) {
-		Size optimalSize=null;
-		Collections.sort(sizes, new Comparator<Size>() {
+
+	public static Camera.Size getOptimalSize(String type,List<Camera.Size> sizes, int w, int h) {
+		LogUtils.i(TAG, "类型："+type+" 寻找：w-h:"+w+"-"+h);
+		Camera.Size optimalSize=null;
+		Collections.sort(sizes, new Comparator<Camera.Size>() {
 
 			@Override
 			public int compare(Size lhs, Size rhs) {
 				int result=0;
-				if(lhs.width>rhs.width){
-					result=1;
+				if(lhs.width>lhs.height&&rhs.width>rhs.height){//判断是手机是直屏幕的情况下
+					if(lhs.width>rhs.width){
+						result=-1;
+					}else if(lhs.height>rhs.height){
+						result=-1;
+					}else{
+						result=1;
+					}
 				}else{
-					result=-1;
+
 				}
-				
-				return 0;
+				return result;
 			}
 		});
+
+		for(int i=0;i<sizes.size();i++){
+			LogUtils.i(TAG, "排序：w-h:"+sizes.get(i).width+"-"+sizes.get(i).height);
+		}
+
 		boolean isExit=false;
 		LogUtils.i(TAG, "寻找：w-h:"+w+"-"+h);
 		for(int i=0;i<sizes.size();i++){
@@ -151,12 +165,21 @@ public class CameraHelper {
 			if(!isExit){
 				if(sizes.get(i).width<=w){
 					optimalSize=sizes.get(i);
-					LogUtils.i(TAG, "找到 ：w-h:"+optimalSize.width+"-"+optimalSize.height);
+					LogUtils.i(TAG, "找到合适的宽度 ：w-h:"+optimalSize.width+"-"+optimalSize.height);
 					isExit=true;
+					if(sizes.get(i).height<=h){
+						LogUtils.i(TAG, "找到合适的高度 ：w-h:"+optimalSize.width+"-"+optimalSize.height);
+						break;
+					}
 				}
+			}else if(sizes.get(i).height<=h){
+				optimalSize=sizes.get(i);
+				LogUtils.i(TAG, "找到合适的高度 ：w-h:"+optimalSize.width+"-"+optimalSize.height);
+				break;
 			}
 		}
-		
+		LogUtils.i(TAG, type+"最合适的宽度-高度分别是："+optimalSize.width+"-"+optimalSize.height);
+
 		return optimalSize;
 	}
 
@@ -176,9 +199,9 @@ public class CameraHelper {
 
 	/**获取一个打开的摄像头，开始预览画面 
 	 * 
-	 * screenOrientation activity的屏幕方向,0表示水平SCREEN_PORTRAIT，1表示垂直SCREEN_LANDSCAPE
+	 * size是view的大小，不管怎么样size.x=长，size.y=宽
 	 * */
-	public static void startPreviewCamera(final Context context,final TextureView preview,final int screenOrientation,final int mediaType,final CameraOpenCallBack callBack){
+	public static void startPreviewCamera(final Context context,final TextureView preview,final Point size,final int screenOrientation,final int mediaType,final CameraOpenCallBack callBack){
 		new AsyncTask<String, Integer, Camera>() {
 			@Override
 			protected void onPreExecute() {
@@ -206,38 +229,37 @@ public class CameraHelper {
 					}
 					//用于处理摄像头看到的画面
 					Camera.Parameters parameters = camera.getParameters();
-			        
+
 			        List<Size> mSupportedPreviewSizes = parameters.getSupportedPreviewSizes();
 			        List<Size> mSupportedPictureSizes = parameters.getSupportedPictureSizes();
-			        Size optimalSize=null;
+			        Size previewSize=null;
 			        Size pictureSize=null;
-			        LogUtils.i("view的宽度－高度是：", preview.getWidth()+"-"+preview.getHeight());
-			        
+			        LogUtils.i("屏幕view的宽度－高度是：", size.x+"-"+size.y);
+
 			        //不管屏幕的方向如何，CameraSize默认是水平来看，所以cameraSize中的值都是 长－高 的。如1920-1080 1280-720
 			        //当垂直的时候，应该拿屏幕的高去跟size的长对比，当水平时，则拿屏幕的宽和size的长对比，返回的值是cameraSize，所以值也是长－高
 			        if(screenOrientation==SCREEN_LANDSCAPE){
-			        	optimalSize = CameraHelper.getOptimalPreviewSize(mSupportedPreviewSizes,
-				        		preview.getWidth(), preview.getHeight());
-				        pictureSize = CameraHelper.getOptimalPictureSize(mSupportedPictureSizes,
-				        		preview.getWidth(), preview.getHeight());
-				        
-					}else if(screenOrientation==SCREEN_PORTRAIT){
-						optimalSize = CameraHelper.getOptimalPreviewSize(mSupportedPreviewSizes,
-				        		preview.getHeight(), preview.getWidth());
-				        pictureSize = CameraHelper.getOptimalPictureSize(mSupportedPictureSizes,
-				        		preview.getHeight(), preview.getWidth());
-				        
+			        	previewSize = CameraHelper.getOptimalSize("预览",mSupportedPreviewSizes,
+								size.x, size.y);
+				        pictureSize = CameraHelper.getOptimalSize("图像",mSupportedPictureSizes,
+								size.x, size.y);
+
+					}else {
+						previewSize = CameraHelper.getOptimalSize("预览",mSupportedPreviewSizes,
+								size.y, size.x);
+				        pictureSize = CameraHelper.getOptimalSize("图像",mSupportedPictureSizes,
+								size.y, size.x);
+
 					}
-			        LogUtils.i(TAG, "预览最合适的宽度-高度分别是："+optimalSize.width+"-"+optimalSize.height);
-			        LogUtils.i(TAG, "图像最合适的宽度-高度分别是："+optimalSize.width+"-"+optimalSize.height);
 			        //预览参数图片大小等值也是按默认的值给的，所以无论屏幕如何放置，给的参数都是长－高，也就是CameraSize，所以只要把算得的Size设置给它就可以了
-			        parameters.setPreviewSize(optimalSize.width, optimalSize.height);
-			        parameters.setPictureSize(pictureSize.width, pictureSize.height);
+			        parameters.setPreviewSize(previewSize.width, previewSize.height);
+
 			       
 			        
 			        // likewise for the camera object itself.
 			        List<String> focusModes = parameters.getSupportedFocusModes();
 			        if(mediaType==MEDIA_TYPE_IMAGE){
+						parameters.setPictureSize(pictureSize.width,pictureSize.height);
 			        	parameters.setPictureFormat(PixelFormat.JPEG);//设置拍照后存储的图片格式
 			        	if(focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)){
 			        		parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
@@ -277,7 +299,7 @@ public class CameraHelper {
 		}.execute();
 	}
 	
-	public static void startVideoRecord(final Context context,final Camera camera,final int screenOrientation,final Point videoSize,final VedioRecordCallBack callBack){
+	public static void startVideoRecord(final Context context,final Camera camera,final int screenOrientation,final Point size,final VedioRecordCallBack callBack){
 		new AsyncTask<Void, Integer, MediaRecorder>(){
 
 			private String path="";
@@ -311,24 +333,40 @@ public class CameraHelper {
 		        // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
 		        
 		        // Use the same size for recording profile.
-		        CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_480P);
-		        LogUtils.i(TAG, "传进来视频的宽度－高度是："+videoSize.x+"-"+videoSize.y);
-		        LogUtils.i(TAG, "录制视频的480宽度－高度是："+profile.videoFrameWidth+"-"+profile.videoFrameHeight);
-		      //用于处理摄像头看到的画面
+				CamcorderProfile profile=null;
+				if(size.x<480){
+					LogUtils.i(TAG, "使用低于480的值");
+					profile = CamcorderProfile.get(CamcorderProfile.QUALITY_QVGA);
+				}else if(size.x>480&&size.x<720){
+					LogUtils.i(TAG, "使用>=480 <720的值");
+					profile = CamcorderProfile.get(CamcorderProfile.QUALITY_480P);
+				}else if(size.x>=720&&size.x<1080){
+					LogUtils.i(TAG, "使用>=720 <1080的值");
+					profile = CamcorderProfile.get(CamcorderProfile.QUALITY_720P);
+				}else{
+					LogUtils.i(TAG, "使用>=1080的值");
+					profile = CamcorderProfile.get(CamcorderProfile.QUALITY_1080P);
+				}
+
+		        LogUtils.i(TAG, "传进来视频的宽度－高度是："+size.x+"-"+size.y);
+		        LogUtils.i(TAG, "录制视频的宽度－高度是："+profile.videoFrameWidth+"-"+profile.videoFrameHeight);
+
+		         //用于处理摄像头看到的画面
 		      //视频的大小是按默认的值给的，所以无论屏幕如何放置，给的参数都是长－高，也就是CameraSize，所以只要把算得的Size设置给它就可以了
-		        profile.videoFrameWidth = videoSize.x;
-		        profile.videoFrameHeight =videoSize.y;
+//		        profile.videoFrameWidth = optimalSize.width;
+//		        profile.videoFrameHeight =optimalSize.height;
 		        mMediaRecorder.setProfile(profile);
 		        //特别的设置，这里的设置能使最终
 		        //video的大小决定视频分辨率，EncodingBitRate决定了存储的视频数据的清晰度，值越大越清晰，
-		        mMediaRecorder.setVideoEncodingBitRate(1024*1024);
+//		        mMediaRecorder.setVideoEncodingBitRate(1024*1024);
 		        //mMediaRecorder.setVideoSize(800,480);
 		        
 				//mMediaRecorder.setVideoFrameRate(20);
 				//mMediaRecorder.setAudioEncodingBitRate();
 				//mMediaRecorder.setAudioChannels()
 				//mMediaRecorder.setAudioSamplingRate()
-				
+
+
 		        // Step 4: Set output file
 		        path=getOutputMediaFile(
 		                CameraHelper.MEDIA_TYPE_VIDEO).toString();

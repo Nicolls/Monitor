@@ -109,7 +109,7 @@ public class SigninActivity extends BaseActivity {
 		}
 		hideLoading();
 	}
-	
-	
-	
+
+
+
 }

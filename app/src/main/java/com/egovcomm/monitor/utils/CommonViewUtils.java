@@ -3,16 +3,10 @@
  */
 package com.egovcomm.monitor.utils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -20,23 +14,14 @@ import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.os.Environment;
-import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.ListAdapter;
-
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.ImageLoader.ImageCache;
-import com.android.volley.toolbox.ImageLoader.ImageListener;
-import com.android.volley.toolbox.Volley;
-import com.egovcomm.monitor.common.AppConstant;
 
 /**
  * View工具
@@ -116,9 +101,14 @@ public class CommonViewUtils {
 	/** 获取屏幕宽高 */
 	public static Point getDisplaySize(Context context) {
 		Point p = new Point();
-		WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-		int width = wm.getDefaultDisplay().getWidth();
-		int height = wm.getDefaultDisplay().getHeight();
+		WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+
+		DisplayMetrics dm=new DisplayMetrics();
+		manager.getDefaultDisplay().getMetrics(dm);
+		int width=dm.widthPixels;
+		int height=dm.heightPixels;
+		LogUtils.d("width2", String.valueOf(width));
+		LogUtils.d("height2", String.valueOf(height));
 		p.x = width;
 		p.y = height;
 		return p;

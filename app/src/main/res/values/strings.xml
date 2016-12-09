@@ -42,7 +42,7 @@
     <string name="exit">退出</string>
     <string name="confirm">确认</string>
     <!-- APP升级 -->
-    <string name="app_update">APP升级</string><!-- APP升级 -->
+    <string name="app_update">版本更新提示</string><!-- APP升级 -->
     <string name="app_update_tip">有新的版本可提供，想更新到最新版本吗？</string><!-- 有新的版本可提供，想更新到最新版本吗？ -->
     <string name="app_update_force_tip">有新的版本可提供，你必须更新应用到最新版本才能使用 </string><!-- 有新的版本可提供，你必须更新应用到最新版本才能使用 -->
     <string name="start_download">下载完成后，将自动更新</string><!-- 下载完成后，将自动更新 -->

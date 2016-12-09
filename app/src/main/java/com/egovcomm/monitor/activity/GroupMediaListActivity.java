@@ -154,11 +154,13 @@ public class GroupMediaListActivity extends BaseListActivity<RspMediaGroup> {
 	}
 
 	private void requestData() {
+		ToastUtils.toast(GroupMediaListActivity.this,"搜索"+key);
+		String data="{\"createAddr\":"+key+",\"remark\":"+key+"}";
 		//领导的数据，不传ID，返回所有
 		if (TextUtils.equals(mediaType, MonitorMediaGroup.TYPE_PHOTO)) {
-			mEBikeRequestService.getPhotoMedia("", pageNow, pageSize);
+			mEBikeRequestService.getPhotoMedia("",data, pageNow, pageSize);
 		} else if (TextUtils.equals(mediaType, MonitorMediaGroup.TYPE_VIDEO)) {
-			mEBikeRequestService.getVideoMedia("", pageNow, pageSize);
+			mEBikeRequestService.getVideoMedia("",data, pageNow, pageSize);
 		} 
 //		else {
 //			mEBikeRequestService.getPhotoMedia(SPUtils.getUser(this)
@@ -171,17 +173,7 @@ public class GroupMediaListActivity extends BaseListActivity<RspMediaGroup> {
 	// 关键字搜索
 	@Override
 	public List<RspMediaGroup> onSearch(String key) {
-		//ToastUtils.toast(getApplicationContext(), "回到子类"+key);
-		//检索本地数据
-		List<RspMediaGroup> list = new ArrayList<RspMediaGroup>();
-		for(RspMediaGroup group:dataList){
-			if((group.getCreateAddr()!=null&&group.getCreateAddr().indexOf(key)!=-1)||(group.getCreateAddr()!=null&&group.getCreateTime().indexOf(key)!=-1)||(group.getRemark()!=null&&group.getRemark().indexOf(key)!=-1)){
-				//检索地址跟时间匹配的数据
-				LogUtils.i(tag, "匹配"+group.getCreateAddr());
-				list.add(group);
-			}
-		}
-		return list;
+		return dataList;
 	}
 
 	// 适配器

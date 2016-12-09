@@ -1,5 +1,7 @@
 package com.egovcomm.monitor.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +16,9 @@ import com.egovcomm.monitor.model.RspVersion;
 import com.egovcomm.monitor.model.User;
 import com.egovcomm.monitor.net.RequestService;
 import com.egovcomm.monitor.service.UpdateAPPService;
+import com.egovcomm.monitor.utils.AppUpdateUtils;
+import com.egovcomm.monitor.utils.CommonUtil;
+import com.egovcomm.monitor.utils.MyActivityManager;
 import com.egovcomm.monitor.utils.SPUtils;
 import com.egovcomm.monitor.utils.ToastUtils;
 import com.crashlytics.android.Crashlytics;
@@ -37,43 +42,34 @@ public class WelcomeActivity extends BaseActivity {
 			}
 		}
 		setContentView(R.layout.activity_welcome);
-		// ib=(ImageView) findViewById(R.id.iv_welcome);
-		// Animation anim=AnimationUtils.loadAnimation(this,
-		// R.anim.welcome_fade_in_scale);
-		// ib.startAnimation(anim);
-		// mEBikeRequestService.version("Android",
-		// CommonUtil.getAppVersion(this));//新版本检查
-		initData();
+		showLoading(true);
+		mEBikeRequestService.updateMonitorApp(CommonUtil.getAppVersion(WelcomeActivity.this));
 	}
 
-	private void initData() {
+	/**登录*/
+	private void requestLogin() {
 		User user = SPUtils.getUser(this);
 		if (user != null && !TextUtils.isEmpty(user.getUserAccount()) && !TextUtils.isEmpty(user.getPassword())) {// 自动登录
 			showLoading(true);
 			mEBikeRequestService.login(user.getUserAccount(), user.getPassword());
 		} else {
-			showLoading(true);
-			Handler handler=new Handler(){
-
-				@Override
-				public void handleMessage(Message msg) {
-					super.handleMessage(msg);
-					hideLoading();
-					openActivity(SigninActivity.class, null, true);
-				}
-				
-			};
-			handler.sendEmptyMessageDelayed(0, 2000);//添加一个延迟
+			openActivity(SigninActivity.class, null, true);
 		}
 	}
 
 	@Override
 	public void dateUpdate(int id, Object obj) {
 		hideLoading();
-		// if(id==EBikeRequestService.ID_VERSION){
-		if (id == 0) {
+		 if(id==RequestService.ID_UPDATEMONITORAPP){
 			RspVersion version = (RspVersion) obj;
-			chargeUpdate(version);
+			 AppUpdateUtils.chargeUpdate(this, version, new AppUpdateUtils.AppUpdateChargeListener() {
+				 @Override
+				 public void chargeResult(RspVersion version,boolean isUpdate) {
+					 if(!isUpdate){//不需要更新
+						requestLogin();
+					 }
+				 }
+			 });
 		} else if (id == RequestService.ID_LOGIN) {
 			RspLogin login = (RspLogin) obj;
 			LoginInfo.user = login.getData();
@@ -88,39 +84,17 @@ public class WelcomeActivity extends BaseActivity {
 		}
 	}
 
-	/** 判断更新 */
-	private void chargeUpdate(RspVersion version) {
-		if (version != null) {
-			String newest = version.getData().getNewest();
-			final String url = version.getData().getUrl();
-			// final String url =
-			// "http://www.saner5.com/index.aspx?appId=1&appDownLoadCount=55&appDownloadUrl=upload/app/2014_07_17_17_44_48ear.apk";
-			int m = Integer.parseInt(version.getData().getForce_update());
-			boolean isForceUpdate = (m == 0 ? false : true);
-		} else {
-			initData();
-		}
-	}
-
-	/** 版本更新 */
-	private void updateApk(String downloadUrl, boolean isfinish) {
-		// final String downloadUrl =
-		// "http://www.saner5.com/index.aspx?appId=1&appDownLoadCount=55&appDownloadUrl=upload/app/2014_07_17_17_44_48ear.apk";
-		ToastUtils.toast(WelcomeActivity.this, getString(R.string.start_download));
-		Intent intent = new Intent(UpdateAPPService.class.getName());
-		intent.putExtra(UpdateAPPService.INTENT_DOWNLOAD_URL, downloadUrl);
-		WelcomeActivity.this.startService(intent);
-		if (isfinish) {
-			finish();
-		}
-	}
 
 	/** 请求出错 */
 	@Override
 	protected void requestError(int id,Object obj) {
 		hideLoading();
-		SPUtils.setUser(this, null);
-		openActivity(SigninActivity.class, null, true);
+		if(id==RequestService.ID_UPDATEMONITORAPP){
+			requestLogin();
+		}else if(id==RequestService.ID_LOGIN){
+			SPUtils.setUser(this, null);
+			openActivity(SigninActivity.class, null, true);
+		}
 	}
 
 }

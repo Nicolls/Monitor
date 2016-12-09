@@ -36,6 +36,9 @@ public interface RequestService {
 	
 	/**下载图片视频URL*/
 	static final int ID_DOWNLOADMEDIA=8;
+
+	/**更新应用*/
+	static final int ID_UPDATEMONITORAPP=9;
 	
 	
 	/** 方法名 **/
@@ -58,8 +61,10 @@ public interface RequestService {
 	
 	/**下载图片视频URL*/
 	static final String METHOD_DOWNLOADMEDIA="/attach/mediaFile/";
-	
-	
+
+	/**更新应用*/
+
+	static final String METHOD_UPDATEMONITORAPP="/userAction.struts";
 	/**
 	 * 
 	 * @param dataUpdateListener 监听器
@@ -105,9 +110,14 @@ public interface RequestService {
 	 * @param userId (选填)：用户id，填写则只获取该用户的数据，不填则不会过滤用户id
 	 * @param page (选填): 第几页，从1开始，不填默认为1
 	 * @param count (选填): 每页多少条数据，不填默认为20
+	 * @param data data(选填、json字符串)：数据筛选字段，可以只提交其中一个参数，若两个参数都提交，是“或”关系
+	{
+	createAddr: '创建时所在地址(使用高德地图获取)',
+	remark: '备注'
+	}
 	 * @Description 
 	 */
-	void getPhotoMedia(String userId, int page, int count);
+	void getPhotoMedia(String userId,String data, int page, int count);
 	
 	
 	/**获取视频列表数据
@@ -115,9 +125,14 @@ public interface RequestService {
 	 * @param userId (选填)：用户id，填写则只获取该用户的数据，不填则不会过滤用户id
 	 * @param page (选填): 第几页，从1开始，不填默认为1
 	 * @param count (选填): 每页多少条数据，不填默认为20
+	 * @param data data(选填、json字符串)：数据筛选字段，可以只提交其中一个参数，若两个参数都提交，是“或”关系
+	{
+	createAddr: '创建时所在地址(使用高德地图获取)',
+	remark: '备注'
+	}
 	 * @Description 
 	 */
-	void getVideoMedia(String userId, int page, int count);
+	void getVideoMedia(String userId,String data, int page, int count);
 	
 	/**通过url下载视频或者照片
 	 * @param url (选填)：用户id，填写则只获取该用户的数据，不填则不会过滤用户id
@@ -130,12 +145,13 @@ public interface RequestService {
 	void downLoadMedia(Context context, MonitorMedia media);
 	
 	/**
-	 * @param type 设备类型 Android
-	 * @param version 当前应用版本号，如1.0.0
+	 * userAction.struts?actionType=updateMonitorApp
+	 * @param deviceType 设备类型 android
+	 * @param installedVersion 当前应用版本号，如1.0.0
 	 * @return void
 	 * @Description 查询更新
 	 */
-	void version(String type, String version);
+	void updateMonitorApp(String installedVersion);
 	
 	
 }

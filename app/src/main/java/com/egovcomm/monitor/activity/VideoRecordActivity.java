@@ -60,6 +60,7 @@ import com.egovcomm.monitor.utils.CameraHelper;
 import com.egovcomm.monitor.utils.CameraHelper.CameraOpenCallBack;
 import com.egovcomm.monitor.utils.CameraHelper.VedioRecordCallBack;
 import com.egovcomm.monitor.utils.CommonUtil;
+import com.egovcomm.monitor.utils.CommonViewUtils;
 import com.egovcomm.monitor.utils.FileUtils;
 import com.egovcomm.monitor.utils.LogUtils;
 import com.egovcomm.monitor.utils.SPUtils;
@@ -195,8 +196,9 @@ public class VideoRecordActivity extends BaseActivity {
 			mIBVideoData.setVisibility(View.GONE);
 			recordButton.setSelected(true);
 			if (mCamera != null) {
+				Point p=CommonViewUtils.getDisplaySize(VideoRecordActivity.this);
 				CameraHelper.startVideoRecord(this, mCamera, screenOrientation,
-						new Point(800, 480), new VedioRecordCallBack() {
+						p, new VedioRecordCallBack() {
 
 							@Override
 							public void startSuccess(
@@ -365,7 +367,9 @@ public class VideoRecordActivity extends BaseActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		CameraHelper.startPreviewCamera(this, mPreview, screenOrientation,
+		Point p= CommonViewUtils.getDisplaySize(VideoRecordActivity.this);
+
+		CameraHelper.startPreviewCamera(this, mPreview, p,screenOrientation,
 				CameraHelper.MEDIA_TYPE_VIDEO, new CameraOpenCallBack() {
 
 					@Override
@@ -538,6 +542,7 @@ public class VideoRecordActivity extends BaseActivity {
 		DBHelper.getInstance(VideoRecordActivity.this).updateMonitorMediaList(list);
 		// 调用FTP上传
 		 FTPMediaUtil.mediaUpload(VideoRecordActivity.this, uploadGroup);
+		ToastUtils.toast(VideoRecordActivity.this,"上传已成功提交，可到我的数据页面查看数据上传进度");
 		 mCamera.startPreview();
 	}
 

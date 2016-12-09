@@ -1,6 +1,7 @@
 package com.egovcomm.monitor.activity;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -64,7 +65,6 @@ public class VideoPlayActivity extends BaseActivity implements
 
 		surfaceHolder = surface.getHolder(); // SurfaceHolder是SurfaceView的控制接口
 		surfaceHolder.addCallback(this); // 因为这个类实现了SurfaceHolder.Callback接口，所以回调参数直接this
-		surfaceHolder.setFixedSize(800, 480);// 显示的分辨率,不设置为视频默认
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);// Surface类型
 		surface.setOnClickListener(new OnClickListener() {
 
@@ -136,6 +136,13 @@ public class VideoPlayActivity extends BaseActivity implements
 	public void surfaceCreated(SurfaceHolder arg0) {
 		// 必须在surface创建后才能初始化MediaPlayer,否则不会显示图像
 		player = new MediaPlayer();
+		player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				videoIcon.setVisibility(View.VISIBLE);
+				playImageView.setSelected(false);
+			}
+		});
 		player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		player.setDisplay(surfaceHolder);
 		// 设置显示视频显示在SurfaceView上

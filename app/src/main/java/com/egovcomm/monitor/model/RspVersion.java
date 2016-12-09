@@ -7,9 +7,6 @@ package com.egovcomm.monitor.model;
  */
 public class RspVersion extends AppResponse {
 	private static final long serialVersionUID = 1L;
-	/**
-	 * @Fields data 用户信息
-	 */
 	private ResultData data;
 	public ResultData getData() {
 		return data;
@@ -18,33 +15,61 @@ public class RspVersion extends AppResponse {
 		this.data = data;
 	}
 	public class ResultData{
-		private String newest;
-		private String description;
-		private String url;
-		private String force_update;
-		public String getNewest() {
-			return newest;
+
+		private boolean canUpdate;
+		private String deviceType;
+		private boolean forceUpdate;
+		private String installedVersion;
+		private String latestVersioUri;
+		private String latestVersion;
+
+		public boolean isCanUpdate() {
+			return canUpdate;
 		}
-		public void setNewest(String newest) {
-			this.newest = newest;
+
+		public void setCanUpdate(boolean canUpdate) {
+			this.canUpdate = canUpdate;
 		}
-		public String getDescription() {
-			return description;
+
+		public String getDeviceType() {
+			return deviceType;
 		}
-		public void setDescription(String description) {
-			this.description = description;
+
+		public void setDeviceType(String deviceType) {
+			this.deviceType = deviceType;
 		}
-		public String getUrl() {
-			return url;
+
+		public boolean isForceUpdate() {
+			return forceUpdate;
 		}
-		public void setUrl(String url) {
-			this.url = url;
+
+		public void setForceUpdate(boolean forceUpdate) {
+			this.forceUpdate = forceUpdate;
 		}
-		public String getForce_update() {
-			return force_update;
+
+		public String getInstalledVersion() {
+			return installedVersion;
 		}
-		public void setForce_update(String force_update) {
-			this.force_update = force_update;
+
+		public void setInstalledVersion(String installedVersion) {
+			this.installedVersion = installedVersion;
 		}
+
+		public String getLatestVersioUri() {
+			return latestVersioUri;
+		}
+
+		public void setLatestVersioUri(String latestVersioUri) {
+			this.latestVersioUri = latestVersioUri;
+		}
+
+		public String getLatestVersion() {
+			return latestVersion;
+		}
+
+		public void setLatestVersion(String latestVersion) {
+			this.latestVersion = latestVersion;
+		}
+
 	}
 }

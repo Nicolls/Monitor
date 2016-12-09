@@ -87,10 +87,11 @@ public class RequestServiceVolleyImpl implements RequestService {
 
 
 	@Override
-	public void version(String type, String version) {
+	public void updateMonitorApp(String installedVersion) {
 		AppRequest ebReq = new AppRequest("");
-		ebReq.setReqeustParam("type", type);
-		ebReq.setReqeustParam("version",version);
+		ebReq.setReqeustParam("actionType", "updateMonitorApp");
+		ebReq.setReqeustParam("deviceType", "android");
+		ebReq.setReqeustParam("installedVersion",installedVersion);
 		sendRequest(ebReq, 0, RspVersion.class);
 	}
 
@@ -122,20 +123,22 @@ public class RequestServiceVolleyImpl implements RequestService {
 	}
 	
 	@Override
-	public void getPhotoMedia(String userId, int page, int count) {
+	public void getPhotoMedia(String userId,String data, int page, int count) {
 		AppRequest ebReq = new AppRequest(RequestService.METHOD_GETPHOTOMEDIA);
 		ebReq.setReqeustParam("actionType", "photoList");
 		ebReq.setReqeustParam("userId", userId+"");
+		ebReq.setReqeustParam("data", data+"");
 		ebReq.setReqeustParam("page", page+"");
 		ebReq.setReqeustParam("count", count+"");
 		sendRequest(ebReq, RequestService.ID_GETPHOTOMEDIA, RspGroupList.class);
 	}
 
 	@Override
-	public void getVideoMedia(String userId, int page, int count) {
+	public void getVideoMedia(String userId, String data,int page, int count) {
 		AppRequest ebReq = new AppRequest(RequestService.METHOD_GETVIDEOMEDIA);
 		ebReq.setReqeustParam("actionType", "videoList");
 		ebReq.setReqeustParam("userId", userId+"");
+		ebReq.setReqeustParam("data", data+"");
 		ebReq.setReqeustParam("page", page+"");
 		ebReq.setReqeustParam("count", count+"");
 		sendRequest(ebReq, RequestService.ID_GETVIDEOMEDIA, RspGroupList.class);

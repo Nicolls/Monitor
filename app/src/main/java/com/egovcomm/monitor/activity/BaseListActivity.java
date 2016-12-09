@@ -163,6 +163,9 @@ public abstract class BaseListActivity<T> extends BaseActivity implements OnClic
 	// 显示或者隐藏搜索框
 	protected void showHideSearchBar() {
 		if (mSearchBar.getVisibility() == View.VISIBLE) {
+			mSearchEt.setText("");
+			key="";
+			listViewRefresh();
 			mSearchBar.setVisibility(View.GONE);
 		} else {
 			mSearchBar.setVisibility(View.VISIBLE);
@@ -188,14 +191,10 @@ public abstract class BaseListActivity<T> extends BaseActivity implements OnClic
 			if (actionId == EditorInfo.IME_ACTION_SEARCH
 					|| (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
 				key = v.getText().toString();
-				v.setText("");
+//				v.setText("");
 				operate = 0;
 				pageNow = 1;
-				if(!TextUtils.isEmpty(key)){
-					setPageSize(SEARCH_MAX_PAGE_SIZE);//搜索的时候就把pagesize设置为100
-				}
-				List<T> list=onSearch(key);
-				loadListView(list);
+				listViewRefresh();
 				CommonViewUtils.hideSystemKeyBoard(BaseListActivity.this, mSearchEt);
 				return true;
 			}

@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import com.egovcomm.monitor.R;
 import com.egovcomm.monitor.common.BaseActivity;
+import com.egovcomm.monitor.model.RspVersion;
+import com.egovcomm.monitor.net.RequestService;
+import com.egovcomm.monitor.utils.AppUpdateUtils;
 import com.egovcomm.monitor.utils.CommonUtil;
 import com.egovcomm.monitor.utils.MyActivityManager;
 import com.egovcomm.monitor.utils.SPUtils;
@@ -74,7 +77,7 @@ public class ProfileActivity extends BaseActivity implements OnClickListener{
 	}
 	
 	public void onCheckUpdate(View view){
-		ToastUtils.toast(getApplicationContext(), "当前为最新版，无须更新");
+		mEBikeRequestService.updateMonitorApp(CommonUtil.getAppVersion(this));
 	}
 	
 	public void onExit(View view){
@@ -83,8 +86,28 @@ public class ProfileActivity extends BaseActivity implements OnClickListener{
 
 	@Override
 	public void dateUpdate(int id, Object obj) {
-		// TODO Auto-generated method stub
-		
+		if(id== RequestService.ID_UPDATEMONITORAPP){
+			RspVersion version = (RspVersion) obj;
+			AppUpdateUtils.chargeUpdate(this, version, new AppUpdateUtils.AppUpdateChargeListener() {
+				@Override
+				public void chargeResult(RspVersion version,boolean isNeedToUpdate) {
+					if(!isNeedToUpdate){//不需要更新
+						if(version!=null&&version.getData()!=null&&!version.getData().isCanUpdate()){
+							ToastUtils.toast(getApplicationContext(), "当前为最新版，无须更新");
+						}
+					}
+				}
+			});
+		}
+	}
+
+	/** 请求出错 */
+	@Override
+	protected void requestError(int id,Object obj) {
+		hideLoading();
+		if(id==RequestService.ID_UPDATEMONITORAPP){
+			ToastUtils.toast(getApplicationContext(), "未檢查到版本信息");
+		}
 	}
 
 	@Override

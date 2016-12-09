@@ -21,6 +21,7 @@ import java.util.HashMap;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
@@ -39,6 +40,8 @@ import com.egovcomm.monitor.model.MonitorMedia;
 import com.egovcomm.monitor.model.MonitorMediaGroup;
 import com.egovcomm.monitor.model.MonitorMediaGroupUpload;
 import com.egovcomm.monitor.utils.CameraHelper;
+import com.egovcomm.monitor.utils.CommonUtil;
+import com.egovcomm.monitor.utils.CommonViewUtils;
 import com.egovcomm.monitor.utils.FileUtils;
 import com.egovcomm.monitor.utils.LogUtils;
 import com.egovcomm.monitor.utils.SPUtils;
@@ -160,7 +163,8 @@ public class PhotoCaptureActivity extends BaseActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		 CameraHelper.startPreviewCamera(this, mPreview, screenOrientation, CameraHelper.MEDIA_TYPE_IMAGE, new CameraOpenCallBack() {
+		Point p= CommonViewUtils.getDisplaySize(PhotoCaptureActivity.this);
+		 CameraHelper.startPreviewCamera(this, mPreview, p,screenOrientation, CameraHelper.MEDIA_TYPE_IMAGE, new CameraOpenCallBack() {
 				
 				@Override
 				public void openSuccess(Camera camera) {
