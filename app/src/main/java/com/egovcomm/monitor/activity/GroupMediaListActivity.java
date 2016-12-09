@@ -154,8 +154,8 @@ public class GroupMediaListActivity extends BaseListActivity<RspMediaGroup> {
 	}
 
 	private void requestData() {
-		ToastUtils.toast(GroupMediaListActivity.this,"搜索"+key);
-		String data="{\"createAddr\":"+key+",\"remark\":"+key+"}";
+//		ToastUtils.toast(GroupMediaListActivity.this,"搜索"+key);
+		String data="{\"createAddr\":\""+key+"\",\"remark\":\""+key+"\"}";
 		//领导的数据，不传ID，返回所有
 		if (TextUtils.equals(mediaType, MonitorMediaGroup.TYPE_PHOTO)) {
 			mEBikeRequestService.getPhotoMedia("",data, pageNow, pageSize);

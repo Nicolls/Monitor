@@ -105,8 +105,8 @@ public class ProfileActivity extends BaseActivity implements OnClickListener{
 	@Override
 	protected void requestError(int id,Object obj) {
 		hideLoading();
-		if(id==RequestService.ID_UPDATEMONITORAPP){
-			ToastUtils.toast(getApplicationContext(), "未檢查到版本信息");
+		if(id==RequestService.ID_UPDATEMONITORAPP||id==RequestService.ID_REQUEST_ERROR){
+			ToastUtils.toast(getApplicationContext(), "未检查到版本信息");
 		}
 	}
 
