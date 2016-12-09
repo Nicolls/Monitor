@@ -75,18 +75,19 @@ public class MonitorLocationService extends BaseService implements
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		int code = intent.getIntExtra(KEY_CODE, CODE_START);
-		if (code == CODE_START) {
-			startLocation();
-		} else if (code == CODE_STOP) {
-			stopLocation();
-		} else if (code == CODE_CLOSE) {
-			stopSelf();// 把服务也停止掉
-		} else {
-			startLocation();
+		if(intent!=null){
+			int code = intent.getIntExtra(KEY_CODE, CODE_START);
+			if (code == CODE_START) {
+				startLocation();
+			} else if (code == CODE_STOP) {
+				stopLocation();
+			} else if (code == CODE_CLOSE) {
+				stopSelf();// 把服务也停止掉
+			} else {
+				startLocation();
+			}
+			LogUtils.i(tag, code + "");
 		}
-		LogUtils.i(tag, code + "");
-
 		return super.onStartCommand(intent, flags, startId);
 	}
 

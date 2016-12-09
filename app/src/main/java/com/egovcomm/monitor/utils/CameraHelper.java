@@ -39,6 +39,7 @@ import android.graphics.Point;
 import android.hardware.Camera;
 import android.hardware.Camera.Size;
 import android.media.CamcorderProfile;
+import android.media.CameraProfile;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -232,8 +233,10 @@ public class CameraHelper {
 
 			        List<Size> mSupportedPreviewSizes = parameters.getSupportedPreviewSizes();
 			        List<Size> mSupportedPictureSizes = parameters.getSupportedPictureSizes();
+					List<Size> mSupportedVideoSizes=parameters.getSupportedVideoSizes();
 			        Size previewSize=null;
 			        Size pictureSize=null;
+					Size videoSize=null;
 			        LogUtils.i("屏幕view的宽度－高度是：", size.x+"-"+size.y);
 
 			        //不管屏幕的方向如何，CameraSize默认是水平来看，所以cameraSize中的值都是 长－高 的。如1920-1080 1280-720
@@ -243,11 +246,15 @@ public class CameraHelper {
 								size.x, size.y);
 				        pictureSize = CameraHelper.getOptimalSize("图像",mSupportedPictureSizes,
 								size.x, size.y);
+						videoSize = CameraHelper.getOptimalSize("视频录制",mSupportedVideoSizes,
+								size.x, size.y);
 
 					}else {
 						previewSize = CameraHelper.getOptimalSize("预览",mSupportedPreviewSizes,
 								size.y, size.x);
 				        pictureSize = CameraHelper.getOptimalSize("图像",mSupportedPictureSizes,
+								size.y, size.x);
+						videoSize = CameraHelper.getOptimalSize("视频录制",mSupportedVideoSizes,
 								size.y, size.x);
 
 					}
