@@ -70,69 +70,62 @@ public class CameraHelper {
 		void startSuccess(MediaRecorder mediaRecorder, String videoPath);
 		void startFail(String message);
 	}
-	/**
-	 * Iterate over supported camera preview sizes to see which one best fits
-	 * the dimensions of the given view while maintaining the aspect ratio. If
-	 * none can, be lenient with the aspect ratio.
-	 *
-	 * @param sizes
-	 *            Supported camera preview sizes.
-	 * @param w
-	 *            The width of the view.
-	 * @param h
-	 *            The height of the view.
-	 * @return Best match camera preview size to fit in the view.
-	 */
-	public static Size getOptimalSize2(String type,List<Size> sizes, int w, int h) {
+
+	/**获取最佳大小*/
+	public static Camera.Size getOptimalSize(String type,List<Camera.Size> sizes, int w, int h) {
 		LogUtils.i(TAG, "类型："+type+" 寻找：w-h:"+w+"-"+h);
-		// Use a very small tolerance because we want an exact match.
-		final double ASPECT_TOLERANCE = 0.1;
-		double targetRatio = (double) w / h;
-		if (sizes == null)
-			return null;
+		Camera.Size optimalSize=null;
+		Collections.sort(sizes, new Comparator<Camera.Size>() {
 
-		Size optimalSize = null;
+			@Override
+			public int compare(Size lhs, Size rhs) {
+				int result=0;
+				if(lhs.width>lhs.height&&rhs.width>rhs.height){//判断是手机是直屏幕的情况下
+					if(lhs.width>rhs.width){
+						result=1;
+					}else if(lhs.height>rhs.height){
+						result=1;
+					}else{
+						result=-1;
+					}
+				}else{
 
-		// Start with max value and refine as we iterate over available preview
-		// sizes. This is the
-		// minimum difference between view and camera height.
-		double minDiff = Double.MAX_VALUE;
-
-		// Target view height
-		int targetHeight = h;
-
-		// Try to find a preview size that matches aspect ratio and the target
-		// view size.
-		// Iterate over all available sizes and pick the largest size that can
-		// fit in the view and
-		// still maintain the aspect ratio.
-		for (Size size : sizes) {
-			LogUtils.i(TAG, "遍历：w-h:"+size.width+"-"+size.height);
-			double ratio = (double) size.width / size.height;
-			if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE)
-				continue;
-			if (Math.abs(size.height - targetHeight) < minDiff) {
-				optimalSize = size;
-				minDiff = Math.abs(size.height - targetHeight);
+				}
+				return result;
 			}
+		});
+
+		for(int i=0;i<sizes.size();i++){
+			LogUtils.i(TAG, "排序：w-h:"+sizes.get(i).width+"-"+sizes.get(i).height);
 		}
 
-		// Cannot find preview size that matches the aspect ratio, ignore the
-		// requirement
-		if (optimalSize == null) {
-			minDiff = Double.MAX_VALUE;
-			for (Size size : sizes) {
-				if (Math.abs(size.height - targetHeight) < minDiff) {
-					optimalSize = size;
-					minDiff = Math.abs(size.height - targetHeight);
+		boolean isExit=false;
+		LogUtils.i(TAG, "寻找：w-h:"+w+"-"+h);
+		for(int i=0;i<sizes.size();i++){
+			LogUtils.i(TAG, "遍历：w-h:"+sizes.get(i).width+"-"+sizes.get(i).height);
+			if(!isExit){
+				if(sizes.get(i).width>=w){
+					optimalSize=sizes.get(i);
+					LogUtils.i(TAG, "找到合适的宽度 ：w-h:"+optimalSize.width+"-"+optimalSize.height);
+					isExit=true;
+					if(sizes.get(i).height>=h){
+						LogUtils.i(TAG, "找到合适的高度 ：w-h:"+optimalSize.width+"-"+optimalSize.height);
+						break;
+					}
 				}
+			}else if(sizes.get(i).height>=h){
+				optimalSize=sizes.get(i);
+				LogUtils.i(TAG, "找到合适的高度 ：w-h:"+optimalSize.width+"-"+optimalSize.height);
+				break;
 			}
 		}
 		LogUtils.i(TAG, type+"最合适的宽度-高度分别是："+optimalSize.width+"-"+optimalSize.height);
+
 		return optimalSize;
 	}
 
-	public static Camera.Size getOptimalSize(String type,List<Camera.Size> sizes, int w, int h) {
+	/**找出最合适的大小*/
+	public static Camera.Size getOptimalSize2(String type,List<Camera.Size> sizes, int w, int h) {
 		LogUtils.i(TAG, "类型："+type+" 寻找：w-h:"+w+"-"+h);
 		Camera.Size optimalSize=null;
 		Collections.sort(sizes, new Comparator<Camera.Size>() {
@@ -184,6 +177,7 @@ public class CameraHelper {
 		return optimalSize;
 	}
 
+
 	/**
 	 * @return the default camera on the device. Return null if there is no
 	 *         camera on the device.
@@ -202,7 +196,7 @@ public class CameraHelper {
 	 * 
 	 * size是view的大小，不管怎么样size.x=长，size.y=宽
 	 * */
-	public static void startPreviewCamera(final Context context,final TextureView preview,final Point size,final int screenOrientation,final int mediaType,final CameraOpenCallBack callBack){
+	public static void startPreviewCamera(final Context context,final Point size,final int screenOrientation,final int mediaType,final CameraOpenCallBack callBack){
 		new AsyncTask<String, Integer, Camera>() {
 			@Override
 			protected void onPreExecute() {
@@ -237,7 +231,7 @@ public class CameraHelper {
 			        Size previewSize=null;
 			        Size pictureSize=null;
 					Size videoSize=null;
-			        LogUtils.i("屏幕view的宽度－高度是：", size.x+"-"+size.y);
+			        LogUtils.i("view的宽度－高度是：", size.x+"-"+size.y);
 
 			        //不管屏幕的方向如何，CameraSize默认是水平来看，所以cameraSize中的值都是 长－高 的。如1920-1080 1280-720
 			        //当垂直的时候，应该拿屏幕的高去跟size的长对比，当水平时，则拿屏幕的宽和size的长对比，返回的值是cameraSize，所以值也是长－高
@@ -279,15 +273,16 @@ public class CameraHelper {
 			        }
 			        
 			        camera.setParameters(parameters);
-			        try {
-			                // Requires API level 11+, For backward compatibility use {@link setPreviewDisplay}
-			                // with {@link SurfaceView}
-			                camera.setPreviewTexture(preview.getSurfaceTexture());
-			                camera.startPreview();//开启预览
-			        } catch (IOException e) {
-			        	camera=null;
-			        	LogUtils.e(TAG, "Surface texture is 不可用，或者大小不合适" + e.getMessage());
-			        }
+					//把设置相机SurfaceView的代码移到UI上层来实现
+//			        try {
+//			                // Requires API level 11+, For backward compatibility use {@link setPreviewDisplay}
+//			                // with {@link SurfaceView}
+//			                camera.setPreviewTexture(preview.getSurfaceTexture());
+//			                camera.startPreview();//开启预览
+//			        } catch (IOException e) {
+//			        	camera=null;
+//			        	LogUtils.e(TAG, "Surface texture is 不可用，或者大小不合适" + e.getMessage());
+//			        }
 				}
 				return camera;
 			}

@@ -17,6 +17,7 @@
 package com.egovcomm.monitor.activity;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,12 +30,14 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.res.Configuration;
 import android.graphics.Point;
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -45,8 +48,10 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.egovcomm.monitor.R;
+import com.egovcomm.monitor.common.AppConstant;
 import com.egovcomm.monitor.common.BaseActivity;
 import com.egovcomm.monitor.common.BaseApplication;
 import com.egovcomm.monitor.db.DBHelper;
@@ -74,13 +79,14 @@ import com.egovcomm.monitor.utils.ToastUtils;
  * easily replaced with a {@link android.view.SurfaceView} to run on older
  * devices.
  */
-public class VideoRecordActivity extends BaseActivity {
+public class VideoRecordActivity extends BaseActivity implements TextureView.SurfaceTextureListener{
 
 	private Camera mCamera;
 	private TextureView mPreview;
 	private MediaRecorder mMediaRecorder;
 	private ImageButton mIBVideoData;
 
+	private boolean isCameraStateReady=false;
 	private boolean isRecording = false;
 	private static final String TAG = VideoRecordActivity.class.getName();
 	private ImageButton recordButton;
@@ -108,6 +114,7 @@ public class VideoRecordActivity extends BaseActivity {
 		BaseApplication.status = BaseApplication.STATUS_WORKING;
 		mIBVideoData = (ImageButton) findViewById(R.id.video_btn_data);
 		mPreview = (TextureView) findViewById(R.id.surface_view);
+		mPreview.setSurfaceTextureListener(this);
 		recordButton = (ImageButton) findViewById(R.id.video_btn_record);
 		timeTv = (TextView) findViewById(R.id.video_tv_time);
 		int mCurrentOrientation = getResources().getConfiguration().orientation;
@@ -171,57 +178,62 @@ public class VideoRecordActivity extends BaseActivity {
 	 *            the view generating the event.
 	 */
 	public void onRecord(View view) {
-		if (isRecording) {
-			recordButton.setSelected(false);
-			mIBVideoData.setVisibility(View.VISIBLE);
-			if (mMediaRecorder != null) {
-				mMediaRecorder.stop(); // stop the recording
-				// clear recorder configuration
-				mMediaRecorder.reset();
-				// release the recorder object
-				mMediaRecorder.release();
-				mMediaRecorder = null;
-				// Lock camera for later use i.e taking it back from
-				// MediaRecorder.
-				// MediaRecorder doesn't need it anymore and we will release
-				// it if the activity pauses.
-				// mCamera.lock();
-			}
-			recordButton.setSelected(false);
-			isRecording = false;
-			mCamera.stopPreview();
-			alertSaveData();
-		} else {
-			recordButton.setSelected(true);
-			mIBVideoData.setVisibility(View.GONE);
-			recordButton.setSelected(true);
-			if (mCamera != null) {
-				Point p=CommonViewUtils.getDisplaySize(VideoRecordActivity.this);
-				CameraHelper.startVideoRecord(this, mCamera, screenOrientation,
-						p, new VedioRecordCallBack() {
+		try {
+			if (isRecording) {
+				recordButton.setSelected(false);
+				mIBVideoData.setVisibility(View.VISIBLE);
+				if (mMediaRecorder != null) {
+					mMediaRecorder.stop(); // stop the recording
+					// clear recorder configuration
+					mMediaRecorder.reset();
+					// release the recorder object
+					mMediaRecorder.release();
+					mMediaRecorder = null;
+					// Lock camera for later use i.e taking it back from
+					// MediaRecorder.
+					// MediaRecorder doesn't need it anymore and we will release
+					// it if the activity pauses.
+					// mCamera.lock();
+				}
+				recordButton.setSelected(false);
+				isRecording = false;
+				mCamera.stopPreview();
+				alertSaveData();
+			} else {
+				recordButton.setSelected(true);
+				mIBVideoData.setVisibility(View.GONE);
+				recordButton.setSelected(true);
+				if (mCamera != null) {
+					Point p=CommonViewUtils.getDisplaySize(VideoRecordActivity.this);
+					CameraHelper.startVideoRecord(this, mCamera, screenOrientation,
+							p, new VedioRecordCallBack() {
 
-							@Override
-							public void startSuccess(
-									MediaRecorder mediaRecorder,
-									String videoPath) {
-								recordTime = 0;
-								isRecording = true;
-								mMediaRecorder = mediaRecorder;
-								// ToastUtils.toast(getApplicationContext(),
-								// "开始录制：" + videoPath);
-								path = videoPath;
-								isRecording = true;
-								startTimeThread();
-							}
+								@Override
+								public void startSuccess(
+										MediaRecorder mediaRecorder,
+										String videoPath) {
+									recordTime = 0;
+									isRecording = true;
+									mMediaRecorder = mediaRecorder;
+									// ToastUtils.toast(getApplicationContext(),
+									// "开始录制：" + videoPath);
+									path = videoPath;
+									isRecording = true;
+									startTimeThread();
+								}
 
-							@Override
-							public void startFail(String message) {
-								ToastUtils.toast(getApplicationContext(),
-										message);
-							}
-						});
+								@Override
+								public void startFail(String message) {
+									ToastUtils.toast(getApplicationContext(),
+											message);
+								}
+							});
+				}
 			}
+		}catch (Exception e){
+			e.printStackTrace();
 		}
+
 	}
 
 	/** 提示是否保存数据 */
@@ -339,6 +351,11 @@ public class VideoRecordActivity extends BaseActivity {
 			}
 		}
 		if (mCamera != null) {
+			try {
+				mCamera.unlock();
+			}catch (Exception e){
+				LogUtils.e(TAG,"解锁相机"+e.getMessage()+"");
+			}
 			mCamera.release();
 			mCamera = null;
 		}
@@ -351,12 +368,6 @@ public class VideoRecordActivity extends BaseActivity {
 		isRecording = false;
 	}
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		LogUtils.i(TAG, "####onPause");
-		exit();
-	}
 
 	@Override
 	public void dateUpdate(int id, Object obj) {
@@ -364,26 +375,6 @@ public class VideoRecordActivity extends BaseActivity {
 
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		Point p= CommonViewUtils.getDisplaySize(VideoRecordActivity.this);
-
-		CameraHelper.startPreviewCamera(this, mPreview, p,screenOrientation,
-				CameraHelper.MEDIA_TYPE_VIDEO, new CameraOpenCallBack() {
-
-					@Override
-					public void openSuccess(Camera camera) {
-						// ToastUtils.toast(getApplicationContext(), "预览成功");
-						mCamera = camera;
-					}
-
-					@Override
-					public void openFail(String message) {
-						ToastUtils.toast(getApplicationContext(), message);
-					}
-				});
-	}
 
 	@Override
 	protected void onDestroy() {
@@ -546,4 +537,66 @@ public class VideoRecordActivity extends BaseActivity {
 		 mCamera.startPreview();
 	}
 
+	@Override
+	public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+		LogUtils.i(TAG,"onSurfaceTextureAvailable");
+		Point p= new Point(mPreview.getWidth(),mPreview.getHeight());
+		isCameraStateReady=false;
+		CameraHelper.startPreviewCamera(this, p,screenOrientation,
+				CameraHelper.MEDIA_TYPE_VIDEO, new CameraOpenCallBack() {
+
+					@Override
+					public void openSuccess(Camera camera) {
+						isCameraStateReady=true;
+						// ToastUtils.toast(getApplicationContext(), "预览成功");
+						try {
+							// Requires API level 11+, For backward compatibility use {@link setPreviewDisplay}
+							// with {@link SurfaceView}
+							camera.setPreviewTexture(mPreview.getSurfaceTexture());
+							camera.startPreview();//开启预览
+							mCamera = camera;
+						} catch (IOException e) {
+							camera=null;
+							LogUtils.e(TAG, "Surface texture is 不可用，或者大小不合适" + e.getMessage());
+						}
+
+					}
+
+					@Override
+					public void openFail(String message) {
+						isCameraStateReady=true;
+						ToastUtils.toast(getApplicationContext(), message);
+					}
+				});
+	}
+
+	@Override
+	public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+		LogUtils.i(TAG,"onSurfaceTextureSizeChanged");
+
+	}
+
+	@Override
+	public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+		LogUtils.i(TAG,"onSurfaceTextureDestroyed");
+		exit();//退出页面
+		return false;
+	}
+
+	@Override
+	public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
+	}
+
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN){
+			if(isCameraStateReady){
+				finish();
+			}
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 }

@@ -17,16 +17,19 @@
 package com.egovcomm.monitor.activity;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Point;
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.ImageButton;
@@ -54,7 +57,7 @@ import com.egovcomm.monitor.utils.CameraHelper.CameraOpenCallBack;
  *  A {@link TextureView} is used as the camera preview which limits the code to API 14+. This
  *  can be easily replaced with a {@link android.view.SurfaceView} to run on older devices.
  */
-public class PhotoCaptureActivity extends BaseActivity {
+public class PhotoCaptureActivity extends BaseActivity implements TextureView.SurfaceTextureListener{
 
     private Camera mCamera;
     private TextureView mPreview;
@@ -62,12 +65,14 @@ public class PhotoCaptureActivity extends BaseActivity {
     private static final String TAG = "Recorder";
     private ImageButton captureButton;
     private int screenOrientation=0;//屏幕方向
+	private boolean isCameraStateReady=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_capture);
         BaseApplication.status=BaseApplication.STATUS_WORKING;
         mPreview = (TextureView) findViewById(R.id.surface_view);
+		mPreview.setSurfaceTextureListener(this);
         captureButton = (ImageButton) findViewById(R.id.photo_btn_record);
         
         int mCurrentOrientation = getResources().getConfiguration().orientation;
@@ -142,15 +147,6 @@ public class PhotoCaptureActivity extends BaseActivity {
     }
     
     
-    
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if(mCamera!=null){
-        	mCamera.release();
-            mCamera = null;
-        }
-    }
 
 
 	@Override
@@ -160,29 +156,79 @@ public class PhotoCaptureActivity extends BaseActivity {
 	}
 
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		Point p= CommonViewUtils.getDisplaySize(PhotoCaptureActivity.this);
-		 CameraHelper.startPreviewCamera(this, mPreview, p,screenOrientation, CameraHelper.MEDIA_TYPE_IMAGE, new CameraOpenCallBack() {
-				
-				@Override
-				public void openSuccess(Camera camera) {
-					//ToastUtils.toast(getApplicationContext(), "预览成功");
-					mCamera=camera;
-					
-				}
-				
-				@Override
-				public void openFail(String message) {
-					ToastUtils.toast(getApplicationContext(), message);
-				}
-			});
-	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		BaseApplication.status=BaseApplication.STATUS_ONLINE;
 	}
+
+	@Override
+	public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+		LogUtils.i(TAG,"onSurfaceTextureAvailable");
+		Point p= new Point(mPreview.getWidth(),mPreview.getHeight());
+		isCameraStateReady=false;
+		CameraHelper.startPreviewCamera(this, p,screenOrientation, CameraHelper.MEDIA_TYPE_IMAGE, new CameraOpenCallBack() {
+
+			@Override
+			public void openSuccess(Camera camera) {
+				isCameraStateReady=true;
+				//ToastUtils.toast(getApplicationContext(), "预览成功");
+				try {
+					// Requires API level 11+, For backward compatibility use {@link setPreviewDisplay}
+					// with {@link SurfaceView}
+					camera.setPreviewTexture(mPreview.getSurfaceTexture());
+					camera.startPreview();//开启预览
+					mCamera=camera;
+				} catch (IOException e) {
+					camera=null;
+					LogUtils.e(TAG, "Surface texture is 不可用，或者大小不合适" + e.getMessage());
+				}
+
+			}
+
+			@Override
+			public void openFail(String message) {
+				isCameraStateReady=true;
+				ToastUtils.toast(getApplicationContext(), message);
+			}
+		});
+	}
+
+	@Override
+	public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+		LogUtils.i(TAG,"onSurfaceTextureSizeChanged");
+	}
+
+	@Override
+	public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+		LogUtils.i(TAG,"onSurfaceTextureDestroyed");
+		if(mCamera!=null){
+			try {
+				mCamera.unlock();
+			}catch (Exception e){
+				LogUtils.e(TAG,"解锁相机"+e.getMessage()+"");
+			}
+			mCamera.release();
+			mCamera = null;
+		}
+		return false;
+	}
+
+	@Override
+	public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN){
+			if(isCameraStateReady){
+				finish();
+			}
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
 }

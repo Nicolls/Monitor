@@ -26,8 +26,8 @@ public class MainUserActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_user);
 		FTPMediaUtil.startFTPService(getApplicationContext());// ftp服务
-		MapUtils.doLocationService(getApplicationContext(),
-				MonitorLocationService.CODE_START);// 定位服务
+//		MapUtils.doLocationService(getApplicationContext(),
+//				MonitorLocationService.CODE_START);// 定位服务
 		BaseApplication.status = BaseApplication.STATUS_ONLINE;
 	}
 
