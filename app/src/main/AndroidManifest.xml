@@ -152,8 +152,8 @@
 
         <!-- 设置key -->
         <!-- eclipse测试 ：fe31ef1179371cdb3f6ac02da89d69c3  发布： 012673f15f7eef62ce8229f9bdbc99e5 -->
-        <!-- as测试 ：099a00d0d763bcdd33296ec63123c111  发布： 012673f15f7eef62ce8229f9bdbc99e5 -->
-
+        <!-- as云桌面测试 ：099a00d0d763bcdd33296ec63123c111  发布： 012673f15f7eef62ce8229f9bdbc99e5 -->
+        <!--as我的电脑测试：d762df8ef7ca9182ea851c778cab80f8-->
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="099a00d0d763bcdd33296ec63123c111" />
