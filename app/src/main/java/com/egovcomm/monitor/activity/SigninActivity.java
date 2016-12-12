@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.egovcomm.monitor.R;
 import com.egovcomm.monitor.common.BaseActivity;
@@ -23,6 +24,7 @@ public class SigninActivity extends BaseActivity {
 	private View mViewSetting;
 	private EditText mEtUserAccount;
 	private EditText mEtPassword;
+	private TextView mTvLogin;
 	private int signinType;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,13 @@ public class SigninActivity extends BaseActivity {
 	}
 	
 	private void initView(){
+		mTvLogin= (TextView) findViewById(R.id.sign_tv_login);
+		mTvLogin.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				onSignin();
+			}
+		});
 		mViewSetting =findViewById(R.id.sigin_setting);
 		mEtUserAccount=(EditText) findViewById(R.id.sign_et_account);
 		mEtPassword=(EditText) findViewById(R.id.sign_et_password);
@@ -56,7 +65,7 @@ public class SigninActivity extends BaseActivity {
 		}
 	}
 
-	public void onSignin(View view) {
+	public void onSignin() {
 		String account=mEtUserAccount.getText().toString();
 		String password=mEtPassword.getText().toString();
 		if(TextUtils.isEmpty(account)){

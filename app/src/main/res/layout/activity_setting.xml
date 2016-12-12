@@ -13,7 +13,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="50dp"
+        android:layout_margin="@dimen/sign_layout_margin"
         android:orientation="vertical" >
 
         <TextView 
@@ -178,6 +178,43 @@
                 android:password="true"
                 android:textColor="@color/monitor_text_gray" />
         </LinearLayout>
+      <!--  <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center_horizontal"
+            android:text="数据存储位置配置"
+            android:textColor="@color/black"
+            />
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            >
+            <RadioButton
+                android:id="@+id/setting_rb_data_inner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@drawable/radio_selector"
+                android:textColor="@color/monitor_text_gray"
+                android:drawablePadding="3dp"
+                android:text="手机存储"
+                />
+
+            <RadioButton
+                android:id="@+id/setting_rb_data_sdcard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@drawable/radio_selector"
+                android:textColor="@color/monitor_text_gray"
+                android:layout_marginLeft="30dp"
+                android:text="sdcard存储"
+                android:drawablePadding="3dp"
+                />
+
+        </RadioGroup>-->
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -189,7 +226,7 @@
 
             <Button
                 android:layout_width="wrap_content"
-                android:layout_height="35dp"
+                android:layout_height="@dimen/setting_btn_height"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="35dp"
                 android:layout_marginTop="20dp"
@@ -202,7 +239,7 @@
 
             <Button
                 android:layout_width="wrap_content"
-                android:layout_height="35dp"
+                android:layout_height="@dimen/setting_btn_height"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="30dp"
                 android:layout_marginTop="20dp"

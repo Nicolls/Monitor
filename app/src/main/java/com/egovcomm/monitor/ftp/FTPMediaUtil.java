@@ -14,7 +14,9 @@ import android.content.Intent;
 
 import com.egovcomm.monitor.model.MonitorMedia;
 import com.egovcomm.monitor.model.MonitorMediaGroupUpload;
+import com.egovcomm.monitor.utils.CommonUtil;
 import com.egovcomm.monitor.utils.TimeUtils;
+import com.egovcomm.monitor.utils.ToastUtils;
 
 /**
  * ftp上传工具包
@@ -31,11 +33,22 @@ public class FTPMediaUtil {
 	}
 	
 	public static void mediaUpload(Context context,MonitorMediaGroupUpload uploadMediaGroup) {
-		Intent intent=new Intent(FTPService.FTP_BROAD_CAST_ACTION_MEDIA_HANDLE);
-		intent.putExtra(FTPService.FTP_KEY_CODE,FTPService.FTP_CODE_HANDLE_UPLOAD);
-		intent.putExtra(FTPService.FTP_KEY_GROUP_DATA, uploadMediaGroup);
-		//intent.putExtra(FTPService.FTP_KEY_MEDIA_LIST_DATA, mediaList.toArray());
-		context.sendBroadcast(intent);
+		if(context!=null){
+			try {
+				if(CommonUtil.checkNetWork(context)){
+					Intent intent=new Intent(FTPService.FTP_BROAD_CAST_ACTION_MEDIA_HANDLE);
+					intent.putExtra(FTPService.FTP_KEY_CODE,FTPService.FTP_CODE_HANDLE_UPLOAD);
+					intent.putExtra(FTPService.FTP_KEY_GROUP_DATA, uploadMediaGroup);
+					//intent.putExtra(FTPService.FTP_KEY_MEDIA_LIST_DATA, mediaList.toArray());
+					context.sendBroadcast(intent);
+				}else{
+					ToastUtils.toast(context,"当前网络不可用");
+				}
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+
+		}
 	}
 	/**取消单个上传*/
 	public static  void cancelMediaUpload(Context context,MonitorMediaGroupUpload uploadGroup) {

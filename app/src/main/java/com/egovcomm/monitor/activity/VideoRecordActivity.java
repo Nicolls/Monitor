@@ -178,62 +178,68 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 	 *            the view generating the event.
 	 */
 	public void onRecord(View view) {
-		try {
-			if (isRecording) {
-				recordButton.setSelected(false);
-				mIBVideoData.setVisibility(View.VISIBLE);
-				if (mMediaRecorder != null) {
-					mMediaRecorder.stop(); // stop the recording
-					// clear recorder configuration
-					mMediaRecorder.reset();
-					// release the recorder object
-					mMediaRecorder.release();
-					mMediaRecorder = null;
-					// Lock camera for later use i.e taking it back from
-					// MediaRecorder.
-					// MediaRecorder doesn't need it anymore and we will release
-					// it if the activity pauses.
-					// mCamera.lock();
-				}
-				recordButton.setSelected(false);
-				isRecording = false;
-				mCamera.stopPreview();
-				alertSaveData();
-			} else {
-				recordButton.setSelected(true);
-				mIBVideoData.setVisibility(View.GONE);
-				recordButton.setSelected(true);
-				if (mCamera != null) {
-					Point p=CommonViewUtils.getDisplaySize(VideoRecordActivity.this);
-					CameraHelper.startVideoRecord(this, mCamera, screenOrientation,
-							p, new VedioRecordCallBack() {
+		if(isCameraStateReady){
+			try {
+				if (isRecording) {
+					isCameraStateReady=false;
+					recordButton.setSelected(false);
+					mIBVideoData.setVisibility(View.VISIBLE);
+					if (mMediaRecorder != null) {
+						mMediaRecorder.stop(); // stop the recording
+						// clear recorder configuration
+						mMediaRecorder.reset();
+						// release the recorder object
+						mMediaRecorder.release();
+						mMediaRecorder = null;
+						// Lock camera for later use i.e taking it back from
+						// MediaRecorder.
+						// MediaRecorder doesn't need it anymore and we will release
+						// it if the activity pauses.
+						// mCamera.lock();
+					}
+					recordButton.setSelected(false);
+					isRecording = false;
+					isCameraStateReady=true;
+					mCamera.stopPreview();
+					alertSaveData();
+				} else {
+					recordButton.setSelected(true);
+					mIBVideoData.setVisibility(View.GONE);
+					recordButton.setSelected(true);
+					if (mCamera != null) {
+						isCameraStateReady=false;
+						Point p=CommonViewUtils.getDisplaySize(VideoRecordActivity.this);
+						CameraHelper.startVideoRecord(this, mCamera, screenOrientation,
+								p, new VedioRecordCallBack() {
 
-								@Override
-								public void startSuccess(
-										MediaRecorder mediaRecorder,
-										String videoPath) {
-									recordTime = 0;
-									isRecording = true;
-									mMediaRecorder = mediaRecorder;
-									// ToastUtils.toast(getApplicationContext(),
-									// "开始录制：" + videoPath);
-									path = videoPath;
-									isRecording = true;
-									startTimeThread();
-								}
+									@Override
+									public void startSuccess(
+											MediaRecorder mediaRecorder,
+											String videoPath) {
+										recordTime = 0;
+										isRecording = true;
+										mMediaRecorder = mediaRecorder;
+										// ToastUtils.toast(getApplicationContext(),
+										// "开始录制：" + videoPath);
+										path = videoPath;
+										isRecording = true;
+										startTimeThread();
+										isCameraStateReady=true;
+									}
 
-								@Override
-								public void startFail(String message) {
-									ToastUtils.toast(getApplicationContext(),
-											message);
-								}
-							});
+									@Override
+									public void startFail(String message) {
+										isCameraStateReady=true;
+										ToastUtils.toast(getApplicationContext(),
+												message);
+									}
+								});
+					}
 				}
+			}catch (Exception e){
+				e.printStackTrace();
 			}
-		}catch (Exception e){
-			e.printStackTrace();
 		}
-
 	}
 
 	/** 提示是否保存数据 */

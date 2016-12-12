@@ -67,7 +67,7 @@ public class MediaDownLoadAsyncTask extends AsyncTask<String, Integer, MonitorMe
 						if (m >= spacing) {
 							m = 0;
 							value++;
-							this.onProgressUpdate(value);
+							this.publishProgress(value);
 						}
 						m++;
 					}

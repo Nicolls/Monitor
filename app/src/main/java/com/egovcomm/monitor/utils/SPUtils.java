@@ -37,11 +37,7 @@ public class SPUtils {
 	// app相关
 	public static final String SP_APP = "SP_APP";
 	public static final String SP_APP_ENTER = "SP_APP_ENTER";
-	public static final String SP_APP_EBIKE_ADDRESS = "SP_APP_EBIKE_ADDRESS";
-	public static final String SP_APP_EBIKE_NAME = "SP_APP_EBIKE_NAME";
-	public static final String SP_APP_EBIKE_MILE = "SP_APP_EBIKE_MILE";//保存剩余里程计算的缓存
-	public static final String SP_APP_EBIKE_DISCONNECT_TIME = "SP_APP_EBIKE_DISCONNECT_TIME";//与控制器断开的时间
-	
+
 	
 	// 用户相关
 	public static final String SP_USER = "SP_USER";
@@ -49,15 +45,8 @@ public class SPUtils {
 	public static final String SP_USER_SAFE_CODE = "SP_USER_SAFE_CODE";
 	public static final String SP_USER_SAFE_CODE_SWITCH = "SP_USER_SAFE_CODE_SWITCH";
 	public static final String SP_USER_TOKEN = "SP_USER_TOKEN";
-//	public static final String SP_USER_TRAVEL_ID = "SP_USER_TRAVEL_ID";//行程ID
 
-	public static final String SP_USER_SIGNIN_TYPE = "SP_USER_SIGNIN_TYPE";
-	public static final String SP_USER_UI_MODEL = "SP_USER_UI_MODEL";
-	public static final String SP_USER_WORK_MODEL = "SP_USER_WORK_MODEL";
 	public static final String SP_USER_DATA = "SP_USER_DATA";
-	public static final String SP_USER_UNIT_OF_DISTANCE = "SP_USER_UNIT_OF_DISTANCE";
-	public static final String SP_USER_TRAVEL_MAP = "SP_USER_TRAVEL_MAP";//地图行程数据
-	public static final String SP_USER_WHEEL = "SP_USER_WHEEL";//轮径
 
 	
 
@@ -202,6 +191,5 @@ public class SPUtils {
 		boolean isOk = sp.edit().putString(SP_USER_DATA, data).commit();
 		return isOk;
 	}
-	
-	
+
 }

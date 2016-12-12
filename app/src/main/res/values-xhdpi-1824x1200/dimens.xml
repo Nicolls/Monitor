@@ -27,8 +27,8 @@
     <!-- 更新APP -->
     <dimen name="app_update_nofity_item_margin">5dp</dimen>
 
-    <dimen name="sign_layout_margin">50dp</dimen>
-    <dimen name="sign_btn_height">40dp</dimen>
-    <dimen name="setting_btn_height">35dp</dimen>
+    <dimen name="sign_layout_margin">80dp</dimen>
+    <dimen name="sign_btn_height">60dp</dimen>
+    <dimen name="setting_btn_height">55dp</dimen>
 
 </resources>

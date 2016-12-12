@@ -89,7 +89,8 @@ public class PhotoCaptureActivity extends BaseActivity implements TextureView.Su
     
     @SuppressWarnings("deprecation")
 	public void onCapture(View view){
-    	if(mCamera!=null){
+    	if(mCamera!=null&&isCameraStateReady){
+			isCameraStateReady=false;
     		mCamera.takePicture(new ShutterCallback() {
 				
 				@Override
@@ -128,6 +129,7 @@ public class PhotoCaptureActivity extends BaseActivity implements TextureView.Su
 					}else{
 						LogUtils.e(tag, "保存文件失败");
 					}
+					isCameraStateReady=true;
 				}
 			});
     	}

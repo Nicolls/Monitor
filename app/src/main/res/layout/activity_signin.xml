@@ -7,13 +7,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="50dp"
+        android:layout_margin="@dimen/sign_layout_margin"
         android:orientation="vertical" >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="140dp"
+            android:gravity="center_horizontal"
             android:orientation="horizontal" >
 
             <ImageView
@@ -24,7 +25,7 @@
 
             <EditText
                 android:id="@+id/sign_et_account"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:paddingLeft="5dp"
@@ -36,6 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
+            android:gravity="center_horizontal"
             android:orientation="horizontal" >
 
             <ImageView
@@ -46,7 +48,7 @@
 
             <EditText
                 android:id="@+id/sign_et_password"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:paddingLeft="5dp"
@@ -83,6 +85,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
+            android:gravity="center_horizontal"
             android:orientation="horizontal" >
 
             <ImageView
@@ -92,13 +95,14 @@
                 android:src="@drawable/signin_password"
                 android:visibility="invisible" />
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
+            <TextView
+                android:id="@+id/sign_tv_login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="10dp"
-                android:background="@drawable/corners_white_solid"
-                android:onClick="onSignin"
+                android:background="@drawable/signin_btn"
+                android:gravity="center"
                 android:text="登录"
                 android:textColor="@color/monitor_green" />
         </LinearLayout>

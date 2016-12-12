@@ -217,7 +217,6 @@ public class FileUtils {
 	
 	/**保存缩略图
 	 * 
-	 * @param isLocalFile 存储的是否是本地数据，true是，false则表示是服务器上回来的
 	 * */
 	public static String saveMediaServerGroupThumbnail(Context context,String mediaThmbnailPath,String groupId) {
 		String groupThumbnailPath="";
@@ -365,14 +364,18 @@ public class FileUtils {
 	 * */
 	public static File getAppStorageDirectory(String childPath) {
 		File f=null;
+		String storePath="";
 		if (!Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED)) {
-			return null;
+			storePath=Environment.getDataDirectory().getAbsolutePath();
+		}else{
+			storePath=Environment.getExternalStorageDirectory().getAbsolutePath();
 		}
+
 		if(!TextUtils.isEmpty(childPath)){
 			if(childPath.startsWith("/")){
-				f = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+AppConstant.FILE_DIR+childPath);
+				f = new File(storePath+File.separator+AppConstant.FILE_DIR+childPath);
 			}else{
-				f = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+AppConstant.FILE_DIR+File.separator+childPath);
+				f = new File(storePath+File.separator+AppConstant.FILE_DIR+File.separator+childPath);
 			}
 		}
 		
@@ -404,5 +407,6 @@ public class FileUtils {
 			return "";
 		}
 	}
-	
+
+
 }
