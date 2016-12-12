@@ -313,7 +313,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 	
 	/** 提示是否上传 */
 	private void alertUpload(final MonitorMedia media) {
-		new Builder(VideoRecordActivity.this).setTitle("保存数据完成，是否上传此视频?")
+		new Builder(VideoRecordActivity.this).setTitle("保存数据完成，是否上传此视频?").setCancelable(false)
 		.setPositiveButton("是", new OnClickListener() {
 
 			@Override
@@ -425,7 +425,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 				}
 			});
 
-			dialog = new Builder(VideoRecordActivity.this).setTitle("选择已有分组或新建一个分组来完成数据上传").setView(listView)
+			dialog = new Builder(VideoRecordActivity.this).setTitle("选择已有分组或新建一个分组来完成数据上传").setView(listView).setCancelable(false)
 					.setPositiveButton("新建分组", new OnClickListener() {
 
 						@Override
@@ -458,6 +458,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 		builder.setTitle("创建上传数据分组");
 		// builder.setMessage("请输入分组名称，按确定完成创建!");
 		builder.setView(et);
+		builder.setCancelable(false);
 		builder.setPositiveButton("创建", new OnClickListener() {
 
 			@Override
@@ -499,7 +500,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 
 		builder.setTitle("提示");
 		builder.setMessage("分组创建完成，是否立刻上传!");
-
+		builder.setCancelable(false);
 		builder.setPositiveButton("是", new OnClickListener() {
 
 			@Override

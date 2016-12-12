@@ -159,7 +159,7 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> {
 			ToastUtils.toast(getActivity(), "请选择要操作的数据!");
 			return;
 		}
-		new Builder(getActivity()).setTitle("确定要删除吗？").setPositiveButton("删除", new OnClickListener() {
+		new Builder(getActivity()).setTitle("确定要删除吗？").setCancelable(false).setPositiveButton("删除", new OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -269,7 +269,7 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> {
 			});
 
 			dialog = new Builder(getActivity()).setTitle("选择已有分组或新建一个分组来完成数据上传").setView(listView)
-					.setPositiveButton("新建分组", new OnClickListener() {
+					.setCancelable(false).setPositiveButton("新建分组", new OnClickListener() {
 
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
@@ -298,6 +298,7 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> {
 		Builder builder = new Builder(getActivity());
 
 		builder.setTitle("创建上传数据分组");
+		builder.setCancelable(false);
 		// builder.setMessage("请输入分组名称，按确定完成创建!");
 		builder.setView(et);
 		builder.setPositiveButton("创建", new OnClickListener() {
@@ -340,7 +341,7 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> {
 
 		builder.setTitle("提示");
 		builder.setMessage("分组创建完成，是否立刻上传!");
-
+		builder.setCancelable(false);
 		builder.setPositiveButton("是", new OnClickListener() {
 
 			@Override
