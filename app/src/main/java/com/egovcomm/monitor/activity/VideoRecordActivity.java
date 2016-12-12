@@ -244,7 +244,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 
 	/** 提示是否保存数据 */
 	private void alertSaveData() {
-		new Builder(VideoRecordActivity.this).setTitle("录制完成，要保存此视频吗？")
+		new Builder(VideoRecordActivity.this).setTitle("录制完成，要保存此视频吗？").setCancelable(false)
 		.setPositiveButton("保存", new OnClickListener() {
 
 			@Override
