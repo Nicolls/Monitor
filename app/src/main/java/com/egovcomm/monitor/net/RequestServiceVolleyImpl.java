@@ -88,11 +88,11 @@ public class RequestServiceVolleyImpl implements RequestService {
 
 	@Override
 	public void updateMonitorApp(String installedVersion) {
-		AppRequest ebReq = new AppRequest("");
+		AppRequest ebReq = new AppRequest(RequestService.METHOD_UPDATEMONITORAPP);
 		ebReq.setReqeustParam("actionType", "updateMonitorApp");
 		ebReq.setReqeustParam("deviceType", "android");
 		ebReq.setReqeustParam("installedVersion",installedVersion);
-		sendRequest(ebReq, 0, RspVersion.class);
+		sendRequest(ebReq, RequestService.ID_UPDATEMONITORAPP, RspVersion.class);
 	}
 
 

@@ -23,6 +23,7 @@ import android.widget.RemoteViews;
 
 import com.egovcomm.monitor.R;
 import com.egovcomm.monitor.common.AppConstant;
+import com.egovcomm.monitor.common.BaseApplication;
 import com.egovcomm.monitor.service.UpdateAPPService.AppDownloadListener;
 
 /**
@@ -40,7 +41,6 @@ public class AppDownLoadAsyncTask extends AsyncTask<String, Integer, String> {
 	private String appName = AppConstant.APP_DOWNLOAD_APK_NAME;
 	private Context context;
 	private AppDownloadListener mUpdateAppListener;
-
 	public AppDownLoadAsyncTask(Context context, AppDownloadListener updateAppListener) {
 		this.context = context;
 		this.mUpdateAppListener = updateAppListener;
@@ -56,6 +56,7 @@ public class AppDownLoadAsyncTask extends AsyncTask<String, Integer, String> {
 				con.connect();
 				int code = con.getResponseCode();
 				if (code == 200) {
+					BaseApplication.isUpdating=true;
 					InputStream is = con.getInputStream();
 					byte[] buf = new byte[1024];
 					int length = con.getContentLength();
@@ -70,18 +71,22 @@ public class AppDownLoadAsyncTask extends AsyncTask<String, Integer, String> {
 						if (m >= spacing) {
 							m = 0;
 							value++;
-							this.onProgressUpdate(value);
+							this.publishProgress(value);
 						}
 						m++;
 					}
 					fos.flush();
 					fos.close(); // 使用流完毕之后,记得关闭流
+					BaseApplication.isUpdating=false;
 				}
 			} catch (IOException e) {
+				BaseApplication.isUpdating=false;
 				e.printStackTrace();
 			} finally {
+				BaseApplication.isUpdating=false;
 			}
 		} catch (MalformedURLException e) {
+			BaseApplication.isUpdating=false;
 			e.printStackTrace();
 		}
 		return null;

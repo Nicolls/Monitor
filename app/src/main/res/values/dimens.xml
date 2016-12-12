@@ -41,4 +41,7 @@
     <dimen name="sign_btn_height">40dp</dimen>
     <dimen name="setting_btn_height">35dp</dimen>
 
+    <dimen name="profile_margin_horizontal">30dp</dimen>
+    <dimen name="profile_margin_vertical">20dp</dimen>
+
 </resources>

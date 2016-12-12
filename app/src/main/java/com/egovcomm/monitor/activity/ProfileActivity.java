@@ -10,8 +10,10 @@ import android.widget.TextView;
 
 import com.egovcomm.monitor.R;
 import com.egovcomm.monitor.common.BaseActivity;
+import com.egovcomm.monitor.common.BaseApplication;
 import com.egovcomm.monitor.model.RspVersion;
 import com.egovcomm.monitor.net.RequestService;
+import com.egovcomm.monitor.utils.AppDownLoadAsyncTask;
 import com.egovcomm.monitor.utils.AppUpdateUtils;
 import com.egovcomm.monitor.utils.CommonUtil;
 import com.egovcomm.monitor.utils.MyActivityManager;
@@ -88,16 +90,20 @@ public class ProfileActivity extends BaseActivity implements OnClickListener{
 	public void dateUpdate(int id, Object obj) {
 		if(id== RequestService.ID_UPDATEMONITORAPP){
 			RspVersion version = (RspVersion) obj;
-			AppUpdateUtils.chargeUpdate(this, version, new AppUpdateUtils.AppUpdateChargeListener() {
-				@Override
-				public void chargeResult(RspVersion version,boolean isNeedToUpdate) {
-					if(!isNeedToUpdate){//不需要更新
-						if(version!=null&&version.getData()!=null&&!version.getData().isCanUpdate()){
-							ToastUtils.toast(getApplicationContext(), "当前为最新版，无须更新");
+			if(!BaseApplication.isUpdating){
+				AppUpdateUtils.chargeUpdate(this, version, new AppUpdateUtils.AppUpdateChargeListener() {
+					@Override
+					public void chargeResult(RspVersion version,boolean isNeedToUpdate) {
+						if(!isNeedToUpdate){//不需要更新
+							if(version!=null&&version.getData()!=null&&!version.getData().isCanUpdate()){
+								ToastUtils.toast(getApplicationContext(), "当前为最新版，无须更新");
+							}
 						}
 					}
-				}
-			});
+				});
+			}else{
+				ToastUtils.toast(getApplicationContext(), "应用正在下载更新中，请稍后...");
+			}
 		}
 	}
 

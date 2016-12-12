@@ -30,7 +30,7 @@ public class AppUpdateUtils {
             if(version.getData().isCanUpdate()){//需要更新
                 if(version.getData().isForceUpdate()){//强制更新
                     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
+                    builder.setCancelable(false);
                     builder.setTitle(activity.getString(R.string.app_update));
                     builder.setMessage(activity.getString(R.string.app_update_force_tip));
 
@@ -43,6 +43,7 @@ public class AppUpdateUtils {
                                 lis.chargeResult(version,true);
                             }
                             updateApk(activity,version.getData().getLatestVersioUri(),true);
+                            MyActivityManager.getAppManager().appExit(activity);
                         }
                     });
                     builder.setNegativeButton("退出", new DialogInterface.OnClickListener() {
@@ -59,7 +60,7 @@ public class AppUpdateUtils {
                     builder.create().show();
                 }else{//非强制更新
                     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
+                    builder.setCancelable(false);
                     builder.setTitle(activity.getString(R.string.app_update));
                     builder.setMessage(activity.getString(R.string.app_update_tip));
 
@@ -100,10 +101,11 @@ public class AppUpdateUtils {
 
     /** 版本更新 */
     private static void updateApk(Activity activity,String downloadUrl, boolean isfinish) {
+        downloadUrl=downloadUrl.replace(" ","");
 		AppRequest ebReq = new AppRequest(downloadUrl);
 		downloadUrl=ebReq.getReqeustURL();
         ToastUtils.toast(activity, activity.getString(R.string.start_download));
-        Intent intent = new Intent(UpdateAPPService.class.getName());
+        Intent intent = new Intent(activity,UpdateAPPService.class);
         intent.putExtra(UpdateAPPService.INTENT_DOWNLOAD_URL, downloadUrl);
         activity.startService(intent);
         if (isfinish) {

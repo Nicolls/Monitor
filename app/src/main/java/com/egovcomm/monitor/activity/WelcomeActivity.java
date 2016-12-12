@@ -10,12 +10,14 @@ import android.text.TextUtils;
 
 import com.egovcomm.monitor.R;
 import com.egovcomm.monitor.common.BaseActivity;
+import com.egovcomm.monitor.common.BaseApplication;
 import com.egovcomm.monitor.common.LoginInfo;
 import com.egovcomm.monitor.model.RspLogin;
 import com.egovcomm.monitor.model.RspVersion;
 import com.egovcomm.monitor.model.User;
 import com.egovcomm.monitor.net.RequestService;
 import com.egovcomm.monitor.service.UpdateAPPService;
+import com.egovcomm.monitor.utils.AppDownLoadAsyncTask;
 import com.egovcomm.monitor.utils.AppUpdateUtils;
 import com.egovcomm.monitor.utils.CommonUtil;
 import com.egovcomm.monitor.utils.MyActivityManager;
@@ -42,9 +44,23 @@ public class WelcomeActivity extends BaseActivity {
 			}
 		}
 		setContentView(R.layout.activity_welcome);
-		showLoading(true);
-		mEBikeRequestService.updateMonitorApp(CommonUtil.getAppVersion(WelcomeActivity.this));
+		if(!BaseApplication.isUpdating){
+			showLoading(true);
+			mEBikeRequestService.updateMonitorApp(CommonUtil.getAppVersion(WelcomeActivity.this));
+		}else{
+			ToastUtils.toast(WelcomeActivity.this,"应用将自动退出，请等待应用更新完成后再使用");
+			exitHandler.sendEmptyMessageDelayed(0,2000);
+		}
 	}
+
+	private Handler exitHandler=new Handler(){
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			finish();
+		}
+	};
+
 
 	/**登录*/
 	private void requestLogin() {

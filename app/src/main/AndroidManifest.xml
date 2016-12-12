@@ -50,6 +50,11 @@
         android:label="locationservice"
         android:permissionGroup="string"
         android:protectionLevel="signature" />
+    <permission
+        android:name="com.egovcomm.monitor.service.UpdateAPPService"
+        android:label="updateappservice"
+        android:permissionGroup="string"
+        android:protectionLevel="signature" />
     <application
         android:name="com.egovcomm.monitor.common.BaseApplication"
         android:allowBackup="true"
@@ -162,6 +167,16 @@
             android:permission="com.egovcomm.monitor.service.MonitorLocationService" >
             <intent-filter>
                 <action android:name="com.egovcomm.monitor.service.MonitorLocationService" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="com.egovcomm.monitor.service.UpdateAPPService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="com.egovcomm.monitor.service.UpdateAPPService" >
+            <intent-filter>
+                <action android:name="com.egovcomm.monitor.service.UpdateAPPService" />
             </intent-filter>
         </service>
     </application>

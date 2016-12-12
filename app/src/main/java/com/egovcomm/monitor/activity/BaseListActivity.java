@@ -194,6 +194,7 @@ public abstract class BaseListActivity<T> extends BaseActivity implements OnClic
 //				v.setText("");
 				operate = 0;
 				pageNow = 1;
+				showLoading(true);
 				listViewRefresh();
 				CommonViewUtils.hideSystemKeyBoard(BaseListActivity.this, mSearchEt);
 				return true;

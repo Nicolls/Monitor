@@ -30,5 +30,7 @@
     <dimen name="sign_layout_margin">80dp</dimen>
     <dimen name="sign_btn_height">60dp</dimen>
     <dimen name="setting_btn_height">55dp</dimen>
+    <dimen name="profile_margin_horizontal">50dp</dimen>
+    <dimen name="profile_margin_vertical">30dp</dimen>
 
 </resources>

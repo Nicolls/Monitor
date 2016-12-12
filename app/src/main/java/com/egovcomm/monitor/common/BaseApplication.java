@@ -19,7 +19,8 @@ public class BaseApplication extends Application{
 	public static double latitude;
 	public static String address;
 	public static int status=STATUS_OFFLINE;//状态，0离线，1在线，2，拍传
-	
+
+	public static boolean isUpdating=false;//是否在更新状态
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -27,6 +28,7 @@ public class BaseApplication extends Application{
 	}
 	
 	private void initData(){
+		isUpdating=false;
 		LogUtils.i("BaseApplication", "初始化数据!!!!!");
 		String serverHost=SPUtils.getServerHost(getApplicationContext());
 		int serverPort=SPUtils.getServerPort(getApplicationContext());
