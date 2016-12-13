@@ -41,6 +41,7 @@ import com.egovcomm.monitor.model.MonitorMedia;
 import com.egovcomm.monitor.model.MonitorMediaGroup;
 import com.egovcomm.monitor.model.MonitorMediaGroupUpload;
 import com.egovcomm.monitor.model.User;
+import com.egovcomm.monitor.utils.FileUtils;
 import com.egovcomm.monitor.utils.LogUtils;
 import com.egovcomm.monitor.utils.SPUtils;
 import com.egovcomm.monitor.utils.TimeUtils;
@@ -102,7 +103,7 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> {
 	}
 
 	@Override
-	public void onListViewItemClick(MonitorMedia item, int position) {
+	public void onListViewItemClick(final MonitorMedia item, int position) {
 		if(mediaOperateView.getVisibility()==View.VISIBLE){//可选 就要选中
 			if(item.getCheck()==1){
 				item.setCheck(0);
@@ -111,13 +112,37 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> {
 			}
 			mAdapter.notifyDataSetChanged();
 		}else{
-			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("media", item);
-			if (TextUtils.equals(MonitorMediaGroup.TYPE_PHOTO + "", item.getMediaType())) {// 图片
-				((BaseActivity)getActivity()).openActivity(PhotoShowActivity.class, map, false);
-			} else {// 视频
-				((BaseActivity)getActivity()).openActivity(VideoPlayActivity.class, map, false);
+			try {
+				if(!FileUtils.isFileExit(item.getPath())){//文件不存在提示
+					new Builder(getActivity()).setTitle("应用在存储卡中检测不到此源文件，是否删除此记录？").setCancelable(true).setPositiveButton("删除", new OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// 删除数据库
+							DBHelper.getInstance(getActivity()).deleteMonitorMedia(item.getId());
+							listViewRefresh();
+
+						}
+					}).setNegativeButton("取消", new OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					}).create().show();
+				}else{
+					HashMap<String, Object> map = new HashMap<String, Object>();
+					map.put("media", item);
+					if (TextUtils.equals(MonitorMediaGroup.TYPE_PHOTO + "", item.getMediaType())) {// 图片
+						((BaseActivity)getActivity()).openActivity(PhotoShowActivity.class, map, false);
+					} else {// 视频
+						((BaseActivity)getActivity()).openActivity(VideoPlayActivity.class, map, false);
+					}
+				}
+			}catch (Exception e){
+				e.printStackTrace();
 			}
+
 		}
 	}
 

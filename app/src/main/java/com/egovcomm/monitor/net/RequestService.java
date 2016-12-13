@@ -152,6 +152,6 @@ public interface RequestService {
 	 * @Description 查询更新
 	 */
 	void updateMonitorApp(String installedVersion);
-	
-	
+
+
 }

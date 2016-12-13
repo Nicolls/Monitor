@@ -35,8 +35,8 @@ public class UploadTask implements Callable<String>{
     public String call() throws Exception {  
     	String result = "";  
         try{  
-        	ftpConnection = new FTPConnection(context,workingDirectory); 
-            ftpConnection.uploadFileList(uploadMediaGroup,mediaList);
+        	ftpConnection = new FTPConnection(context,this.uploadMediaGroup);
+            ftpConnection.uploadFileList(mediaList);
             result="上传成功!";
         }catch(IOException ex){  
             result="上传失败!";

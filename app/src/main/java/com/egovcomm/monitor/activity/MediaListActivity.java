@@ -229,7 +229,7 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> {
 
 	// item点击
 	@Override
-	public void onListViewItemClick(MonitorMedia item, int position) {
+	public void onListViewItemClick(final MonitorMedia item, int position) {
 		LogUtils.i(tag, ""+item.toString());
 		if (TextUtils.equals(uploadGroup.getUploadState(),
 				MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA)) {//服务器的数据，才要去判断，不是的话，则不用
@@ -254,15 +254,41 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> {
 
 			}
 		}else{
-			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("media", item);
-			map.put("mediaList", mediaList);
-			if (TextUtils.equals(MonitorMediaGroup.TYPE_PHOTO + "",
-					item.getMediaType())) {// 图片
-				openActivity(PhotoShowActivity.class, map, false);
-			} else {// 视频
-				openActivity(VideoPlayActivity.class, map, false);
+			try {
+				if(!FileUtils.isFileExit(item.getPath())){//文件不存在提示
+					new Builder(MediaListActivity.this).setTitle("应用在存储卡中检测不到此源文件，是否删除此记录？").setCancelable(true).setPositiveButton("删除", new OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// 删除数据库
+							DBHelper.getInstance(MediaListActivity.this).deleteMonitorMedia(item.getId());
+							listViewRefresh();
+
+						}
+					}).setNegativeButton("取消", new OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					}).create().show();
+				}else{
+					HashMap<String, Object> map = new HashMap<String, Object>();
+					map.put("media", item);
+					map.put("mediaList", mediaList);
+					if (TextUtils.equals(MonitorMediaGroup.TYPE_PHOTO + "",
+							item.getMediaType())) {// 图片
+						openActivity(PhotoShowActivity.class, map, false);
+					} else {// 视频
+						openActivity(VideoPlayActivity.class, map, false);
+					}
+				}
+			}catch (Exception e){
+				e.printStackTrace();
 			}
+
+
+
 		}
 		
 	}

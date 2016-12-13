@@ -3,6 +3,7 @@ package com.egovcomm.monitor.ftp;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ import com.egovcomm.monitor.net.RequestServiceFactory;
 import com.egovcomm.monitor.utils.JsonUtils;
 import com.egovcomm.monitor.utils.LogUtils;
 import com.egovcomm.monitor.utils.TimeUtils;
+import com.egovcomm.monitor.utils.ToastUtils;
 import com.google.gson.Gson;
 
 /**
@@ -44,7 +46,7 @@ public class FTPConnection implements DataUpdateListener {
 	private String workingDirectory;
 
 	public static int defaultTimeoutSecond = 60;
-	public static int connectTimeoutSecond = 60;
+	public static int connectTimeoutSecond = 30;
 	public static int dataTimeoutSecond = 3600;//一个小时
 
 	public static String host=AppConstant.DEFAULT_FTP_HOST;
@@ -64,20 +66,21 @@ public class FTPConnection implements DataUpdateListener {
 	/**
 	 * 构造函数
 	 */
-	public FTPConnection(Context context, String workingDirectory) {
+	public FTPConnection(Context context, MonitorMediaGroupUpload uploadMediaGroup) {
 		LogUtils.i(TAG, "FTPConnection当前线程ID是" + Thread.currentThread().getId()
 				+ "--" + Thread.currentThread().getName());
 		this.context = context;
-		this.workingDirectory = "/" + workingDirectory + "/";
+		this.uploadGroup=uploadMediaGroup;
+		this.workingDirectory = "/" + this.uploadGroup.getRemoteDirectory() + "/";
 		is_connected = false;
 		/** 设置ftp参数值 */
 		ftp.setDefaultTimeout(defaultTimeoutSecond * 1000);
 		ftp.setConnectTimeout(connectTimeoutSecond * 1000);
 		ftp.setDataTimeout(dataTimeoutSecond * 1000);
-
 		try {
 			initConnect(host, port, userName, password);
 		} catch (IOException e) {
+			updateUploadGroupState(false);
 			e.printStackTrace();
 		}
 	}
@@ -91,19 +94,13 @@ public class FTPConnection implements DataUpdateListener {
 	 * @param password
 	 * @throws IOException
 	 */
-	private void initConnect(String host, int port, String user, String password)
-			throws IOException {
+	private void initConnect(String host, int port, String user, String password) throws IOException {
 		System.out.println("初始化链接" + workingDirectory);
-		try {
-			ftp.connect(host, port);
-		} catch (UnknownHostException ex) {
-			throw new IOException("Can't find FTP server '" + host + "'");
-		}
+		ftp.connect(host, port);
 
 		int reply = ftp.getReplyCode();
 		if (!FTPReply.isPositiveCompletion(reply)) {
 			disconnect();
-			throw new IOException("Can't connect to server '" + host + "'");
 		}
 
 		if (user == "") {
@@ -113,7 +110,6 @@ public class FTPConnection implements DataUpdateListener {
 		if (!ftp.login(user, password)) {
 			is_connected = false;
 			disconnect();
-			throw new IOException("Can't login to server '" + host + "'");
 		} else {
 			is_connected = true;
 			// 设置工作路径
@@ -155,14 +151,9 @@ public class FTPConnection implements DataUpdateListener {
 	/**
 	 * 上传多个文件
 	 * 
-	 * @param path
-	 * @param ftpFileName
-	 * @param localFile
 	 * @throws IOException
 	 */
-	public void uploadFileList(MonitorMediaGroupUpload uploadMediaGroup,
-			List<MonitorMedia> mediaList) throws IOException {
-		this.uploadGroup = uploadMediaGroup;
+	public void uploadFileList(List<MonitorMedia> mediaList) throws IOException {
 		this.mediaList=mediaList;
 		groupSize = 0;
 		groupUploadSize = 0;
@@ -170,19 +161,16 @@ public class FTPConnection implements DataUpdateListener {
 			groupSize += Long.parseLong(media.getFileSize());
 		}
 		for (MonitorMedia media : mediaList) {// 每上传一个就要把它的大小算上
-			upload(uploadMediaGroup, media);
+			upload(this.uploadGroup, media);
 			groupUploadSize += Long.parseLong(media.getFileSize());
 		}
-		requestSetMediaUpload(uploadMediaGroup, mediaList);// 服务器数据设置上传完成
+		requestSetMediaUpload(this.uploadGroup, mediaList);// 服务器数据设置上传完成
 
 	}
 
 	/**
 	 * 上传文件
 	 * 
-	 * @param path
-	 * @param ftpFileName
-	 * @param localFile
 	 * @throws IOException
 	 */
 	private void upload(final MonitorMediaGroupUpload uploadMediaGroup,
@@ -411,42 +399,52 @@ public class FTPConnection implements DataUpdateListener {
 				&& id == RequestService.ID_UPLOADMEDIA) {
 			RspUploadMedia rsp = (RspUploadMedia) obj;
 			if (TextUtils.equals(rsp.getCode(), AppResponse.CODE_SUCCESS)) {// 成功
-				sendBroadCast(context,
-						FTPService.FTP_CODE_UPLOAD_GROUP_SUCCESS,
-						uploadGroup.getId(), "", 0, uploadGroup.getMediaGroup()
-								.getRemark() + "上传成功");
-
-				uploadGroup.setProgress(0);
-				uploadGroup
-						.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADED
-								+ "");
-				List<MonitorMedia> mediaList = DBHelper.getInstance(context)
-						.listMonitorMediaByGroupUploadId(uploadGroup.getId());
-				for (MonitorMedia media : mediaList) {
-					media.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADED
-							+ "");
-				}
-				DBHelper.getInstance(context).updateMonitorMediaGroupUpload(
-						uploadGroup);// 更新状态
-				DBHelper.getInstance(context).updateMonitorMediaList(mediaList);// 更新数据
+				updateUploadGroupState(true);
 			} else {// 失败
-				sendBroadCast(context, FTPService.FTP_CODE_UPLOAD_GROUP_ERROR,
-						uploadGroup.getId(), "", 0, uploadGroup.getMediaGroup()
-								.getRemark() + "上传成功");
-				uploadGroup.setProgress(0);
-				uploadGroup
-						.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_UPLOAD_FAIL
-								+ "");
-				List<MonitorMedia> mediaList = DBHelper.getInstance(context)
-						.listMonitorMediaByGroupUploadId(uploadGroup.getId());
-				for (MonitorMedia media : mediaList) {
-					media.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_UPLOAD_FAIL
-							+ "");
-				}
-				DBHelper.getInstance(context).updateMonitorMediaGroupUpload(
-						uploadGroup);// 更新状态
-				DBHelper.getInstance(context).updateMonitorMediaList(mediaList);// 更新数据
+				updateUploadGroupState(false);
 			}
+		}
+	}
+
+	/**更新组数据并发送通知*/
+	private void updateUploadGroupState(boolean isSuccess){
+
+		if (isSuccess) {// 成功
+			sendBroadCast(context,
+					FTPService.FTP_CODE_UPLOAD_GROUP_SUCCESS,
+					uploadGroup.getId(), "", 0, uploadGroup.getMediaGroup()
+							.getRemark() + "上传成功");
+
+			uploadGroup.setProgress(0);
+			uploadGroup
+					.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADED
+							+ "");
+			List<MonitorMedia> mediaList = DBHelper.getInstance(context)
+					.listMonitorMediaByGroupUploadId(uploadGroup.getId());
+			for (MonitorMedia media : mediaList) {
+				media.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADED
+						+ "");
+			}
+			DBHelper.getInstance(context).updateMonitorMediaGroupUpload(
+					uploadGroup);// 更新状态
+			DBHelper.getInstance(context).updateMonitorMediaList(mediaList);// 更新数据
+		} else {// 失败
+			sendBroadCast(context, FTPService.FTP_CODE_UPLOAD_GROUP_ERROR,
+					uploadGroup.getId(), "", 0, uploadGroup.getMediaGroup()
+							.getRemark() + "上传失败");
+			uploadGroup.setProgress(0);
+			uploadGroup
+					.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_UPLOAD_FAIL
+							+ "");
+			List<MonitorMedia> mediaList = DBHelper.getInstance(context)
+					.listMonitorMediaByGroupUploadId(uploadGroup.getId());
+			for (MonitorMedia media : mediaList) {
+				media.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_UPLOAD_FAIL
+						+ "");
+			}
+			DBHelper.getInstance(context).updateMonitorMediaGroupUpload(
+					uploadGroup);// 更新状态
+			DBHelper.getInstance(context).updateMonitorMediaList(mediaList);// 更新数据
 		}
 	}
 

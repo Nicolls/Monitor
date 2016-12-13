@@ -113,13 +113,14 @@ public class FTPService extends BaseService {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		LogUtils.i(tag,"FTP---@@@@@@@@@@@@@@@@onCreate");
 		startService();
 	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		//每次start都会执行一次
-		
+		LogUtils.i(tag,"FTP---###############onStartCommand");
 		return super.onStartCommand(intent, flags, startId);
 	}
 

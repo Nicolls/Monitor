@@ -29,6 +29,7 @@ import com.egovcomm.monitor.model.ItemEntity;
 import com.egovcomm.monitor.model.MonitorMediaGroup;
 import com.egovcomm.monitor.model.MonitorMediaGroupUpload;
 import com.egovcomm.monitor.utils.LogUtils;
+import com.egovcomm.monitor.utils.ToastUtils;
 import com.egovcomm.monitor.view.ListPopupWindow;
 import com.egovcomm.monitor.view.ListPopupWindow.OnPopupListClickLstener;
 import com.egovcomm.monitor.view.TabBarView.OnPagerChangeListener;
@@ -226,7 +227,10 @@ public class MediaDataActivity extends CommonPagerActivity implements OnClickLis
 					if(uploadingFragment!=null){
 						uploadingFragment.dataNodify(groupId, MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADED, progress);
 					}
-				}else if(code==FTPService.FTP_CODE_UPLOAD_GROUP_ERROR){//上传完成
+				}else if(code==FTPService.FTP_CODE_UPLOAD_GROUP_ERROR){//上传失败
+					if(MediaDataActivity.this!=null){
+						ToastUtils.toast(MediaDataActivity.this,"上传失败，请检查网络设置");
+					}
 					if(uploadingFragment!=null){
 						uploadingFragment.dataNodify(groupId, MonitorMediaGroupUpload.UPLOAD_STATE_UPLOAD_FAIL, progress);
 					}

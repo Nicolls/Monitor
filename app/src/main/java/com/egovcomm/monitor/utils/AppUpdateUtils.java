@@ -32,7 +32,7 @@ public class AppUpdateUtils {
                     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                     builder.setCancelable(false);
                     builder.setTitle(activity.getString(R.string.app_update));
-                    builder.setMessage(activity.getString(R.string.app_update_force_tip));
+                    builder.setMessage("有新的版本可提供，新版本号为:"+version.getData().getLatestVersion()+" 您必须更新应用到最新版本才能使用");
 
                     builder.setPositiveButton("更新", new DialogInterface.OnClickListener() {
 
@@ -62,7 +62,7 @@ public class AppUpdateUtils {
                     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                     builder.setCancelable(false);
                     builder.setTitle(activity.getString(R.string.app_update));
-                    builder.setMessage(activity.getString(R.string.app_update_tip));
+                    builder.setMessage("有新的版本可提供，新版本号为:"+version.getData().getLatestVersion()+" 想更新到最新版本吗？");
 
                     builder.setPositiveButton("马上更新", new DialogInterface.OnClickListener() {
 

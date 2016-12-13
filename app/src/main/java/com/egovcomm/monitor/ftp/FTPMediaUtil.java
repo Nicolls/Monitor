@@ -34,6 +34,7 @@ public class FTPMediaUtil {
 	
 	public static void mediaUpload(Context context,MonitorMediaGroupUpload uploadMediaGroup) {
 		if(context!=null){
+			startFTPService(context);
 			try {
 				if(CommonUtil.checkNetWork(context)){
 					Intent intent=new Intent(FTPService.FTP_BROAD_CAST_ACTION_MEDIA_HANDLE);
