@@ -162,9 +162,11 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 
 	/** 我的数据 */
 	public void onData(View view) {
-		HashMap<String, Object> map = new HashMap<String, Object>();
-		map.put("mediaType", MonitorMediaGroup.TYPE_VIDEO);
-		openActivity(MediaDataActivity.class, map, false);
+		if(isCameraStateReady){
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("mediaType", MonitorMediaGroup.TYPE_VIDEO);
+			openActivity(MediaDataActivity.class, map, false);
+		}
 	}
 
 	/**
@@ -183,7 +185,6 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 				if (isRecording) {
 					isCameraStateReady=false;
 					recordButton.setSelected(false);
-					mIBVideoData.setVisibility(View.VISIBLE);
 					if (mMediaRecorder != null) {
 						mMediaRecorder.stop(); // stop the recording
 						// clear recorder configuration
@@ -249,6 +250,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				mIBVideoData.setVisibility(View.VISIBLE);
 				// 保存数据
 				try {
 					File file = new File(path);
@@ -296,6 +298,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				mIBVideoData.setVisibility(View.VISIBLE);
 				if(!TextUtils.isEmpty(path)){
 					try {
 						File f=new File(path);

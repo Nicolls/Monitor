@@ -143,9 +143,11 @@ public class PhotoCaptureActivity extends BaseActivity implements TextureView.Su
     
     /**我的数据*/
     public void onData(View view){
-    	HashMap<String,Object> map=new HashMap<String,Object>();
-    	map.put("mediaType",MonitorMediaGroup.TYPE_PHOTO);
-    	openActivity(MediaDataActivity.class, map, false);
+		if(isCameraStateReady){
+			HashMap<String,Object> map=new HashMap<String,Object>();
+			map.put("mediaType",MonitorMediaGroup.TYPE_PHOTO);
+			openActivity(MediaDataActivity.class, map, false);
+		}
     }
     
     
