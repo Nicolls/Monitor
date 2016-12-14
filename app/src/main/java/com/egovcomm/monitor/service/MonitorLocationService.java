@@ -42,6 +42,8 @@ public class MonitorLocationService extends BaseService implements
 	private RequestLocationThread mRequestLocationThread;
 	private boolean isRequestRunning=false;//
 
+	private boolean isNeedToTip=true;
+
 	private MyBinder mBinder = new MyBinder();
 
 	public class MyBinder extends Binder {
@@ -143,14 +145,20 @@ public class MonitorLocationService extends BaseService implements
 		@Override
 		public void onLocationChanged(AMapLocation loc) {
 			lastLocation = loc;
-			if (null != loc) {
+
+			if (null != loc&&loc.getErrorCode()==0) {//成功
+				isNeedToTip=true;
 				BaseApplication.longitude = loc.getLongitude();
 				BaseApplication.latitude = loc.getLatitude();
 				BaseApplication.address = loc.getAddress() + "";
 				// 解析定位结果
 				// String result = MapUtils.getLocationStr(loc);
 				// LogUtils.i(tag, result);
-			} else {
+			} else {//失败
+				if(isNeedToTip){
+					isNeedToTip=false;
+					ToastUtils.toast(MonitorLocationService.this,"获取位置信息失败");
+				}
 				LogUtils.i(tag, "定位失败，loc is null");
 			}
 		}

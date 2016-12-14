@@ -179,7 +179,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 	 * @param view
 	 *            the view generating the event.
 	 */
-	public void onRecord(View view) {
+	public  void onRecord(final View view) {
 		if(isCameraStateReady){
 			try {
 				if (isRecording) {
@@ -200,15 +200,14 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 					}
 					recordButton.setSelected(false);
 					isRecording = false;
-					isCameraStateReady=true;
 					mCamera.stopPreview();
 					alertSaveData();
 				} else {
 					recordButton.setSelected(true);
 					mIBVideoData.setVisibility(View.GONE);
 					recordButton.setSelected(true);
+					isCameraStateReady=false;
 					if (mCamera != null) {
-						isCameraStateReady=false;
 						Point p=CommonViewUtils.getDisplaySize(VideoRecordActivity.this);
 						CameraHelper.startVideoRecord(this, mCamera, screenOrientation,
 								p, new VedioRecordCallBack() {
@@ -251,6 +250,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				mIBVideoData.setVisibility(View.VISIBLE);
+				isCameraStateReady=true;
 				// 保存数据
 				try {
 					File file = new File(path);
@@ -299,6 +299,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				mIBVideoData.setVisibility(View.VISIBLE);
+				isCameraStateReady=true;
 				if(!TextUtils.isEmpty(path)){
 					try {
 						File f=new File(path);
@@ -346,12 +347,16 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 		LogUtils.i(TAG, "###exit" + mMediaRecorder);
 		if (mMediaRecorder != null) {
 			if (mMediaRecorder != null) {
-				mMediaRecorder.stop(); // stop the recording
-				// clear recorder configuration
-				mMediaRecorder.reset();
-				// release the recorder object
-				mMediaRecorder.release();
-				mMediaRecorder = null;
+				try {
+					mMediaRecorder.stop(); // stop the recording
+					// clear recorder configuration
+					mMediaRecorder.reset();
+					// release the recorder object
+					mMediaRecorder.release();
+					mMediaRecorder = null;
+				}catch (Exception e){
+					e.printStackTrace();
+				}
 				// Lock camera for later use i.e taking it back from
 				// MediaRecorder.
 				// MediaRecorder doesn't need it anymore and we will release it
