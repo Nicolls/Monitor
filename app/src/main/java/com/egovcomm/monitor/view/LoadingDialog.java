@@ -44,7 +44,9 @@ public class LoadingDialog extends Dialog {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.common_loading);
 		mProgressBar = (ProgressBar) findViewById(R.id.common_dialog_loading);
-		getWindow().setBackgroundDrawable(new ColorDrawable(color.transparent));
+		if(getContext()!=null){
+			getWindow().setBackgroundDrawable(new ColorDrawable(getContext().getResources().getColor(R.color.transparent)));
+		}
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 	}

@@ -15,7 +15,6 @@ import com.egovcomm.monitor.ftp.FTPMediaUtil;
 import com.egovcomm.monitor.model.MonitorMediaGroup;
 import com.egovcomm.monitor.service.MonitorLocationService;
 import com.egovcomm.monitor.utils.MapUtils;
-import com.egovcomm.monitor.utils.ToastUtils;
 
 public class MainUserActivity extends BaseActivity {
 

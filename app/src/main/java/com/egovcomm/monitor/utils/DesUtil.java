@@ -184,8 +184,6 @@ public class DesUtil {
 	 *
 	 * @param file
 	 *            已加密的文件 如 c:/ 加密后文件 .txt *
-	 * @param destFile
-	 *            解密后存放的文件名 如 c:/ test/ 解密后文件 .txt
 	 */
 	public void decryptFile(String file, String dest) throws Exception {
 		Cipher cipher = Cipher.getInstance("DES");

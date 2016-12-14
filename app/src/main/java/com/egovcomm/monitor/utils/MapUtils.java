@@ -52,7 +52,6 @@ public class MapUtils {
 	
 	/**
 	 * 根据定位结果返回定位信息的字符串
-	 * @param loc
 	 * @return
 	 */
 	public synchronized static String getLocationStr(AMapLocation location){

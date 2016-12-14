@@ -56,12 +56,6 @@ public class VolleyGsonRequest<T> extends Request<T> {
 	/**
 	 * Make a GET request and return a parsed object from JSON.
 	 *
-	 * @param url
-	 *            URL of the request to make
-	 * @param clazz
-	 *            Relevant class object, for Gson's reflection
-	 * @param params
-	 *            Map of request params
 	 */
 	public VolleyGsonRequest(Context context, BaseRequest bRquest, Type type, Listener<T> listener,
 			ErrorListener errorListener) {

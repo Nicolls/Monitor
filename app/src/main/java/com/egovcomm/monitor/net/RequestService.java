@@ -74,7 +74,7 @@ public interface RequestService {
 	void setUptateListener(DataUpdateListener dataUpdateListener);
 
 	/**
-	 * @param actionType ajaxLogin
+	 * actionType ajaxLogin
 	 * @param userAccount 用户名
 	 * @param pwd 密码
 	 * @Description 
@@ -82,13 +82,13 @@ public interface RequestService {
 	void login(String userAccount, String pwd);
 	
 	/**注销
-	 * @param actionType ajaxLogout
+	 *actionType ajaxLogout
 	 * @Description 
 	 */
 	void logout();
 	
 	/**上传位置
-	 * @param actionType updateLocation
+	 * actionType updateLocation
 	 * @param longitude 经度。不能使用时分秒的形式提交（23°01′13.93″），只能以小数形式提交，例：23.03
 	 * @param latitude 纬度。不能使用时分秒的形式提交（113°45′6.35），只能以小数形式提交, 例：113.7
 	 * @param status 状态，1为在线，2为正在拍传
@@ -97,7 +97,7 @@ public interface RequestService {
 	void uploadLocation(double longitude, double latitude, int status);
 	
 	/**设置上传到ftp的视频照片关联
-	 * @param actionType uploadMedia
+	 * actionType uploadMedia
 	 * @param data 上传的组数据json
 	 * @Description 
 	 */
@@ -106,7 +106,7 @@ public interface RequestService {
 	
 	
 	/**获取照片列表数据
-	 * @param actionType photoList
+	 * actionType photoList
 	 * @param userId (选填)：用户id，填写则只获取该用户的数据，不填则不会过滤用户id
 	 * @param page (选填): 第几页，从1开始，不填默认为1
 	 * @param count (选填): 每页多少条数据，不填默认为20
@@ -121,7 +121,7 @@ public interface RequestService {
 	
 	
 	/**获取视频列表数据
-	 * @param actionType videoList
+	 * actionType videoList
 	 * @param userId (选填)：用户id，填写则只获取该用户的数据，不填则不会过滤用户id
 	 * @param page (选填): 第几页，从1开始，不填默认为1
 	 * @param count (选填): 每页多少条数据，不填默认为20
@@ -135,7 +135,6 @@ public interface RequestService {
 	void getVideoMedia(String userId,String data, int page, int count);
 	
 	/**通过url下载视频或者照片
-	 * @param url (选填)：用户id，填写则只获取该用户的数据，不填则不会过滤用户id
 	 * @Description  url: http://[IP]:[PORT]/attach/mediaFile/[文件路径]
             文件路径说明：
            在调用获取图片（视频）列表接口后，响应数据中包含media对象数组，每个media就是一组图片或视频，
@@ -146,7 +145,6 @@ public interface RequestService {
 	
 	/**
 	 * userAction.struts?actionType=updateMonitorApp
-	 * @param deviceType 设备类型 android
 	 * @param installedVersion 当前应用版本号，如1.0.0
 	 * @return void
 	 * @Description 查询更新
