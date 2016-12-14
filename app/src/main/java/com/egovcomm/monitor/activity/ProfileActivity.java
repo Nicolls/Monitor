@@ -93,8 +93,8 @@ public class ProfileActivity extends BaseActivity implements OnClickListener{
 			if(!BaseApplication.isUpdating){
 				AppUpdateUtils.chargeUpdate(this, version, new AppUpdateUtils.AppUpdateChargeListener() {
 					@Override
-					public void chargeResult(RspVersion version,boolean isNeedToUpdate) {
-						if(!isNeedToUpdate){//不需要更新
+					public void chargeResult(RspVersion version,int operate) {
+						if(operate== AppUpdateUtils.AppUpdateChargeListener.OPERATE_NOT_UPDATE){//不需要更新
 							if(version!=null&&version.getData()!=null&&!version.getData().isCanUpdate()){
 								ToastUtils.toast(getApplicationContext(), "当前为最新版，无须更新");
 							}

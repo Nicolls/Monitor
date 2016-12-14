@@ -80,8 +80,8 @@ public class WelcomeActivity extends BaseActivity {
 			RspVersion version = (RspVersion) obj;
 			 AppUpdateUtils.chargeUpdate(this, version, new AppUpdateUtils.AppUpdateChargeListener() {
 				 @Override
-				 public void chargeResult(RspVersion version,boolean isUpdate) {
-					 if(!isUpdate){//不需要更新
+				 public void chargeResult(RspVersion version,int operate) {
+					 if(operate== AppUpdateUtils.AppUpdateChargeListener.OPERATE_NOT_UPDATE){//不需要更新
 						requestLogin();
 					 }
 				 }

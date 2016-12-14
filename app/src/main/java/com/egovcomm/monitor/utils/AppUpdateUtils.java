@@ -21,7 +21,10 @@ import com.egovcomm.monitor.service.UpdateAPPService;
 public class AppUpdateUtils {
 
     public interface AppUpdateChargeListener{
-        void chargeResult(RspVersion version,boolean isUpdate);
+        int OPERATE_UPDATE=0;
+        int OPERATE_EXIT=1;
+        int OPERATE_NOT_UPDATE=2;
+        void chargeResult(RspVersion version,int operate);
     }
 
     /** 判断更新 */
@@ -40,7 +43,7 @@ public class AppUpdateUtils {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                             if(lis!=null){
-                                lis.chargeResult(version,true);
+                                lis.chargeResult(version,AppUpdateChargeListener.OPERATE_UPDATE);
                             }
                             updateApk(activity,version.getData().getLatestVersioUri(),true);
                             MyActivityManager.getAppManager().appExit(activity);
@@ -52,7 +55,7 @@ public class AppUpdateUtils {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                             if(lis!=null){
-                                lis.chargeResult(version,false);
+                                lis.chargeResult(version,AppUpdateChargeListener.OPERATE_EXIT);
                             }
                             MyActivityManager.getAppManager().appExit(activity);
                         }
@@ -70,7 +73,7 @@ public class AppUpdateUtils {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                             if(lis!=null){
-                                lis.chargeResult(version,true);
+                                lis.chargeResult(version,AppUpdateChargeListener.OPERATE_UPDATE);
                             }
                             updateApk(activity,version.getData().getLatestVersioUri(),false);
                         }
@@ -81,7 +84,7 @@ public class AppUpdateUtils {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                             if(lis!=null){
-                                lis.chargeResult(version,false);
+                                lis.chargeResult(version,AppUpdateChargeListener.OPERATE_NOT_UPDATE);
                             }
                         }
                     });
@@ -89,12 +92,12 @@ public class AppUpdateUtils {
                 }
             }else{//不需要更新
                 if(lis!=null){
-                    lis.chargeResult(version,false);
+                    lis.chargeResult(version,AppUpdateChargeListener.OPERATE_NOT_UPDATE);
                 }
             }
         } else {
             if(lis!=null){
-                lis.chargeResult(version,false);
+                lis.chargeResult(version,AppUpdateChargeListener.OPERATE_NOT_UPDATE);
             }
         }
     }
