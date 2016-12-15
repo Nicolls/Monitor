@@ -214,6 +214,37 @@ public class FileUtils {
 		}
 		return thumpPath;
 	}
+
+	/**保存缩略图
+	 *
+	 * */
+	public static String saveMediaLocalGroupThumbnail(Context context,String mediaThmbnailPath,String groupId) {
+		String groupThumbnailPath="";
+		File mediaFile=new File(mediaThmbnailPath);
+		File fdir=getAppStorageDirectory(AppConstant.FILE_DIR_LOCAL+File.separator+AppConstant.FILE_DIR_THUMBNAIL);
+		File groupFile=new File(fdir.getAbsolutePath()+File.separator+groupId+".jpg");
+
+		//写入
+		try {
+			if(!groupFile.exists()){
+				groupFile.createNewFile();
+				FileInputStream fis=new FileInputStream(mediaFile);
+				FileOutputStream fos = new FileOutputStream(groupFile);
+				byte[] buf=new byte[1024];
+				int len=0;
+				while((len=fis.read(buf))!=-1){
+					fos.write(buf,0,len);
+				}
+				fos.flush();
+				fos.close();
+				fis.close();
+			}
+			groupThumbnailPath=groupFile.getAbsolutePath();
+		} catch (IOException e) {
+			LogUtils.e(FileUtils.class.getSimpleName(), e.getMessage());
+		}
+		return groupThumbnailPath;
+	}
 	
 	/**保存缩略图
 	 * 
@@ -401,6 +432,26 @@ public class FileUtils {
 	/**获取存储服务器上文件缩略图的路径*/
 	public static String getAppStorageServerThumbnailDirectoryPath() {
 		File f=getAppStorageDirectory(AppConstant.FILE_DIR_SERVER+File.separator+AppConstant.FILE_DIR_THUMBNAIL);
+		if(f!=null){
+			return f.getAbsolutePath();
+		}else{
+			return "";
+		}
+	}
+
+	/**获取存储本地文件的路径*/
+	public static String getAppStorageLocalDirectoryPath() {
+		File f=getAppStorageDirectory(AppConstant.FILE_DIR_LOCAL);
+		if(f!=null){
+			return f.getAbsolutePath();
+		}else{
+			return "";
+		}
+	}
+
+	/**获取存储本地文件缩略图的路径*/
+	public static String getAppStorageLocalThumbnailDirectoryPath() {
+		File f=getAppStorageDirectory(AppConstant.FILE_DIR_LOCAL+File.separator+AppConstant.FILE_DIR_THUMBNAIL);
 		if(f!=null){
 			return f.getAbsolutePath();
 		}else{

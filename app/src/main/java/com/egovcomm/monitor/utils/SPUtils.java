@@ -11,6 +11,7 @@ import android.text.TextUtils;
 
 import com.egovcomm.monitor.common.AppConstant;
 import com.egovcomm.monitor.ftp.FTPConnection;
+import com.egovcomm.monitor.model.AppConfig;
 import com.egovcomm.monitor.model.AppRequest;
 import com.egovcomm.monitor.model.User;
 import com.google.gson.Gson;
@@ -37,6 +38,7 @@ public class SPUtils {
 	// app相关
 	public static final String SP_APP = "SP_APP";
 	public static final String SP_APP_ENTER = "SP_APP_ENTER";
+	public static final String SP_APP_CONFIG = "SP_APP_CONFIG";
 
 	
 	// 用户相关
@@ -189,6 +191,25 @@ public class SPUtils {
 		String data=gson.toJson(user);
 		data=EncryptUtils.encryptBase64(data);
 		boolean isOk = sp.edit().putString(SP_USER_DATA, data).commit();
+		return isOk;
+	}
+
+	/** 获取app配置*/
+	public static AppConfig getAppConfig(Context context) {
+		AppConfig config=new AppConfig();
+		SharedPreferences sp = context.getSharedPreferences(SP_APP, Context.MODE_PRIVATE);
+		String str = sp.getString(SP_APP_CONFIG, "");
+		if(!TextUtils.isEmpty(str)){
+			config= (AppConfig) JsonUtils.jsonString2ObjectWithClass(str,AppConfig.class);
+		}
+		return config;
+	}
+
+	/** 设置app配置 */
+	public static boolean setAppConfig(Context context, AppConfig config) {
+		SharedPreferences sp = context.getSharedPreferences(SP_APP, Context.MODE_PRIVATE);
+		String str=JsonUtils.objectToJson(config,AppConfig.class);
+		boolean isOk = sp.edit().putString(SP_APP_CONFIG, str).commit();
 		return isOk;
 	}
 

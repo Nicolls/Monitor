@@ -12,6 +12,7 @@ import com.egovcomm.monitor.R;
 import com.egovcomm.monitor.common.BaseActivity;
 import com.egovcomm.monitor.common.BaseApplication;
 import com.egovcomm.monitor.common.LoginInfo;
+import com.egovcomm.monitor.model.AppConfig;
 import com.egovcomm.monitor.model.RspLogin;
 import com.egovcomm.monitor.model.RspVersion;
 import com.egovcomm.monitor.model.User;
@@ -44,6 +45,15 @@ public class WelcomeActivity extends BaseActivity {
 			}
 		}
 		setContentView(R.layout.activity_welcome);
+
+		/**在初始进入应用时做配置*/
+		AppConfig config=new AppConfig();
+		config.setLocaltionFailTipSpaceTime(5);//5秒
+		config.setUploadLocationSpaceTime(8);//8秒
+		SPUtils.setAppConfig(this,config);
+
+
+
 		if(!BaseApplication.isUpdating){
 			showLoading(true);
 			mEBikeRequestService.updateMonitorApp(CommonUtil.getAppVersion(WelcomeActivity.this));

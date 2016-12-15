@@ -15,12 +15,14 @@ import com.amap.api.location.AMapLocationClientOption.AMapLocationProtocol;
 import com.amap.api.location.AMapLocationListener;
 import com.egovcomm.monitor.common.BaseApplication;
 import com.egovcomm.monitor.common.BaseService;
+import com.egovcomm.monitor.model.AppConfig;
 import com.egovcomm.monitor.model.AppResponse;
 import com.egovcomm.monitor.model.RspUploadLocation;
 import com.egovcomm.monitor.net.DataUpdateListener;
 import com.egovcomm.monitor.net.RequestService;
 import com.egovcomm.monitor.net.RequestServiceFactory;
 import com.egovcomm.monitor.utils.LogUtils;
+import com.egovcomm.monitor.utils.SPUtils;
 import com.egovcomm.monitor.utils.ToastUtils;
 
 /** 应用更新Service */
@@ -42,7 +44,9 @@ public class MonitorLocationService extends BaseService implements
 	private RequestLocationThread mRequestLocationThread;
 	private boolean isRequestRunning=false;//
 
-	private boolean isNeedToTip=true;
+	private long time=System.currentTimeMillis();
+
+	private AppConfig appConfig=new AppConfig();
 
 	private MyBinder mBinder = new MyBinder();
 
@@ -77,6 +81,8 @@ public class MonitorLocationService extends BaseService implements
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		appConfig= SPUtils.getAppConfig(this);
+		time=System.currentTimeMillis();
 		if(intent!=null){
 			int code = intent.getIntExtra(KEY_CODE, CODE_START);
 			if (code == CODE_START) {
@@ -147,7 +153,6 @@ public class MonitorLocationService extends BaseService implements
 			lastLocation = loc;
 
 			if (null != loc&&loc.getErrorCode()==0) {//成功
-				isNeedToTip=true;
 				BaseApplication.longitude = loc.getLongitude();
 				BaseApplication.latitude = loc.getLatitude();
 				BaseApplication.address = loc.getAddress() + "";
@@ -155,9 +160,10 @@ public class MonitorLocationService extends BaseService implements
 				// String result = MapUtils.getLocationStr(loc);
 				// LogUtils.i(tag, result);
 			} else {//失败
-				if(isNeedToTip){
-					isNeedToTip=false;
+				long currentTime=System.currentTimeMillis();
+				if((currentTime-time)>=appConfig.getLocaltionFailTipSpaceTime()*1000){
 					ToastUtils.toast(MonitorLocationService.this,"获取位置信息失败");
+					time=currentTime;
 				}
 				LogUtils.i(tag, "定位失败，loc is null");
 			}
@@ -249,7 +255,10 @@ public class MonitorLocationService extends BaseService implements
 		public void run() {
 			while (isRequestRunning) {
 				try {
-					Thread.sleep(REQUEST_SPACE_TIME*1000);
+					if(appConfig.getUploadLocationSpaceTime()<=0){
+						appConfig.setUploadLocationSpaceTime(REQUEST_SPACE_TIME);
+					}
+					Thread.sleep(appConfig.getUploadLocationSpaceTime()*1000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

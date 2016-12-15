@@ -30,6 +30,7 @@ import com.egovcomm.monitor.db.DBHelper;
 import com.egovcomm.monitor.ftp.FTPMediaUtil;
 import com.egovcomm.monitor.model.MonitorMedia;
 import com.egovcomm.monitor.model.MonitorMediaGroupUpload;
+import com.egovcomm.monitor.utils.FileUtils;
 import com.egovcomm.monitor.utils.LogUtils;
 import com.egovcomm.monitor.utils.SPUtils;
 import com.egovcomm.monitor.utils.ToastUtils;
@@ -75,13 +76,12 @@ public class MediaCompletedFragment extends
 									+ "" });
 
 			Iterator<MonitorMediaGroupUpload> it = list.iterator();
-			if (!TextUtils.isEmpty(mediaType)) {
-				while (it.hasNext()) {
-					MonitorMediaGroupUpload group = it.next();
-					if (!TextUtils.equals(mediaType, group.getMediaGroup()
-							.getMediaType())) {
-						it.remove();
-					}
+			while (it.hasNext()) {
+				MonitorMediaGroupUpload group = it.next();
+				group.setThumbnailPath(FileUtils.getAppStorageLocalThumbnailDirectoryPath()+File.separator+group.getId()+".jpg");//用组ID做缩略图
+				if (!TextUtils.isEmpty(mediaType)&&!TextUtils.equals(mediaType, group.getMediaGroup()
+						.getMediaType())) {
+					it.remove();
 				}
 			}
 			super.loadListView(list);

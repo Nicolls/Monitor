@@ -67,12 +67,12 @@ public class MediaUploadingFragment extends BaseListFragment<MonitorMediaGroupUp
 			List<MonitorMediaGroupUpload> list = DBHelper.getInstance(getActivity()).listMonitorMediaGroupUpload(
 					SPUtils.getUser(getActivity()).getUserID(), MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADING + "");
 			Iterator<MonitorMediaGroupUpload> it = list.iterator();
-			if (!TextUtils.isEmpty(mediaType)) {
-				while (it.hasNext()) {
-					MonitorMediaGroupUpload group = it.next();
-					if (!TextUtils.equals(mediaType, group.getMediaGroup().getMediaType())) {
-						it.remove();
-					}
+			while (it.hasNext()) {
+				MonitorMediaGroupUpload group = it.next();
+				group.setThumbnailPath(FileUtils.getAppStorageLocalThumbnailDirectoryPath()+File.separator+group.getId()+".jpg");//用组ID做缩略图
+
+				if (!TextUtils.isEmpty(mediaType)&&!TextUtils.equals(mediaType, group.getMediaGroup().getMediaType())) {
+					it.remove();
 				}
 			}
 			super.loadListView(list);
