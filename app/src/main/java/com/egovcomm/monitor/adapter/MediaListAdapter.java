@@ -129,10 +129,14 @@ public  class MediaListAdapter extends EBBaseAdapter<MonitorMedia> {
 				holder.item_progress.setProgress(0);
 			}
 			
-			if(media.getDownloadState()==MonitorMedia.DOWNLOAD_STATE_YES){//正在下载
+			if(media.getDownloadState()==MonitorMedia.DOWNLOAD_STATE_DOWNLOADING){//正在下载
 				holder.item_view_Tip.setVisibility(View.VISIBLE);
+				holder.item_progress.setVisibility(View.VISIBLE);
+				holder.item_progress.setProgress(media.getProgress());
+
 			}else{
 				holder.item_view_Tip.setVisibility(View.GONE);
+				holder.item_progress.setVisibility(View.GONE);
 			}
 			holder.item_name.setText("文件名："+media.getFileName());
 			holder.item_location.setText("拍摄地点："+media.getShootingLocation());

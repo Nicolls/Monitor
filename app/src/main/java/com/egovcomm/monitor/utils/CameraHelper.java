@@ -476,7 +476,7 @@ public class CameraHelper {
 	 * @return A file object pointing to the newly created file.
 	 */
 	public static File getOutputMediaFile(int type) {
-		File mediaStorageDir=FileUtils.getAppStorageDirectory(AppConstant.FILE_DIR_LOCAL);
+		File mediaStorageDir=new File(FileUtils.getAppStorageDirectoryPath());
 		// Create a media file name
 		//String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 		String timeStamp =UUID.randomUUID().toString();

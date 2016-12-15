@@ -30,6 +30,7 @@ public class MonitorMediaGroup implements Parcelable {
 	private String mediaType;
 	private String remark;
 	private String thumbnailPath;//缩略图
+	private String uploadState;
 	private int showCheck=0;//是否显示全选按钮0，不显示，1，显示
 	private int check=0;//是否被选中 0未被选中，1选中
 	private int progress=0;//进度条
@@ -73,6 +74,7 @@ public class MonitorMediaGroup implements Parcelable {
 		dest.writeString(mediaType);
 		dest.writeString(remark);
 		dest.writeString(thumbnailPath);
+		dest.writeString(uploadState);
 		dest.writeInt(showCheck);
 		dest.writeInt(check);
 		dest.writeInt(progress);
@@ -101,6 +103,7 @@ public class MonitorMediaGroup implements Parcelable {
 		mediaType = in.readString();
 		remark = in.readString();
 		thumbnailPath = in.readString();
+		uploadState = in.readString();
 		showCheck = in.readInt();
 		check = in.readInt();
 		progress= in.readInt();
@@ -206,5 +209,11 @@ public class MonitorMediaGroup implements Parcelable {
 	public void setProgress(int progress) {
 		this.progress = progress;
 	}
-	
+	public String getUploadState() {
+		return uploadState;
+	}
+
+	public void setUploadState(String uploadState) {
+		this.uploadState = uploadState;
+	}
 }

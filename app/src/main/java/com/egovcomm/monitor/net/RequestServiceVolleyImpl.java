@@ -146,31 +146,42 @@ public class RequestServiceVolleyImpl implements RequestService {
 
 	@Override
 	public void downLoadMedia(final Context context,final MonitorMedia media) {
-		AppRequest ebReq = new AppRequest(RequestService.METHOD_DOWNLOADMEDIA+media.getPath());
-		MediaDownLoadAsyncTask task=new MediaDownLoadAsyncTask(context, media, new MediaDownloadListener() {
-			
-			@Override
-			public void downLoadCompleted(MonitorMedia media) {
-				RspDownLoadMedia rsp=new RspDownLoadMedia();
-				rsp.setCode(AppResponse.CODE_SUCCESS);
-				rsp.setSuccess(true);
-				rsp.setErrorMsg("下载成功");
-				rsp.setData(media);
-				dataNotify(RequestService.ID_DOWNLOADMEDIA, rsp);
-			}
+		AppRequest ebReq = new AppRequest(RequestService.METHOD_DOWNLOADMEDIA + media.getPath());
+		if(media!=null){
+			MediaDownLoadAsyncTask task = new MediaDownLoadAsyncTask(context, media, new MediaDownloadListener() {
 
-			@Override
-			public void downLoadFail(MonitorMedia media) {
-				RspDownLoadMedia rsp=new RspDownLoadMedia();
-				rsp.setCode(AppResponse.CODE_FAIL);
-				rsp.setSuccess(false);
-				rsp.setErrorMsg("下载失败");
-				rsp.setData(media);
-				dataNotify(RequestService.ID_DOWNLOADMEDIA, rsp);
-				dataNotify(RequestService.ID_DOWNLOADMEDIA, rsp);
-			}
-		});
-		task.execute(ebReq.getReqeustURL());
+				@Override
+				public void downLoadCompleted(MonitorMedia media) {
+					RspDownLoadMedia rsp = new RspDownLoadMedia();
+					rsp.setCode(AppResponse.CODE_SUCCESS);
+					rsp.setSuccess(true);
+					rsp.setErrorMsg("下载成功");
+					rsp.setData(media);
+					dataNotify(RequestService.ID_DOWNLOADMEDIA, rsp);
+				}
+
+				@Override
+				public void downLoading(MonitorMedia media) {
+					RspDownLoadMedia rsp = new RspDownLoadMedia();
+					rsp.setCode(AppResponse.CODE_SUCCESS);
+					rsp.setSuccess(true);
+					rsp.setErrorMsg("正在下载");
+					rsp.setData(media);
+					dataNotify(RequestService.ID_DOWNLOADMEDIA, rsp);
+				}
+
+				@Override
+				public void downLoadFail(MonitorMedia media) {
+					RspDownLoadMedia rsp = new RspDownLoadMedia();
+					rsp.setCode(AppResponse.CODE_FAIL);
+					rsp.setSuccess(false);
+					rsp.setErrorMsg("下载失败");
+					rsp.setData(media);
+					dataNotify(RequestService.ID_DOWNLOADMEDIA, rsp);
+				}
+			});
+			task.execute(ebReq.getReqeustURL());
+	}
 	}
 
 

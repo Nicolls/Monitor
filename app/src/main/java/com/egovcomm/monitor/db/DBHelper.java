@@ -69,8 +69,6 @@ public class DBHelper extends SQLiteOpenHelper {
 		sqliteDatabase.execSQL("CREATE TABLE IF NOT EXISTS " + MediaEntry.TABLE_NAME + " (" + MediaEntry._ID
 				+ " INTEGER PRIMARY KEY AUTOINCREMENT," + MediaEntry.COLUMN_UUID + " TEXT,"
 				+ MediaEntry.COLUMN_UPLOAD_GROUP_ID + " TEXT,"
-				+ MediaEntry.COLUMN_SERVER_GROUP_ID + " TEXT,"
-				+ MediaEntry.COLUMN_SERVER_ID + " TEXT,"
 				+ MediaEntry.COLUMN_USER_ID + " TEXT,"
 				+ MediaEntry.COLUMN_SHOOTING_LOCATION + " TEXT," + MediaEntry.COLUMN_REMARK + " TEXT,"
 				+ MediaEntry.COLUMN_UPLOAD_TIME + " TEXT," + MediaEntry.COLUMN_FILE_NAME + " TEXT,"
@@ -604,11 +602,12 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	/** 删除一个数据 */
-	public void deleteMonitorMedia(String monitorMediaId) {
+	public int deleteMonitorMedia(String monitorMediaId) {
 		SQLiteDatabase sqlDb = getWritableDatabase();
 		int row = sqlDb
 				.delete(MediaEntry.TABLE_NAME, MediaEntry.COLUMN_UUID + " = '" + monitorMediaId+"'", null);
 		LogUtils.i(TAG, "deleteMonitorMedia-row=" + row);
+		return row;
 	}
 	
 	/** 删除数据 */
@@ -620,189 +619,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 	
 	
-	//这里是对服务器回来的数据进行操作--------------------------------------------
-	//数据
-	/**更新一组数据，如果数据存在，则更新，数据不存在则插入*/
-	public void updateServerListMonitorMedia(List<MonitorMedia> mediaList) {
-		//LogUtils.i(TAG, "更新media－－" + media.toString());
-		for(MonitorMedia media:mediaList){
-			updateServerMonitorMedia(media);
-		}
-	}
-	/** 更新一个数据 */
-	public void updateServerMonitorMedia(MonitorMedia media) {
-		//LogUtils.i(TAG, "更新media－－" + media.toString());
-		SQLiteDatabase sqliteDatabase = getWritableDatabase();
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(MediaEntry.COLUMN_UUID, media.getId());
-		contentValues.put(MediaEntry.COLUMN_SHOOTING_LOCATION, media.getShootingLocation());
-		contentValues.put(MediaEntry.COLUMN_FILE_NAME, media.getFileName());
-		contentValues.put(MediaEntry.COLUMN_PATH, media.getPath());
-		contentValues.put(MediaEntry.COLUMN_FILE_SIZE, media.getFileSize());
-		contentValues.put(MediaEntry.COLUMN_FILE_STATE, media.getFileState());
-		contentValues.put(MediaEntry.COLUMN_FILE_SUFFIX, media.getFileSuffix());
-		contentValues.put(MediaEntry.COLUMN_REMARK, media.getRemark());
-		contentValues.put(MediaEntry.COLUMN_UPLOAD_GROUP_ID, media.getGroupUploadId());
-		contentValues.put(MediaEntry.COLUMN_UPLOAD_TIME, media.getUploadTime());
-		contentValues.put(MediaEntry.COLUMN_USER_ID, media.getUserId());
-		contentValues.put(MediaEntry.COLUMN_ORIENTATIONE, media.getOrientation());
-		contentValues.put(MediaEntry.COLUMN_UPLOAD_STATE, media.getUploadState());
-		contentValues.put(MediaEntry.COLUMN_MEDIA_TYPE, media.getMediaType());
-		contentValues.put(MediaEntry.COLUMN_PATH_THUMBNAIL, media.getThumbnailPath());
-		contentValues.put(MediaEntry.COLUMN_SERVER_GROUP_ID, media.getServerGroupId());
-		contentValues.put(MediaEntry.COLUMN_SERVER_ID, media.getServerId());
-		contentValues.put(MediaEntry.COLUMN_CREATE_TIME, media.getCreateTime());
 
-		int row = sqliteDatabase.update(MediaEntry.TABLE_NAME, contentValues,
-				MediaEntry.COLUMN_SERVER_ID + "=?", new String[] { media.getServerId()+ "" });
-		if(row<=0){//说明没有符合的数据，那么就要插入
-			insertServerMonitorMedia(media);
-		}
-		LogUtils.i(TAG, "updateMonitorMedia" + row);
-	}
-	
-	/** 插入一个数据 */
-	private long insertServerMonitorMedia(MonitorMedia media) {
-		SQLiteDatabase sqliteDatabase = getWritableDatabase();
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(MediaEntry.COLUMN_UUID, media.getId());
-		contentValues.put(MediaEntry.COLUMN_SHOOTING_LOCATION, media.getShootingLocation());
-		contentValues.put(MediaEntry.COLUMN_FILE_NAME, media.getFileName());
-		contentValues.put(MediaEntry.COLUMN_PATH, media.getPath());
-		contentValues.put(MediaEntry.COLUMN_FILE_SIZE, media.getFileSize());
-		contentValues.put(MediaEntry.COLUMN_FILE_STATE, media.getFileState());
-		contentValues.put(MediaEntry.COLUMN_FILE_SUFFIX, media.getFileSuffix());
-		contentValues.put(MediaEntry.COLUMN_REMARK, media.getRemark());
-		contentValues.put(MediaEntry.COLUMN_UPLOAD_GROUP_ID, media.getGroupUploadId());
-		contentValues.put(MediaEntry.COLUMN_UPLOAD_TIME, media.getUploadTime());
-		contentValues.put(MediaEntry.COLUMN_USER_ID, media.getUserId());
-		contentValues.put(MediaEntry.COLUMN_ORIENTATIONE, media.getOrientation());
-		contentValues.put(MediaEntry.COLUMN_UPLOAD_STATE, media.getUploadState());
-		contentValues.put(MediaEntry.COLUMN_MEDIA_TYPE, media.getMediaType());
-		contentValues.put(MediaEntry.COLUMN_PATH_THUMBNAIL, media.getThumbnailPath());
-		contentValues.put(MediaEntry.COLUMN_SERVER_GROUP_ID, media.getServerGroupId());
-		contentValues.put(MediaEntry.COLUMN_SERVER_ID, media.getServerId());
-		contentValues.put(MediaEntry.COLUMN_CREATE_TIME, media.getCreateTime());
-
-		long id = sqliteDatabase.insert(MediaEntry.TABLE_NAME, null, contentValues);
-		LogUtils.i(TAG, "insertMonitorMedia" + id);
-		return id;
-	}
-	
-	/** 通过id查询一个数据 */
-	public MonitorMedia findServerMonitorMediaById(String serverId) {
-		SQLiteDatabase sqliteDatabase = getReadableDatabase();
-		Cursor result = sqliteDatabase.rawQuery("SELECT * FROM " + MediaEntry.TABLE_NAME + " WHERE "
-				+ MediaEntry.COLUMN_SERVER_ID + "=? ORDER BY "+MediaEntry.COLUMN_CREATE_TIME+" DESC ", new String[] { serverId + "" });
-		MonitorMedia media = new MonitorMedia();
-		while (result.moveToNext()) {
-			media.setId(result.getString(result.getColumnIndex(MediaEntry.COLUMN_UUID)));
-			media.setShootingLocation(result.getString(result.getColumnIndex(MediaEntry.COLUMN_SHOOTING_LOCATION)));
-			media.setFileName(result.getString(result.getColumnIndex(MediaEntry.COLUMN_FILE_NAME)));
-			media.setPath(result.getString(result.getColumnIndex(MediaEntry.COLUMN_PATH)));
-			media.setFileSize(result.getString(result.getColumnIndex(MediaEntry.COLUMN_FILE_SIZE)));
-			media.setFileState(result.getString(result.getColumnIndex(MediaEntry.COLUMN_FILE_STATE)));
-			media.setFileSuffix(result.getString(result.getColumnIndex(MediaEntry.COLUMN_FILE_SUFFIX)));
-			media.setRemark(result.getString(result.getColumnIndex(MediaEntry.COLUMN_REMARK)));
-			media.setGroupUploadId(result.getString(result.getColumnIndex(MediaEntry.COLUMN_UPLOAD_GROUP_ID)));
-			media.setUploadTime(result.getString(result.getColumnIndex(MediaEntry.COLUMN_UPLOAD_TIME)));
-			media.setUserId(result.getString(result.getColumnIndex(MediaEntry.COLUMN_USER_ID)));
-			media.setOrientation(result.getString(result.getColumnIndex(MediaEntry.COLUMN_ORIENTATIONE)));
-			media.setUploadState(result.getString(result.getColumnIndex(MediaEntry.COLUMN_UPLOAD_STATE)));
-			media.setMediaType(result.getString(result.getColumnIndex(MediaEntry.COLUMN_MEDIA_TYPE)));
-			media.setThumbnailPath(result.getString(result.getColumnIndex(MediaEntry.COLUMN_PATH_THUMBNAIL)));
-			media.setCreateTime(result.getString(result.getColumnIndex(MediaEntry.COLUMN_CREATE_TIME)));
-
-			break;
-		}
-		LogUtils.i(TAG, "findMonitorMediaById" + serverId);
-		result.close();
-		return media;
-	}
-	
-	//组
-	/**更新一组数据，如果数据存在，则更新，数据不存在则插入*/
-	public void updateListServerMonitorMediaGroup(List<MonitorMediaGroup> mediaGroupList) {
-		for(MonitorMediaGroup group:mediaGroupList){
-			updateServerMonitorMediaGroup(group);
-		}
-	}
-	/** 更新一个数据 */
-	private void updateServerMonitorMediaGroup(MonitorMediaGroup mediaGroup) {
-		//LogUtils.i(TAG, "更新mediaGroup－－" + mediaGroup.toString());
-		SQLiteDatabase sqliteDatabase = getWritableDatabase();
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(MediaGropEntry.COLUMN_UUID, mediaGroup.getId());
-		contentValues.put(MediaGropEntry.COLUMN_CREATE_ADDR, mediaGroup.getCreateAddr());
-		contentValues.put(MediaGropEntry.COLUMN_CREATE_TIME, mediaGroup.getCreateTime());
-		contentValues.put(MediaGropEntry.COLUMN_ORG_ID, mediaGroup.getOrgId());
-		contentValues.put(MediaGropEntry.COLUMN_ORG_NAME, mediaGroup.getOrgName());
-		contentValues.put(MediaGropEntry.COLUMN_LATITUDE, mediaGroup.getLatitude());
-		contentValues.put(MediaGropEntry.COLUMN_LONGITUDE, mediaGroup.getLongitude());
-		contentValues.put(MediaGropEntry.COLUMN_REMARK, mediaGroup.getRemark());
-		contentValues.put(MediaGropEntry.COLUMN_MEDIA_TYPE, mediaGroup.getMediaType());
-		contentValues.put(MediaGropEntry.COLUMN_USER_ID, mediaGroup.getUserId());
-		contentValues.put(MediaGropEntry.COLUMN_USER_NAME, mediaGroup.getUserName());
-		contentValues.put(MediaGropEntry.COLUMN_PATH_THUMBNAIL, mediaGroup.getThumbnailPath());
-
-		int row = sqliteDatabase.update(MediaGropEntry.TABLE_NAME, contentValues, MediaGropEntry.COLUMN_UUID + "=?",
-				new String[] { mediaGroup.getId() + "" });
-		if(row<=0){
-			insertServerMonitorMediaGroup(mediaGroup);
-		}
-		LogUtils.i(TAG, "updateMonitorMediaGroup" + row);
-	}
-
-	/** 插入一个数据 */
-	public long insertServerMonitorMediaGroup(MonitorMediaGroup mediaGroup) {
-		SQLiteDatabase sqliteDatabase = getWritableDatabase();
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(MediaGropEntry.COLUMN_UUID, mediaGroup.getId());
-		contentValues.put(MediaGropEntry.COLUMN_CREATE_ADDR, mediaGroup.getCreateAddr());
-		contentValues.put(MediaGropEntry.COLUMN_CREATE_TIME, mediaGroup.getCreateTime());
-		contentValues.put(MediaGropEntry.COLUMN_ORG_ID, mediaGroup.getOrgId());
-		contentValues.put(MediaGropEntry.COLUMN_ORG_NAME, mediaGroup.getOrgName());
-		contentValues.put(MediaGropEntry.COLUMN_LATITUDE, mediaGroup.getLatitude());
-		contentValues.put(MediaGropEntry.COLUMN_LONGITUDE, mediaGroup.getLongitude());
-		contentValues.put(MediaGropEntry.COLUMN_REMARK, mediaGroup.getRemark());
-		contentValues.put(MediaGropEntry.COLUMN_MEDIA_TYPE, mediaGroup.getMediaType());
-		contentValues.put(MediaGropEntry.COLUMN_USER_ID, mediaGroup.getUserId());
-		contentValues.put(MediaGropEntry.COLUMN_USER_NAME, mediaGroup.getUserName());
-		contentValues.put(MediaGropEntry.COLUMN_PATH_THUMBNAIL, mediaGroup.getThumbnailPath());
-
-		long id = sqliteDatabase.insert(MediaGropEntry.TABLE_NAME, null, contentValues);
-		LogUtils.i(TAG, "insertMonitorMediaGroup" + id);
-		return id;
-	}
-	/** 通过id查询一个数据 */
-	public MonitorMediaGroup findServerMonitorMediaGroupById(String monitorMediaGroupId) {
-		SQLiteDatabase sqliteDatabase = getReadableDatabase();
-		Cursor result = sqliteDatabase.rawQuery("SELECT * FROM " + MediaGropEntry.TABLE_NAME + " WHERE "
-				+ MediaGropEntry.COLUMN_UUID + "=? ORDER BY "+MediaGropEntry.COLUMN_CREATE_TIME+" DESC ", new String[] { monitorMediaGroupId + "" });
-		MonitorMediaGroup mediaGroup = new MonitorMediaGroup();
-		while (result.moveToNext()) {
-			mediaGroup.setId(result.getString(result.getColumnIndex(MediaGropEntry.COLUMN_UUID)));
-			mediaGroup
-					.setCreateAddr(result.getString(result.getColumnIndex(MediaGropEntry.COLUMN_CREATE_ADDR)));
-			mediaGroup.setCreateTime(result.getString(result.getColumnIndex(MediaGropEntry.COLUMN_CREATE_TIME)));
-			mediaGroup.setOrgId(result.getString(result.getColumnIndex(MediaGropEntry.COLUMN_ORG_ID)));
-			mediaGroup
-					.setOrgName(result.getString(result.getColumnIndex(MediaGropEntry.COLUMN_ORG_NAME)));
-			mediaGroup.setLatitude(result.getString(result.getColumnIndex(MediaGropEntry.COLUMN_LATITUDE)));
-			mediaGroup.setLongitude(result.getString(result.getColumnIndex(MediaGropEntry.COLUMN_LONGITUDE)));
-			mediaGroup.setRemark(result.getString(result.getColumnIndex(MediaGropEntry.COLUMN_REMARK)));
-			mediaGroup.setMediaType(result.getString(result.getColumnIndex(MediaGropEntry.COLUMN_MEDIA_TYPE)));
-			mediaGroup.setUserId(result.getString(result.getColumnIndex(MediaGropEntry.COLUMN_USER_ID)));
-			mediaGroup.setUserName(result.getString(result.getColumnIndex(MediaGropEntry.COLUMN_USER_NAME)));
-			mediaGroup.setThumbnailPath(result.getString(result.getColumnIndex(MediaGropEntry.COLUMN_PATH_THUMBNAIL)));
-
-			break;
-		}
-		LogUtils.i(TAG, "findMonitorMediaGroupById" + monitorMediaGroupId);
-		result.close();
-		return mediaGroup;
-	}
-	
 	
 	//排序相关
 	

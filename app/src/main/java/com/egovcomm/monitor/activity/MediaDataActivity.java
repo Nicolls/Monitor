@@ -44,9 +44,9 @@ import com.egovcomm.monitor.view.TabBarView.OnPagerChangeListener;
 public class MediaDataActivity extends CommonPagerActivity implements OnClickListener,OnPagerChangeListener{
 
 	private CommonFragmentPagerAdapter<BaseFragment> mAdapter;
-	private MediaUnUploadFragment unUploadFragment =null;
-	private MediaCompletedFragment completedFragment = null;
-	private MediaUploadingFragment uploadingFragment = null;
+	public MediaUnUploadFragment unUploadFragment =null;
+	public MediaCompletedFragment completedFragment = null;
+	public MediaUploadingFragment uploadingFragment = null;
 	//private String mediaType="0";//当前视频类型
 	private List<BaseFragment> dataList = new ArrayList<BaseFragment>();
 	private int currentPage=0;
@@ -273,13 +273,23 @@ public class MediaDataActivity extends CommonPagerActivity implements OnClickLis
 			entity.setTitle("视频");
 			entity.setValue(MonitorMediaGroup.TYPE_VIDEO);
 			filterList.add(entity);
-		}else{
+		}else if(currentPage==1){
 			filterList.clear();
 			entity=new ItemEntity();
 			entity.setTitle("全部");
 			entity.setValue("");
 			filterList.add(entity);
 			
+			entity=new ItemEntity();
+			entity.setTitle("图片");
+			entity.setValue(MonitorMediaGroup.TYPE_PHOTO);
+			filterList.add(entity);
+			entity=new ItemEntity();
+			entity.setTitle("视频");
+			entity.setValue(MonitorMediaGroup.TYPE_VIDEO);
+			filterList.add(entity);
+		}else if(currentPage==2){
+			filterList.clear();
 			entity=new ItemEntity();
 			entity.setTitle("图片");
 			entity.setValue(MonitorMediaGroup.TYPE_PHOTO);

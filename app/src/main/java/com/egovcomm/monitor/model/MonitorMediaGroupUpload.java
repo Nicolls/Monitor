@@ -1,16 +1,16 @@
 package com.egovcomm.monitor.model;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.UUID;
-
-import com.egovcomm.monitor.utils.LogUtils;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+
+import com.egovcomm.monitor.utils.LogUtils;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 public class MonitorMediaGroupUpload implements Parcelable {
 	private static final String TAG=MonitorMediaGroupUpload.class.getSimpleName();
@@ -43,6 +43,10 @@ public class MonitorMediaGroupUpload implements Parcelable {
 	private int showCheck=0;//是否显示全选按钮0，不显示，1，显示
 	private int check=0;//是否被选中 0未被选中，1选中
 	private int progress=0;//进度条
+
+
+
+	private List<MonitorMedia> monitorMediaList;/**存储服务器回来的数据*/
 	public MonitorMediaGroupUpload() {}
 	public String formatTime(Date date) {
 		String result = "";
@@ -154,6 +158,12 @@ public class MonitorMediaGroupUpload implements Parcelable {
 	}
 	public void setRemoteDirectory(String remoteDirectory) {
 		this.remoteDirectory = remoteDirectory;
+	}
+	public List<MonitorMedia> getMonitorMediaList() {
+		return monitorMediaList;
+	}
+	public void setMonitorMediaList(List<MonitorMedia> monitorMediaList) {
+		this.monitorMediaList = monitorMediaList;
 	}
 
 }

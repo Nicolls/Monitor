@@ -32,12 +32,11 @@ public class MonitorLocationService extends BaseService implements
 	
 	public static final String KEY_CODE = "KEY_CODE";
 	public static final int CODE_START = 0;
-	public static final int CODE_STOP = 1;
-	public static final int CODE_CLOSE = 2;
+	public static final int CODE_CLOSE = 1;
 	private static final int REQUEST_SPACE_TIME=8;//上传位置时间间隔，秒
 
 	private AMapLocationClient locationClient = null;
-	private AMapLocationClientOption locationOption = new AMapLocationClientOption();
+//	private AMapLocationClientOption locationOption = new AMapLocationClientOption();
 	private RequestService mEBikeRequestService = null;
 	private AMapLocation lastLocation;// 最近一次定位
 	
@@ -59,12 +58,6 @@ public class MonitorLocationService extends BaseService implements
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		mEBikeRequestService = RequestServiceFactory.getInstance(
-				getApplicationContext(), RequestServiceFactory.REQUEST_VOLLEY);
-		mEBikeRequestService.setUptateListener(this);
-		// 初始化定位
-		initLocation();
-		startRequestThread();
 	}
 
 	@Override
@@ -87,10 +80,8 @@ public class MonitorLocationService extends BaseService implements
 			int code = intent.getIntExtra(KEY_CODE, CODE_START);
 			if (code == CODE_START) {
 				startLocation();
-			} else if (code == CODE_STOP) {
-				stopLocation();
 			} else if (code == CODE_CLOSE) {
-				stopSelf();// 把服务也停止掉
+				destroyLocation();
 			} else {
 				startLocation();
 			}
@@ -102,9 +93,7 @@ public class MonitorLocationService extends BaseService implements
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		isRequestRunning=false;
 		destroyLocation();
-		mEBikeRequestService = null;
 	}
 
 	/**
@@ -114,13 +103,17 @@ public class MonitorLocationService extends BaseService implements
 	 * @author hongming.wang
 	 *
 	 */
-	private void initLocation() {
+	private void initLocationService() {
+		mEBikeRequestService = RequestServiceFactory.getInstance(
+				getApplicationContext(), RequestServiceFactory.REQUEST_VOLLEY);
+		mEBikeRequestService.setUptateListener(this);
 		// 初始化client
 		locationClient = new AMapLocationClient(this.getApplicationContext());
 		// 设置定位参数
 		locationClient.setLocationOption(getDefaultOption());
 		// 设置定位监听
 		locationClient.setLocationListener(locationListener);
+		startRequestThread();
 	}
 
 	/**
@@ -181,30 +174,15 @@ public class MonitorLocationService extends BaseService implements
 	private void startLocation() {
 		LogUtils.i(tag, "开始定位");
 		if (locationClient != null) {
-			// 设置定位参数
-			locationClient.setLocationOption(locationOption);
 			// 启动定位
 			locationClient.startLocation();
 		} else {
-			initLocation();
-			startLocation();
+			initLocationService();
+			// 启动定位
+			locationClient.startLocation();
 		}
 	}
 
-	/**
-	 * 停止定位
-	 * 
-	 * @since 2.8.0
-	 * @author hongming.wang
-	 *
-	 */
-	private void stopLocation() {
-		LogUtils.i(tag, "停止定位");
-		// 停止定位
-		if (locationClient != null) {
-			locationClient.stopLocation();
-		}
-	}
 
 	/**
 	 * 销毁定位
@@ -214,8 +192,9 @@ public class MonitorLocationService extends BaseService implements
 	 *
 	 */
 	private void destroyLocation() {
+		isRequestRunning=false;
 		LogUtils.i(tag, "结束定位");
-		if (lastLocation != null) {// 结束的时候发送最后一次位置
+		if (lastLocation != null&&mEBikeRequestService!=null) {// 结束的时候发送最后一次位置
 			mEBikeRequestService.uploadLocation(lastLocation.getLongitude(),
 					lastLocation.getLatitude(), BaseApplication.status);
 
@@ -227,8 +206,8 @@ public class MonitorLocationService extends BaseService implements
 			 */
 			locationClient.onDestroy();
 			locationClient = null;
-			locationOption = null;
 		}
+		mEBikeRequestService = null;
 	}
 
 	@Override

@@ -26,7 +26,6 @@ import com.egovcomm.monitor.utils.ToastUtils;
 /**
  * 列表，Item两行数据适配器
  * 
- * @param <T>
  *            数据实体类
  * @author mengjk
  * 
@@ -169,6 +168,7 @@ public class GroupUploadListAdapter extends EBBaseAdapter<MonitorMediaGroupUploa
 			}
 
 			if (TextUtils.equals(MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADED
+					+ "", group.getUploadState())||TextUtils.equals(MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA
 					+ "", group.getUploadState())) {// 上传成功
 				holder.item_view_Tip.setVisibility(View.VISIBLE);
 				// holder.item_btn_reupload.setTag(group);

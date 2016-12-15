@@ -37,6 +37,7 @@ public class MediaDownLoadAsyncTask extends AsyncTask<String, Integer, MonitorMe
 	/** 应用更新完成监听器 */
 	public interface MediaDownloadListener {
 		void downLoadCompleted(MonitorMedia media);
+		void downLoading(MonitorMedia media);
 		void downLoadFail(MonitorMedia media);
 	}
 	
@@ -46,6 +47,7 @@ public class MediaDownLoadAsyncTask extends AsyncTask<String, Integer, MonitorMe
 			LogUtils.i("MediaDownLoadTask", "url:"+arg0[0]);
 			URL url = new URL(arg0[0]);
 			HttpURLConnection con;
+			File mediaFile=null;
 			try {
 				con = (HttpURLConnection) url.openConnection();
 				con.connect();
@@ -57,7 +59,7 @@ public class MediaDownLoadAsyncTask extends AsyncTask<String, Integer, MonitorMe
 					int downloadCount = length / buf.length;
 					int spacing = downloadCount / 100;
 					int m = 0;
-					File mediaFile=new File(FileUtils.getAppStorageServerDirectoryPath()+File.separator+media.getFileName());
+					mediaFile=new File(FileUtils.getAppStorageDirectoryPath()+File.separator+media.getFileName());
 					mediaFile.createNewFile();
 					FileOutputStream fos = new FileOutputStream(mediaFile);
 					int len = 0;
@@ -76,10 +78,15 @@ public class MediaDownLoadAsyncTask extends AsyncTask<String, Integer, MonitorMe
 					
 					media.setPath(mediaFile.getPath());
 					media.setThumbnailPath(FileUtils.saveMediaThumbnail(context, mediaFile.getPath(), media.getMediaType(), false));
-					FileUtils.saveMediaServerGroupThumbnail(context, media.getThumbnailPath(), media.getServerGroupId());
+					if(!FileUtils.isFileExit(FileUtils.getAppStorageThumbnailDirectoryPath()+File.separator+media.getGroupUploadId()+".jpg")){
+						FileUtils.saveMediaGroupThumbnail(context, media.getThumbnailPath(), media.getGroupUploadId());
+					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+				if(mediaFile!=null&&mediaFile.exists()){
+					mediaFile.delete();
+				}
 				return null;
 			}
 		} catch (MalformedURLException e) {
@@ -89,12 +96,21 @@ public class MediaDownLoadAsyncTask extends AsyncTask<String, Integer, MonitorMe
 		return this.media;
 	}
 
-	
+	@Override
+	protected void onProgressUpdate(Integer... values) {
+		super.onProgressUpdate(values);
+		if(mListener!=null){
+			media.setDownloadState(MonitorMedia.DOWNLOAD_STATE_DOWNLOADING);
+			media.setProgress(values[0]);
+			mListener.downLoading(media);
+		}
+
+	}
 
 	@Override
 	protected void onPreExecute() {
 		super.onPreExecute();
-		
+
 	}
 
 	@Override
@@ -102,8 +118,10 @@ public class MediaDownLoadAsyncTask extends AsyncTask<String, Integer, MonitorMe
 		super.onPostExecute(result);
 		if(mListener!=null){
 			if(result!=null){
+				result.setDownloadState(MonitorMedia.DOWNLOAD_STATE_DOWNLOADED);
 				mListener.downLoadCompleted(result);
 			}else{
+				media.setDownloadState(MonitorMedia.DOWNLOAD_STATE_DOWNLOAD_FAIL);
 				mListener.downLoadFail(media);
 			}
 		}

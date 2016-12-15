@@ -6,6 +6,7 @@ package com.egovcomm.monitor.activity;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import android.app.AlertDialog.Builder;
@@ -73,17 +74,13 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> {
 		}
 		mRightTv.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 		mRightIv.setVisibility(View.GONE);
-		if (TextUtils.equals(uploadGroup.getUploadState(),
-				MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA)) {
-			// 只有是服务器的才去请求
-			for (MonitorMedia media : mediaList) {
-				media.setMediaType(uploadGroup.getMediaGroup().getMediaType());// 设置类型
-				if (isNeedDownLoad(media)) {
-					//去判断是否下载
+		for (MonitorMedia media : mediaList) {
+			media.setMediaType(uploadGroup.getMediaGroup().getMediaType());// 设置类型
+			if (isNeedDownLoad(media)) {
+				//去判断是否下载
 //					mEBikeRequestService.downLoadMedia(getApplicationContext(),
 //							media);
 //					item.setDownloadState(MonitorMedia.DOWNLOAD_STATE_YES);
-				}
 			}
 		}
 		super.loadListView(mediaList);
@@ -92,29 +89,37 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> {
 	/** 是否需要下载，如果需要则直接下载 */
 	private boolean isNeedDownLoad(MonitorMedia media) {
 		boolean isNeed = false;
-		// 只有是服务器的才去请求
-		if (!FileUtils.isFileExit(FileUtils.getAppStorageServerDirectoryPath()
+		// 只有是服务器的并且还没有下载的才去请求
+		if (media.getDownloadState()!=MonitorMedia.DOWNLOAD_STATE_DOWNLOADING&&!FileUtils.isFileExit(FileUtils.getAppStorageDirectoryPath()
 				+ File.separator + media.getFileName())) {// 通过本地服务器路径加上文件名来判断文件是否存在
 			isNeed = true;
 		} else {
 			isNeed = false;
-			media.setPath(FileUtils.getAppStorageServerDirectoryPath()
+			media.setPath(FileUtils.getAppStorageDirectoryPath()
 				+ File.separator + media.getFileName());
-			media.setDownloadState(MonitorMedia.DOWNLOAD_STATE_NO);
+			media.setDownloadState(MonitorMedia.DOWNLOAD_STATE_DOWNLOADED);
+
+
 			if (!FileUtils.isFileExit(FileUtils
-					.getAppStorageServerThumbnailDirectoryPath()
+					.getAppStorageThumbnailDirectoryPath()
 					+ File.separator + media.getFileName())) {
 				// 缩略图不存在，则存储一个缩略图
 				String thump = FileUtils.saveMediaThumbnail(
 						getApplicationContext(),
-						FileUtils.getAppStorageServerDirectoryPath()
+						FileUtils.getAppStorageDirectoryPath()
 								+ File.separator + media.getFileName(),
 						media.getMediaType(), false);
 				media.setThumbnailPath(thump);
 			} else {
 				media.setThumbnailPath(FileUtils
-						.getAppStorageServerThumbnailDirectoryPath()
+						.getAppStorageThumbnailDirectoryPath()
 						+ File.separator + media.getFileName());
+			}
+
+			/**在这里添加如果组没有缩略图则创建一个*/
+			if(uploadGroup!=null&&!FileUtils.isFileExit(FileUtils.getAppStorageThumbnailDirectoryPath()+File.separator+uploadGroup.getId()+".jpg"))	{
+				//不存在
+				FileUtils.saveMediaGroupThumbnail(this,media.getThumbnailPath(),uploadGroup.getId());
 			}
 
 		}
@@ -171,6 +176,8 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> {
 		}
 	};
 
+
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -187,10 +194,9 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> {
 				RspDownLoadMedia rspMeida = (RspDownLoadMedia) obj;
 				MonitorMedia media = rspMeida.getData();
 				for (MonitorMedia m : dataList) {
-					if (m.getServerId() == media.getServerId()) {//
+					if (m.getId() == media.getId()) {//
 						m.setPath(media.getPath());
 						m.setThumbnailPath(media.getThumbnailPath());
-						m.setDownloadState(MonitorMedia.DOWNLOAD_STATE_NO);// 已下载
 						mAdapter.notifyDataSetChanged();
 						break;
 					}
@@ -233,13 +239,13 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> {
 		LogUtils.i(tag, ""+item.toString());
 		if (TextUtils.equals(uploadGroup.getUploadState(),
 				MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA)) {//服务器的数据，才要去判断，不是的话，则不用
-			if (item.getDownloadState() == MonitorMedia.DOWNLOAD_STATE_NO
+			if ((item.getDownloadState() == MonitorMedia.DOWNLOAD_STATE_NONE||item.getDownloadState() == MonitorMedia.DOWNLOAD_STATE_DOWNLOAD_FAIL)
 					&& isNeedDownLoad(item)) {
-				item.setDownloadState(MonitorMedia.DOWNLOAD_STATE_YES);
-				ToastUtils.toast(getApplicationContext(), "下载文件...");
+				item.setDownloadState(MonitorMedia.DOWNLOAD_STATE_DOWNLOADING);
+//				ToastUtils.toast(getApplicationContext(), "下载文件...");
 				mEBikeRequestService.downLoadMedia(getApplicationContext(), item);
 				mAdapter.notifyDataSetChanged();
-			} else if (item.getDownloadState() == MonitorMedia.DOWNLOAD_STATE_YES) {
+			} else if (item.getDownloadState() == MonitorMedia.DOWNLOAD_STATE_DOWNLOADING) {
 				ToastUtils.toast(getApplicationContext(), "数据正在下载中，请稍候...");
 			} else {
 				HashMap<String, Object> map = new HashMap<String, Object>();
@@ -256,13 +262,25 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> {
 		}else{
 			try {
 				if(!FileUtils.isFileExit(item.getPath())){//文件不存在提示
-					new Builder(MediaListActivity.this).setTitle("应用在存储卡中检测不到此源文件，是否删除此记录？").setCancelable(true).setPositiveButton("删除", new OnClickListener() {
+					new Builder(MediaListActivity.this).setTitle("系统在存储卡中检测不到此源文件，是否删除此记录？").setCancelable(true).setPositiveButton("删除", new OnClickListener() {
 
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							// 删除数据库
-							DBHelper.getInstance(MediaListActivity.this).deleteMonitorMedia(item.getId());
-							listViewRefresh();
+							int row=DBHelper.getInstance(MediaListActivity.this).deleteMonitorMedia(item.getId());
+							if(row>0){
+								ToastUtils.toast(MediaListActivity.this,"删除成功");
+								Iterator<MonitorMedia> it=mediaList.iterator();
+								while (it.hasNext()){
+									MonitorMedia m=it.next();
+									if(TextUtils.equals(m.getId(),item.getId())){
+										it.remove();
+									}
+								}
+								pageNow=1;
+								operate=0;
+								MediaListActivity.super.loadListView(mediaList);
+							}
 
 						}
 					}).setNegativeButton("取消", new OnClickListener() {
@@ -298,13 +316,15 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> {
 	public void onFailRequest(int id,Object obj) {
 		if(id==RequestService.ID_DOWNLOADMEDIA){
 			RspDownLoadMedia rspMeida = (RspDownLoadMedia) obj;
-			MonitorMedia media = rspMeida.getData();
-			for (MonitorMedia m : dataList) {
-				if (m.getServerId() == media.getServerId()) {//
-					ToastUtils.toast(getApplicationContext(), "下载失败，请重新下载");
-					m.setDownloadState(MonitorMedia.DOWNLOAD_STATE_NO);
-					mAdapter.notifyDataSetChanged();
-					break;
+			if(rspMeida!=null&&rspMeida.getData()!=null){
+				MonitorMedia media = rspMeida.getData();
+				for (MonitorMedia m : dataList) {
+					if (m.getId() == media.getId()) {//
+						ToastUtils.toast(getApplicationContext(), "下载失败，请重新下载");
+						m.setDownloadState(MonitorMedia.DOWNLOAD_STATE_DOWNLOAD_FAIL);
+						mAdapter.notifyDataSetChanged();
+						break;
+					}
 				}
 			}
 		}
@@ -329,7 +349,7 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> {
 				for (MonitorMedia media : mediaList) {
 					media.setMediaType(uploadGroup.getMediaGroup().getMediaType());// 设置类型
 					if (isNeedDownLoad(media)) {
-						media.setDownloadState(MonitorMedia.DOWNLOAD_STATE_YES);
+						media.setDownloadState(MonitorMedia.DOWNLOAD_STATE_DOWNLOADING);
 						//去判断是否下载
 						mEBikeRequestService.downLoadMedia(getApplicationContext(),
 								media);

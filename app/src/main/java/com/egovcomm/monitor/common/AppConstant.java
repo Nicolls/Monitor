@@ -6,10 +6,12 @@ public class AppConstant {
 	public static final long SPACE_TIME = 2000;// 1秒内按下，则退出应用
 	/** 存储文件夹 */
 	public static final String FILE_DIR = "com.monitor";
+	/** 用来存储照相，录视频的源文件 */
+	public static final String FILE_DIR_ORIGINAL= "original";
 	/** 用来存储本地照相，录视频等产生的文件 */
-	public static final String FILE_DIR_LOCAL = "local";
+//	public static final String FILE_DIR_LOCAL = "local";
 	/** 用来存储服务器上返回的文件 */
-	public static final String FILE_DIR_SERVER = "server";
+//	public static final String FILE_DIR_SERVER = "server";
 	/** 用来存储服务器上返回的文件缩略图 */
 	public static final String FILE_DIR_THUMBNAIL = "thumbnail";
 	/** 概览页面资源利用 率html */

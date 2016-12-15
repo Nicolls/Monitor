@@ -41,7 +41,6 @@ public class MapUtils {
 	
 	/**定位服务
 	 * code=MonitorLocationService.CODE_START  开始定位
-	 * code=MonitorLocationService.CODE_STOP  停止定位
 	 * code=MonitorLocationService.CODE_CLOSE  结束定位
 	 * */
 	public static void doLocationService(Context context,int code){

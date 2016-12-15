@@ -29,7 +29,12 @@ import com.egovcomm.monitor.common.BaseActivity;
 import com.egovcomm.monitor.db.DBHelper;
 import com.egovcomm.monitor.ftp.FTPMediaUtil;
 import com.egovcomm.monitor.model.MonitorMedia;
+import com.egovcomm.monitor.model.MonitorMediaGroup;
 import com.egovcomm.monitor.model.MonitorMediaGroupUpload;
+import com.egovcomm.monitor.model.RspGroupList;
+import com.egovcomm.monitor.model.RspMedia;
+import com.egovcomm.monitor.model.RspMediaGroup;
+import com.egovcomm.monitor.net.RequestService;
 import com.egovcomm.monitor.utils.FileUtils;
 import com.egovcomm.monitor.utils.LogUtils;
 import com.egovcomm.monitor.utils.SPUtils;
@@ -48,53 +53,133 @@ public class MediaCompletedFragment extends
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = super.onCreateView(inflater, container, savedInstanceState);
-		mListViewPulltorefreshLayout.setPull2RefreshEnable(false);
+		mListViewPulltorefreshLayout.setPull2RefreshEnable(true);
 		mSearchBar.setVisibility(View.GONE);
 		btnCancel.setVisibility(View.GONE);
 		// btnDeleted.setVisibility(View.GONE);
-		listViewRefresh();
+		setMediaType(MonitorMediaGroup.TYPE_PHOTO);
+		requestData();
 		return view;
 	}
 
 	@Override
 	public void dataBack(int id, Object obj) {
-
-	}
-
-	// 刷新
-	@Override
-	public void listViewRefresh() {
-		if (getActivity() != null) {
-			List<MonitorMediaGroupUpload> list = DBHelper.getInstance(
+		LogUtils.i(TAG, "请求数据，返回了!");
+		List<MonitorMediaGroupUpload> list=new ArrayList<MonitorMediaGroupUpload>();
+		if(getActivity()!=null){
+			List<MonitorMediaGroupUpload> localList = DBHelper.getInstance(
 					getActivity()).listMonitorMediaGroupUploadByUploadState(
 					SPUtils.getUser(getActivity()).getUserID(),
 					new String[] {
-							MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADED + "",
 							MonitorMediaGroupUpload.UPLOAD_STATE_UPLOAD_FAIL
 									+ "",
 							MonitorMediaGroupUpload.UPLOAD_STATE_UPLOAD_CANCEL
 									+ "" });
 
-			Iterator<MonitorMediaGroupUpload> it = list.iterator();
+			Iterator<MonitorMediaGroupUpload> it = localList.iterator();
 			while (it.hasNext()) {
 				MonitorMediaGroupUpload group = it.next();
-				group.setThumbnailPath(FileUtils.getAppStorageLocalThumbnailDirectoryPath()+File.separator+group.getId()+".jpg");//用组ID做缩略图
+				group.setShowCheck(0);
+				group.setCheck(0);
+				group.setThumbnailPath(FileUtils.getAppStorageThumbnailDirectoryPath()+File.separator+group.getId()+".jpg");//用组ID做缩略图
 				if (!TextUtils.isEmpty(mediaType)&&!TextUtils.equals(mediaType, group.getMediaGroup()
 						.getMediaType())) {
 					it.remove();
 				}
 			}
+
+			RspGroupList group = null;
+			switch (id) {
+				case RequestService.ID_GETPHOTOMEDIA:
+					group = (RspGroupList) obj;
+					if (group != null && group.getData() != null
+							&& group.getData().getData() != null) {
+						List<RspMediaGroup> listGroup = group.getData().getData();
+						for(RspMediaGroup g:listGroup){
+							MonitorMediaGroupUpload mg=new MonitorMediaGroupUpload();
+							mg.setId(g.getId());
+							mg.setThumbnailPath(FileUtils.getAppStorageThumbnailDirectoryPath()+File.separator+g.getId()+".jpg");//用服务器回来的ID做缩略图
+							mg.setMediaGroup(g);
+							mg.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA);
+							mg.setShowCheck(0);
+							mg.setCheck(0);
+							List<MonitorMedia> mediaList=new ArrayList<>();
+							for(RspMedia m:g.getMediaFiles()){
+								MonitorMedia media=m;
+								media.setGroupUploadId(mg.getId());
+								media.setMediaType(MonitorMediaGroup.TYPE_PHOTO);
+								media.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA);
+								media.setId(m.getMediaId());
+								mediaList.add(media);
+							}
+							mg.setMonitorMediaList(mediaList);
+							list.add(mg);
+						}
+					}
+					break;
+				case RequestService.ID_GETVIDEOMEDIA:
+					group = (RspGroupList) obj;
+					if (group != null && group.getData() != null
+							&& group.getData().getData() != null) {
+						List<RspMediaGroup> listGroup = group.getData().getData();
+						for(RspMediaGroup g:listGroup){
+							MonitorMediaGroupUpload mg=new MonitorMediaGroupUpload();
+							mg.setId(g.getId());
+							mg.setThumbnailPath(FileUtils.getAppStorageThumbnailDirectoryPath()+File.separator+g.getId()+".jpg");//用服务器回来的ID做缩略图
+							mg.setMediaGroup(g);
+							mg.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA);
+							List<MonitorMedia> mediaList=new ArrayList<>();
+							for(RspMedia m:g.getMediaFiles()){
+								MonitorMedia media=m;
+								media.setMediaType(MonitorMediaGroup.TYPE_VIDEO);
+								media.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA);
+								media.setGroupUploadId(m.getId());
+								media.setId(m.getMediaId());
+								mediaList.add(media);
+							}
+							mg.setMonitorMediaList(mediaList);
+							list.add(mg);					}
+					}
+					break;
+
+				default:
+					break;
+			}
+			if(pageNow==1){
+				list.addAll(0,localList);
+			}
 			super.loadListView(list);
-			((BaseActivity) getActivity()).hideLoading();
-		} else {
-			LogUtils.e(TAG, "activity为空了!#######");
+
 		}
+
+	}
+	/**请求数据*/
+	private void requestData(){
+		String data="{\"createAddr\":\"\",\"remark\":\"\"}";
+		if(getActivity()!=null){
+			//普通用户数据，传ID，返回所有
+			if (TextUtils.equals(mediaType, MonitorMediaGroup.TYPE_PHOTO)) {
+				mEBikeRequestService.getPhotoMedia(SPUtils.getUser(getActivity()).getUserID(),data, pageNow, pageSize);
+			} else if (TextUtils.equals(mediaType, MonitorMediaGroup.TYPE_VIDEO)) {
+				mEBikeRequestService.getVideoMedia(SPUtils.getUser(getActivity()).getUserID(),data, pageNow, pageSize);
+			}else{
+				mEBikeRequestService.getPhotoMedia(SPUtils.getUser(getActivity()).getUserID(),data, pageNow, pageSize);
+				mEBikeRequestService.getVideoMedia(SPUtils.getUser(getActivity()).getUserID(),data, pageNow, pageSize);
+			}
+		}
+	}
+
+
+	// 刷新
+	@Override
+	public void listViewRefresh() {
+		requestData();
 	}
 
 	// 加载更多
 	@Override
 	public void listViewLoadMore() {
-
+		requestData();
 	}
 
 	// 关键字搜索
@@ -112,21 +197,34 @@ public class MediaCompletedFragment extends
 
 	@Override
 	public void onListViewItemClick(MonitorMediaGroupUpload item, int position) {
-		if(item.getUploadState()!=MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADED&&mediaOperateView.getVisibility()==View.VISIBLE){//可选 就要选中
-			if(item.getCheck()==1){
-				item.setCheck(0);
+		if(mediaOperateView.getVisibility()==View.VISIBLE){
+			if(item.getUploadState()!=MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA&&item.getUploadState()!=MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADED){//可选 就要选中
+				if(item.getCheck()==1){
+					item.setCheck(0);
+				}else{
+					item.setCheck(1);
+				}
+				mAdapter.notifyDataSetChanged();
 			}else{
-				item.setCheck(1);
+				ToastUtils.toast(getActivity(),"已上传的数据不可操作");
 			}
-			mAdapter.notifyDataSetChanged();
 		}else{
-			List<MonitorMedia> mediaList = DBHelper.getInstance(getActivity()).listMonitorMediaByGroupUploadId(
-					item.getId());
-			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("uploadGroup", item);
-			map.put("mediaList", mediaList);
-			((BaseActivity)getActivity()).openActivity(MediaListActivity.class, map, false);
+			if(item.getUploadState()!=MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA){
+				List<MonitorMedia> mediaList = DBHelper.getInstance(getActivity()).listMonitorMediaByGroupUploadId(
+						item.getId());
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("uploadGroup", item);
+				map.put("mediaList", mediaList);
+				((BaseActivity)getActivity()).openActivity(MediaListActivity.class, map, false);
+			}else{
+				List<MonitorMedia> mediaList = item.getMonitorMediaList();
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("uploadGroup", item);
+				map.put("mediaList", mediaList);
+				((BaseActivity)getActivity()).openActivity(MediaListActivity.class, map, false);
+			}
 		}
+
 	}
 
 	@Override
@@ -205,7 +303,7 @@ public class MediaCompletedFragment extends
 				*/
 				showHideBottomBar();
 				((MediaDataActivity) getActivity()).freshAllData();// 重新刷新所有数据
-				((MediaDataActivity) getActivity()).changeFragmentPager(0);// 切换到未上传页
+//				((MediaDataActivity) getActivity()).changeFragmentPager(0);// 切换到未上传页
 			}
 		}).setNegativeButton("取消", new OnClickListener() {
 
@@ -248,6 +346,8 @@ public class MediaCompletedFragment extends
 			if (show) {
 				if (!TextUtils.equals(
 						MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADED + "",
+						group.getUploadState())&&!TextUtils.equals(
+						MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA + "",
 						group.getUploadState())) {
 					group.setShowCheck(1);
 				} else {
@@ -266,7 +366,7 @@ public class MediaCompletedFragment extends
 		if (buttonView.getId() == R.id.view_operate_checkbox) {// 全选
 			for (MonitorMediaGroupUpload media : dataList) {
 				if (isChecked) {
-					if(!TextUtils.equals(media.getUploadState(), MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADED)){
+					if(!TextUtils.equals(media.getUploadState(), MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADED)&&!TextUtils.equals(media.getUploadState(), MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA)){
 						media.setCheck(1);// 选中
 					}else{
 						media.setCheck(0);// 选中

@@ -92,29 +92,9 @@ public class GroupMediaListActivity extends BaseListActivity<RspMediaGroup> {
 					&& group.getData().getData() != null) {
 				List<RspMediaGroup> listGroup = group.getData().getData();
 				for(RspMediaGroup g:listGroup){
-					g.setThumbnailPath(FileUtils.getAppStorageServerThumbnailDirectoryPath()+File.separator+g.getId()+".jpg");//用服务器回来的ID做缩略图
+					g.setThumbnailPath(FileUtils.getAppStorageThumbnailDirectoryPath()+File.separator+g.getId()+".jpg");//用服务器回来的ID做缩略图
 				}
 				list.addAll(listGroup);
-				// 更新数据库
-				/*
-				 * DBHelper.getInstance(getApplicationContext()).
-				 * updateListServerMonitorMediaGroup(list);
-				 * 
-				 * for(RspMediaGroup g:listGroup){//插入并更新数据库 MonitorMediaGroup
-				 * dbGroup=DBHelper.getInstance(getApplicationContext()).
-				 * findServerMonitorMediaGroupById(g.getId());
-				 * if(dbGroup!=null&&
-				 * TextUtils.isEmpty(dbGroup.getId())){//说明已有数据
-				 * g.setThumbnailPath(dbGroup.getThumbnailPath()); }else{
-				 * List<MonitorMedia> listMedia=new ArrayList<MonitorMedia>();
-				 * for(RspMedia r:g.getMediaFiles()){ MonitorMedia m=r;
-				 * m.setId(UUID.randomUUID().toString());
-				 * m.setServerGroupId(g.getId()); m.setServerId(r.getMediaId());
-				 * m.setFileSuffix(r.getExt()); listMedia.add(m); }
-				 * DBHelper.getInstance
-				 * (getApplicationContext()).updateServerListMonitorMedia
-				 * (listMedia); } }
-				 */
 
 			}
 			break;
@@ -124,7 +104,7 @@ public class GroupMediaListActivity extends BaseListActivity<RspMediaGroup> {
 					&& group.getData().getData() != null) {
 				List<RspMediaGroup> listGroup = group.getData().getData();
 				for(RspMediaGroup g:listGroup){
-					g.setThumbnailPath(FileUtils.getAppStorageServerThumbnailDirectoryPath()+File.separator+g.getId()+".jpg");//用服务器回来的ID做缩略图
+					g.setThumbnailPath(FileUtils.getAppStorageThumbnailDirectoryPath()+File.separator+g.getId()+".jpg");//用服务器回来的ID做缩略图
 				}
 				list.addAll(listGroup);
 			}
@@ -195,8 +175,7 @@ public class GroupMediaListActivity extends BaseListActivity<RspMediaGroup> {
 		//把当前id替换成mediaId
 		for(RspMedia media:rspList){
 			media.setMediaType(mediaType);
-			media.setServerGroupId(item.getId());//用serverGroup当做groupid
-			media.setServerId(media.getMediaId());//用serverid当做id
+			media.setGroupUploadId(item.getId());//用serverGroup当做groupid
 			media.setId(media.getMediaId());
 			media.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA);
 		}
@@ -272,6 +251,14 @@ public class GroupMediaListActivity extends BaseListActivity<RspMediaGroup> {
 			});
 			popupWindow.fresh(filterList);
 			popupWindow.showAsDropDown(mTopBar);
+		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if(mAdapter!=null){
+			mAdapter.notifyDataSetChanged();
 		}
 	}
 

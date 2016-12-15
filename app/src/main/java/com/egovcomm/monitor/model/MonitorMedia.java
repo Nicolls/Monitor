@@ -16,13 +16,13 @@ public class MonitorMedia implements Parcelable {
 	private static final String TAG=MonitorMedia.class.getSimpleName();
 	static SimpleDateFormat format = new SimpleDateFormat(
 			"yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-	public static final int DOWNLOAD_STATE_NO=0;
-	public static final int DOWNLOAD_STATE_YES=1;
+	public static final int DOWNLOAD_STATE_NONE=0;//默认
+	public static final int DOWNLOAD_STATE_DOWNLOADING=1;//下载中
+	public static final int DOWNLOAD_STATE_DOWNLOADED=2;//已下载
+	public static final int DOWNLOAD_STATE_DOWNLOAD_FAIL=3;//下载失败
 	private String id;
 	//private MonitorMediaGroupUpload mediaGroupUpload;
 	private String groupUploadId;
-	private String serverGroupId;//主要用于存储服务器上的数据
-	private String serverId;//主要用于存储服务器上的数据
 	private String userId;
 	private String shootingLocation;
 	private String remark;
@@ -39,7 +39,7 @@ public class MonitorMedia implements Parcelable {
 	private int progress;//进度条
 	private int showCheck=0;//是否显示全选按钮0，不显示，1，显示
 	private int check=0;//是否被选中 0未被选中，1选中
-	private int downloadState=DOWNLOAD_STATE_NO;//下载状态，等于0为没有下载，等于1为正在下载
+	private int downloadState=DOWNLOAD_STATE_NONE;//下载状态
 	private String createTime;//创建时间
 	public MonitorMedia() {}
 	public String formatTime(Date date) {
@@ -72,8 +72,6 @@ public class MonitorMedia implements Parcelable {
 		dest.writeString(id);
 		//dest.writeParcelable(mediaGroupUpload, flags);
 		dest.writeString(groupUploadId);
-		dest.writeString(serverGroupId);
-		dest.writeString(serverId);
 		dest.writeString(userId);
 		dest.writeString(shootingLocation);
 		dest.writeString(remark);
@@ -108,8 +106,6 @@ public class MonitorMedia implements Parcelable {
 		id = in.readString();
 		//mediaGroupUpload = in.readParcelable(MonitorMediaGroupUpload.class.getClassLoader());
 		groupUploadId=in.readString();
-		serverGroupId=in.readString();
-		serverId=in.readString();
 		userId=in.readString();
 		shootingLocation=in.readString();
 		remark=in.readString();
@@ -247,18 +243,6 @@ public class MonitorMedia implements Parcelable {
 	}
 	public void setThumbnailPath(String thumbnailPath) {
 		this.thumbnailPath = thumbnailPath;
-	}
-	public String getServerGroupId() {
-		return serverGroupId;
-	}
-	public void setServerGroupId(String serverGroupId) {
-		this.serverGroupId = serverGroupId;
-	}
-	public String getServerId() {
-		return serverId;
-	}
-	public void setServerId(String serverId) {
-		this.serverId = serverId;
 	}
 	public int getProgress() {
 		return progress;

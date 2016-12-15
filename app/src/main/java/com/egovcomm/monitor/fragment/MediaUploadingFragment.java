@@ -31,6 +31,7 @@ import com.egovcomm.monitor.db.DBHelper;
 import com.egovcomm.monitor.db.MonitorTable;
 import com.egovcomm.monitor.ftp.FTPMediaUtil;
 import com.egovcomm.monitor.model.MonitorMedia;
+import com.egovcomm.monitor.model.MonitorMediaGroup;
 import com.egovcomm.monitor.model.MonitorMediaGroupUpload;
 import com.egovcomm.monitor.utils.FileUtils;
 import com.egovcomm.monitor.utils.LogUtils;
@@ -69,7 +70,7 @@ public class MediaUploadingFragment extends BaseListFragment<MonitorMediaGroupUp
 			Iterator<MonitorMediaGroupUpload> it = list.iterator();
 			while (it.hasNext()) {
 				MonitorMediaGroupUpload group = it.next();
-				group.setThumbnailPath(FileUtils.getAppStorageLocalThumbnailDirectoryPath()+File.separator+group.getId()+".jpg");//用组ID做缩略图
+				group.setThumbnailPath(FileUtils.getAppStorageThumbnailDirectoryPath()+File.separator+group.getId()+".jpg");//用组ID做缩略图
 
 				if (!TextUtils.isEmpty(mediaType)&&!TextUtils.equals(mediaType, group.getMediaGroup().getMediaType())) {
 					it.remove();
@@ -197,7 +198,7 @@ public class MediaUploadingFragment extends BaseListFragment<MonitorMediaGroupUp
 				*/
 				showHideBottomBar();
 				((MediaDataActivity) getActivity()).freshAllData();// 重新刷新所有数据
-				((MediaDataActivity) getActivity()).changeFragmentPager(0);// 切换到未上传页
+//				((MediaDataActivity) getActivity()).changeFragmentPager(0);// 切换到未上传页
 			}
 		}).setNegativeButton("取消", new OnClickListener() {
 

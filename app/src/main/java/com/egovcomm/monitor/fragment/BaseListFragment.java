@@ -57,7 +57,7 @@ public abstract class BaseListFragment<T> extends BaseFragment implements OnClic
 	protected PullToRefreshListener mListViewPullTolistener;
 	protected List<T> dataList = new ArrayList<T>();
 	protected int operate = 0;// 0代表刷新，1代表加载更多
-	protected int pageNow = 0;
+	protected int pageNow = 1;//从1开始
 	protected int pageSize = 10;
 	protected EditText mSearchEt;
 	protected View mSearchBar;
@@ -187,7 +187,7 @@ public abstract class BaseListFragment<T> extends BaseFragment implements OnClic
 				// mAdapter.notifyDataSetChanged();
 				mListView.canPull2LoadMore = true;
 				operate = 0;
-				pageNow = 0;
+				pageNow = 1;
 				if(!TextUtils.isEmpty(key)){
 					setPageSize(SEARCH_MAX_PAGE_SIZE);//搜索的时候就把pagesize设置为100
 				}
@@ -294,7 +294,7 @@ public abstract class BaseListFragment<T> extends BaseFragment implements OnClic
 			this.pullToRefreshLayout = pullToRefreshLayout;
 			mListView.canPull2LoadMore = true;
 			operate = 0;
-			pageNow = 0;
+			pageNow = 1;
 			listViewRefresh();
 		}
 
@@ -334,7 +334,7 @@ public abstract class BaseListFragment<T> extends BaseFragment implements OnClic
 		num = entity.getContent();
 		mListView.canPull2LoadMore = true;
 		operate = 0;
-		pageNow = 0;
+		pageNow = 1;
 //		if(mNavRightButton!=null){
 //			mNavRightButton.setText(entity.getTitle());
 //		}

@@ -537,7 +537,8 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 		uploadGroup.setId(UUID.randomUUID().toString());
 		uploadGroup.setMediaGroup(group);
 		uploadGroup.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADING + "");
-		uploadGroup.setThumbnailPath(list.get(0).getThumbnailPath());
+//		uploadGroup.setThumbnailPath(list.get(0).getThumbnailPath());
+		FileUtils.saveMediaGroupThumbnail(this,list.get(0).getThumbnailPath(),uploadGroup.getId());
 		uploadGroup.setRemoteDirectory(TimeUtils.getFormatNowTime("yyy-MM-dd"));//年月日为文件夹
 		DBHelper.getInstance(VideoRecordActivity.this).insertMonitorMediaGroupUpload(uploadGroup);
 		// 更改数据为在上传，并设置上传组

@@ -21,7 +21,6 @@ import com.egovcomm.monitor.utils.FileUtils;
 /**
  * 列表，Item两行数据适配器
  * 
- * @param <T>
  *            数据实体类
  * @author mengjk
  * 
@@ -64,7 +63,7 @@ public class GroupListAdapter extends EBBaseAdapter<RspMediaGroup> {
 						@Override
 						public void onCheckedChanged(CompoundButton buttonView,
 								boolean isChecked) {
-							MonitorMediaGroupUpload group = (MonitorMediaGroupUpload) buttonView
+							RspMediaGroup group = (RspMediaGroup) buttonView
 									.getTag();
 							group.setCheck(isChecked ? 1 : 0);
 						}
@@ -155,10 +154,10 @@ public class GroupListAdapter extends EBBaseAdapter<RspMediaGroup> {
 			holder.item_lat.setText("纬度："+group.getLatitude());
 			holder.item_lng.setText("经度："+group.getLongitude());
 			
-			
+
 			holder.item_view_uploadTip.setVisibility(View.GONE);
 			holder.item_progress.setVisibility(View.GONE);
-			
+
 		}
 
 		return convertView;

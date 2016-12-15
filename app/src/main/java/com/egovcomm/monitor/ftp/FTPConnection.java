@@ -179,8 +179,8 @@ public class FTPConnection implements DataUpdateListener {
 		File file = new File(media.getPath());
 		// 检查本地文件是否存在
 		if (!file.exists()) {
-			throw new IOException("Can't upload '" + media.getPath()
-					+ "'. This file doesn't exist.");
+			LogUtils.e(TAG,"文件不存在："+media.getPath());
+			return;
 		}
 		// 上传
 		InputStream in = null;

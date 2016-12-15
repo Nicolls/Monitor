@@ -44,8 +44,6 @@ public final class MonitorTable {
 		public static final String COLUMN_UUID = "UUID";
 		public static final String COLUMN_USER_ID = "USER_ID";
 		public static final String COLUMN_UPLOAD_GROUP_ID = "UPLOAD_GROUP_ID";
-		public static final String COLUMN_SERVER_GROUP_ID = "SERVER_GROUP_ID";
-		public static final String COLUMN_SERVER_ID = "SERVER_ID";
 		public static final String COLUMN_SHOOTING_LOCATION = "SHOOTING_LOCATION";
 		public static final String COLUMN_REMARK = "REMARK";
 		public static final String COLUMN_UPLOAD_TIME = "UPLOAD_TIME";
