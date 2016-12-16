@@ -22,6 +22,10 @@ import com.egovcomm.monitor.utils.ToastUtils;
 
 public class ProfileActivity extends BaseActivity implements OnClickListener{
 
+	public static final int REQUEST_CODE=10001;
+	public static final int RESULT_CODE_EXIT=6;
+
+
 	protected View mTopBar;
 	protected ImageView mBack;
 	protected TextView mTitle;
@@ -83,7 +87,8 @@ public class ProfileActivity extends BaseActivity implements OnClickListener{
 	}
 	
 	public void onExit(View view){
-		MyActivityManager.getAppManager().reLogin(getApplicationContext(), true);;
+		setResult(RESULT_CODE_EXIT);
+		finish();
 	}
 
 	@Override

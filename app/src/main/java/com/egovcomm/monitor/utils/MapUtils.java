@@ -44,9 +44,15 @@ public class MapUtils {
 	 * code=MonitorLocationService.CODE_CLOSE  结束定位
 	 * */
 	public static void doLocationService(Context context,int code){
-		Intent service = new Intent(context, MonitorLocationService.class);
-		service.putExtra(MonitorLocationService.KEY_CODE, code);
-		context.startService(service);
+		if(code==MonitorLocationService.CODE_START){
+			Intent service = new Intent(context, MonitorLocationService.class);
+			service.putExtra(MonitorLocationService.KEY_CODE, code);
+			context.startService(service);
+		}else if(code==MonitorLocationService.CODE_STOP){
+			Intent intent=new Intent(MonitorLocationService.EGOVCOMM_LOCATION_BROADCAST_ACTION);
+			intent.putExtra(MonitorLocationService.KEY_CODE,MonitorLocationService.CODE_STOP);
+			context.sendBroadcast(intent);
+		}
 	}
 	
 	/**

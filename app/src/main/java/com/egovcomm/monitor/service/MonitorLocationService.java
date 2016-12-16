@@ -1,6 +1,9 @@
 package com.egovcomm.monitor.service;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -13,10 +16,13 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationClientOption.AMapLocationMode;
 import com.amap.api.location.AMapLocationClientOption.AMapLocationProtocol;
 import com.amap.api.location.AMapLocationListener;
+import com.egovcomm.monitor.activity.MediaDataActivity;
 import com.egovcomm.monitor.common.BaseApplication;
 import com.egovcomm.monitor.common.BaseService;
+import com.egovcomm.monitor.ftp.FTPService;
 import com.egovcomm.monitor.model.AppConfig;
 import com.egovcomm.monitor.model.AppResponse;
+import com.egovcomm.monitor.model.MonitorMediaGroupUpload;
 import com.egovcomm.monitor.model.RspUploadLocation;
 import com.egovcomm.monitor.net.DataUpdateListener;
 import com.egovcomm.monitor.net.RequestService;
@@ -31,14 +37,15 @@ public class MonitorLocationService extends BaseService implements
 
 	
 	public static final String KEY_CODE = "KEY_CODE";
+	public static final String EGOVCOMM_LOCATION_BROADCAST_ACTION="EGOVCOMM_LOCATION_BROADCAST_ACTION";
 	public static final int CODE_START = 0;
-	public static final int CODE_CLOSE = 1;
+	public static final int CODE_STOP = 1;
 	private static final int REQUEST_SPACE_TIME=8;//上传位置时间间隔，秒
 
 	private AMapLocationClient locationClient = null;
 //	private AMapLocationClientOption locationOption = new AMapLocationClientOption();
 	private RequestService mEBikeRequestService = null;
-	private AMapLocation lastLocation;// 最近一次定位
+//	private AMapLocation lastLocation;// 最近一次定位
 	
 	private RequestLocationThread mRequestLocationThread;
 	private boolean isRequestRunning=false;//
@@ -47,74 +54,49 @@ public class MonitorLocationService extends BaseService implements
 
 	private AppConfig appConfig=new AppConfig();
 
-	private MyBinder mBinder = new MyBinder();
-
-	public class MyBinder extends Binder {
-		public MonitorLocationService getService() {
-			return MonitorLocationService.this;
-		}
-	}
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		IntentFilter filter=new IntentFilter(EGOVCOMM_LOCATION_BROADCAST_ACTION);
+		registerReceiver(receiver, filter);
+		initLocation();
 	}
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		LogUtils.i(tag, "in onBind");
-		return mBinder;
-	}
 
-	@Override
-	public boolean onUnbind(Intent intent) {
-		LogUtils.i(tag, "in onUnbind");
-		return super.onUnbind(intent);
-	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		appConfig= SPUtils.getAppConfig(this);
 		time=System.currentTimeMillis();
-		if(intent!=null){
-			int code = intent.getIntExtra(KEY_CODE, CODE_START);
-			if (code == CODE_START) {
-				startLocation();
-			} else if (code == CODE_CLOSE) {
-				destroyLocation();
-			} else {
-				startLocation();
-			}
-			LogUtils.i(tag, code + "");
-		}
+		startLocation();
 		return super.onStartCommand(intent, flags, startId);
 	}
+
+	/**监听FTP发送的广播
+	 **/
+	private BroadcastReceiver receiver=new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if(intent!=null&&intent.getAction()!=null&&TextUtils.equals(EGOVCOMM_LOCATION_BROADCAST_ACTION, intent.getAction())){
+				LogUtils.i(tag, "收到location广播");
+				int code=intent.getIntExtra(KEY_CODE,CODE_STOP);
+				if(code==CODE_STOP){//停止位置服务
+					stopLocation();
+				}
+			}
+		}
+	};
+
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		unregisterReceiver(receiver);
 		destroyLocation();
 	}
 
-	/**
-	 * 初始化定位
-	 * 
-	 * @since 2.8.0
-	 * @author hongming.wang
-	 *
-	 */
-	private void initLocationService() {
-		mEBikeRequestService = RequestServiceFactory.getInstance(
-				getApplicationContext(), RequestServiceFactory.REQUEST_VOLLEY);
-		mEBikeRequestService.setUptateListener(this);
-		// 初始化client
-		locationClient = new AMapLocationClient(this.getApplicationContext());
-		// 设置定位参数
-		locationClient.setLocationOption(getDefaultOption());
-		// 设置定位监听
-		locationClient.setLocationListener(locationListener);
-		startRequestThread();
-	}
 
 	/**
 	 * 默认的定位参数
@@ -143,8 +125,6 @@ public class MonitorLocationService extends BaseService implements
 	AMapLocationListener locationListener = new AMapLocationListener() {
 		@Override
 		public void onLocationChanged(AMapLocation loc) {
-			lastLocation = loc;
-
 			if (null != loc&&loc.getErrorCode()==0) {//成功
 				BaseApplication.longitude = loc.getLongitude();
 				BaseApplication.latitude = loc.getLatitude();
@@ -163,6 +143,26 @@ public class MonitorLocationService extends BaseService implements
 		}
 	};
 
+	/**
+	 * 初始化定位
+	 *
+	 * @since 2.8.0
+	 * @author hongming.wang
+	 *
+	 */
+	private void initLocation() {
+		LogUtils.i(tag, "初始化定位");
+		// 初始化client
+		locationClient = new AMapLocationClient(this.getApplicationContext());
+		// 设置定位参数
+		locationClient.setLocationOption(getDefaultOption());
+		// 设置定位监听
+		locationClient.setLocationListener(locationListener);
+		mEBikeRequestService = RequestServiceFactory.getInstance(
+				getApplicationContext(), RequestServiceFactory.REQUEST_VOLLEY);
+		mEBikeRequestService.setUptateListener(this);
+
+	}
 
 	/**
 	 * 开始定位
@@ -173,14 +173,30 @@ public class MonitorLocationService extends BaseService implements
 	 */
 	private void startLocation() {
 		LogUtils.i(tag, "开始定位");
-		if (locationClient != null) {
-			// 启动定位
-			locationClient.startLocation();
-		} else {
-			initLocationService();
-			// 启动定位
+		// 启动定位
+		if(locationClient!=null){
 			locationClient.startLocation();
 		}
+		startRequestThread();
+	}
+
+
+	/**
+	 * 停止定位
+	 *
+	 * @since 2.8.0
+	 * @author hongming.wang
+	 *
+	 */
+	private void stopLocation(){
+		// 停止定位
+		if(locationClient!=null){
+			locationClient.stopLocation();
+			isRequestRunning=false;
+			LogUtils.i(tag, "停止定位");
+			uploadLocation();// 结束的时候发送最后一次位置
+		}
+
 	}
 
 
@@ -194,11 +210,7 @@ public class MonitorLocationService extends BaseService implements
 	private void destroyLocation() {
 		isRequestRunning=false;
 		LogUtils.i(tag, "结束定位");
-		if (lastLocation != null&&mEBikeRequestService!=null) {// 结束的时候发送最后一次位置
-			mEBikeRequestService.uploadLocation(lastLocation.getLongitude(),
-					lastLocation.getLatitude(), BaseApplication.status);
-
-		}
+		uploadLocation();// 结束的时候发送最后一次位置
 		if (null != locationClient) {
 			/**
 			 * 如果AMapLocationClient是在当前Activity实例化的，

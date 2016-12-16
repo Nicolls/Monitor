@@ -2,6 +2,7 @@ package com.egovcomm.monitor.activity;
 
 import java.util.HashMap;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.egovcomm.monitor.ftp.FTPMediaUtil;
 import com.egovcomm.monitor.model.MonitorMediaGroup;
 import com.egovcomm.monitor.service.MonitorLocationService;
 import com.egovcomm.monitor.utils.MapUtils;
+import com.egovcomm.monitor.utils.SPUtils;
 
 public class MainUserActivity extends BaseActivity {
 
@@ -25,9 +27,9 @@ public class MainUserActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_user);
 		FTPMediaUtil.startFTPService(getApplicationContext());// ftp服务
+		BaseApplication.status = BaseApplication.STATUS_ONLINE;
 		MapUtils.doLocationService(getApplicationContext(),
 				MonitorLocationService.CODE_START);// 定位服务
-		BaseApplication.status = BaseApplication.STATUS_ONLINE;
 	}
 
 	public void onPhoto(View view) {
@@ -47,7 +49,19 @@ public class MainUserActivity extends BaseActivity {
 
 	public void onProfile(View view) {
 		// ToastUtils.toast(getApplicationContext(), "个人中心");
-		openActivity(ProfileActivity.class, null, false);
+		openActivity(ProfileActivity.class,null,false,true,ProfileActivity.REQUEST_CODE);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if(ProfileActivity.REQUEST_CODE==requestCode&&resultCode==ProfileActivity.RESULT_CODE_EXIT){//需要注销
+			BaseApplication.status = BaseApplication.STATUS_OFFLINE;
+			MapUtils.doLocationService(getApplicationContext(),
+					MonitorLocationService.CODE_STOP);// 定位服务
+			SPUtils.cleanLocalData(this);
+			openActivity(SigninActivity.class,null,true);
+		}
 	}
 
 	@Override
@@ -58,10 +72,6 @@ public class MainUserActivity extends BaseActivity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		BaseApplication.status = BaseApplication.STATUS_OFFLINE;
-		MapUtils.doLocationService(getApplicationContext(),
-				MonitorLocationService.CODE_CLOSE);// 定位服务
-
 	}
 
 	@Override
@@ -71,6 +81,9 @@ public class MainUserActivity extends BaseActivity {
 	            Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();                                
 	            exitTime = System.currentTimeMillis();   
 	        } else {
+				BaseApplication.status = BaseApplication.STATUS_OFFLINE;
+				MapUtils.doLocationService(getApplicationContext(),
+						MonitorLocationService.CODE_STOP);// 定位服务
 	            finish();
 	        }
 	        return true;   

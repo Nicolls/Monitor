@@ -165,9 +165,6 @@
             android:enabled="true"
             android:exported="true"
             android:permission="com.egovcomm.monitor.service.MonitorLocationService" >
-            <intent-filter>
-                <action android:name="com.egovcomm.monitor.service.MonitorLocationService" />
-            </intent-filter>
         </service>
 
         <service
