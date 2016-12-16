@@ -174,6 +174,7 @@ public class MediaDataActivity extends CommonPagerActivity implements OnClickLis
 				@Override
 				public void onDismiss() {
 					MediaDataActivity.this.isPopWindowShow=false;
+					mRightTv.setSelected(false);
 				}
 			});
 			popupWindow.setListClickListener(new OnPopupListClickLstener() {
@@ -182,6 +183,7 @@ public class MediaDataActivity extends CommonPagerActivity implements OnClickLis
 				public void onPopupListClick(ItemEntity entity) {
 					//ToastUtils.toast(getApplicationContext(), entity.getTitle());
 					//ToastUtils.toast(getApplicationContext(), "pop"+entity.getValue());
+					mRightTv.setSelected(false);
 					mRightTv.setText(entity.getTitle());
 					if(currentPage==0){
 						unUploadFragment.setMediaType(entity.getValue());
