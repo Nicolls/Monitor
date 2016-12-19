@@ -26,7 +26,7 @@ public class BaseApplication extends Application{
 		super.onCreate();
 		initData();
 	}
-	
+
 	private void initData(){
 		isUpdating=false;
 		LogUtils.i("BaseApplication", "初始化数据!!!!!");
@@ -43,5 +43,5 @@ public class BaseApplication extends Application{
 		FTPConnection.userName=ftpUserName;
 		FTPConnection.password=ftpPassword;
 	}
-	
+
 }

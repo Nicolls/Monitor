@@ -13,18 +13,15 @@ import com.egovcomm.monitor.common.BaseActivity;
 import com.egovcomm.monitor.common.BaseApplication;
 import com.egovcomm.monitor.model.RspVersion;
 import com.egovcomm.monitor.net.RequestService;
-import com.egovcomm.monitor.utils.AppDownLoadAsyncTask;
 import com.egovcomm.monitor.utils.AppUpdateUtils;
 import com.egovcomm.monitor.utils.CommonUtil;
+import com.egovcomm.monitor.utils.LogUtils;
 import com.egovcomm.monitor.utils.MyActivityManager;
 import com.egovcomm.monitor.utils.SPUtils;
+import com.egovcomm.monitor.utils.TimeUtils;
 import com.egovcomm.monitor.utils.ToastUtils;
 
 public class ProfileActivity extends BaseActivity implements OnClickListener{
-
-	public static final int REQUEST_CODE=10001;
-	public static final int RESULT_CODE_EXIT=6;
-
 
 	protected View mTopBar;
 	protected ImageView mBack;
@@ -59,6 +56,8 @@ public class ProfileActivity extends BaseActivity implements OnClickListener{
 		mBack.setOnClickListener(this);
 		mRightTv.setOnClickListener(this);
 		mRightIv.setOnClickListener(this);
+		LogUtils.writeLogtoFile("mjk：","Profile onCreate");
+
 		initData();
 	}
 	
@@ -87,8 +86,15 @@ public class ProfileActivity extends BaseActivity implements OnClickListener{
 	}
 	
 	public void onExit(View view){
-		setResult(RESULT_CODE_EXIT);
-		finish();
+		showLoading(true);
+		LogUtils.writeLogtoFile("mjk：","Profile 点击了注销登录按钮");
+		MyActivityManager.getAppManager().reLogin(this,true);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		LogUtils.writeLogtoFile("mjk：","Profile onDestroy");
 	}
 
 	@Override

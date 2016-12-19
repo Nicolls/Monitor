@@ -138,7 +138,7 @@ public class SettingActivity extends BaseActivity {
 				ToastUtils.toast(getApplicationContext(), "验证服务器参数...");
 				mEBikeRequestService.login(user.getUserAccount(), user.getPassword());
 			} else {
-				MyActivityManager.getAppManager().reLogin(getApplicationContext(), false);
+				MyActivityManager.getAppManager().reLogin(SettingActivity.this, false);
 			}
 			
 		}else{

@@ -4,8 +4,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import com.egovcomm.monitor.activity.SigninActivity;
-import com.egovcomm.monitor.common.BaseApplication;
-import com.egovcomm.monitor.service.MonitorLocationService;
+import com.egovcomm.monitor.common.AppConstant;
 
 import android.app.Activity;
 import android.content.Context;
@@ -99,15 +98,64 @@ public class MyActivityManager {
 	}
 
 	/** 重新登录 */
-	public void reLogin(Context context, boolean isCleanData) {
+	public void reLogin(final Context context, boolean isCleanData) {
+		LogUtils.writeLogtoFile("mjk：","进入reLogin方法，并发送广播");
+		Intent intent=new Intent(AppConstant.BROAD_CAST_DESTROY_LOCATION);
+		context.sendBroadcast(intent);//发送停止位置的广播
+		LogUtils.writeLogtoFile("mjk：","进入reLogin方法，发送广播完成");
+
 		if (isCleanData) {
 			SPUtils.cleanLocalData(context);
 		}
-		Intent intent = new Intent(context, SigninActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		context.startActivity(intent);
+		LogUtils.writeLogtoFile("mjk：","进入reLogin方法，执行打开登录界面方法");
+		Intent reIntent = new Intent(context, SigninActivity.class);
+		reIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		context.startActivity(reIntent);
+		LogUtils.writeLogtoFile("mjk：","进入reLogin方法，完成打开登录界面方法");
 
 	}
+
+
+	/**
+	 *
+	public void reLogin(final Activity context, boolean isCleanData) {
+		final int WAIT_DESTROY_LOCATION_TIME=6;
+		Intent intent=new Intent(AppConstant.BROAD_CAST_DESTROY_LOCATION);
+		context.sendBroadcast(intent);//发送停止位置的广播
+		if (isCleanData) {
+			SPUtils.cleanLocalData(context);
+		}
+		new Thread(){
+			@Override
+			public void run() {
+				super.run();
+				int time=0;
+				while(true){
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					if(time>=WAIT_DESTROY_LOCATION_TIME||!CommonUtil.isActivityExit(context,MainUserActivity.class)){
+						LogUtils.i("myActivityManager","时间到或者已经销毁");
+						break;
+					}
+					time++;
+				}
+				context.finish();
+				Intent intent = new Intent(context, SigninActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+				context.startActivity(intent);
+
+			}
+		}.start();
+
+
+	}
+	 *
+	 *
+	 *
+	 * */
 
 	/**
 	 * 退出应用程序

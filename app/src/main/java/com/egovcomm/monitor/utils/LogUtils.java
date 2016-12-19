@@ -15,6 +15,8 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.egovcomm.monitor.common.AppConstant;
+
 /**
  * 日志工具类
  * 
@@ -98,11 +100,11 @@ public class LogUtils {
         Date nowtime = new Date();  
         String needWriteFiel = logfile.format(nowtime);  
         String needWriteMessage = myLogSdf.format(nowtime) + " " + tag + "\n" + text;  
-        File dir=new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/freway/log");
+        File dir=new File(Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+ AppConstant.FILE_DIR+File.separator+"log");
         if(!dir.exists()){
         	dir.mkdirs();
         }
-        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/freway/log", needWriteFiel  
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+ AppConstant.FILE_DIR+File.separator+"log", needWriteFiel
                 + MYLOGFILEName);  
         if(!file.exists()){
         	try {

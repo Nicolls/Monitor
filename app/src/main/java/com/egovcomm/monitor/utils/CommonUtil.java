@@ -5,16 +5,23 @@ package com.egovcomm.monitor.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 
+import com.egovcomm.monitor.activity.MainUserActivity;
+import com.egovcomm.monitor.activity.SigninActivity;
+import com.egovcomm.monitor.common.AppConstant;
 import com.egovcomm.monitor.model.User;
 
 /**
@@ -223,4 +230,23 @@ public class CommonUtil {
 		isNumber=mer.find();  
 		return isNumber;
 	}
+
+	/**判断某个Activity是否存在*/
+	public static boolean isActivityExit(Context context,Class cls){
+		boolean isExit=false;
+		Intent intent = new Intent(context, cls);
+		ComponentName cmpName = intent.resolveActivity(context.getPackageManager());
+		if (cmpName != null) { // 说明系统中存在这个activity
+			ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+			List<ActivityManager.RunningTaskInfo> taskInfoList = am.getRunningTasks(10);
+			for (ActivityManager.RunningTaskInfo taskInfo : taskInfoList) {
+				if (taskInfo.baseActivity.equals(cmpName)) { // 说明它已经启动了
+					isExit = true;
+					break;  //跳出循环，优化效率
+				}
+			}
+		}
+		return isExit;
+	}
+
 }

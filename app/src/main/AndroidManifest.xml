@@ -21,6 +21,7 @@
     <uses-permission android:name="android.permission.ACCESS_DOWNLOAD_MANAGER" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.GET_TASKS"/>
 
     <!-- Normal Permissions 不需要运行时注册 -->
     <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
@@ -43,11 +44,6 @@
     <permission
         android:name="com.egovcomm.monitor.ftp.FTPService"
         android:label="ftpservice"
-        android:permissionGroup="string"
-        android:protectionLevel="signature" />
-    <permission
-        android:name="com.egovcomm.monitor.service.MonitorLocationService"
-        android:label="locationservice"
         android:permissionGroup="string"
         android:protectionLevel="signature" />
     <permission
@@ -153,18 +149,12 @@
         <!-- 设置key -->
         <!-- eclipse测试 ：fe31ef1179371cdb3f6ac02da89d69c3  发布： 012673f15f7eef62ce8229f9bdbc99e5 -->
         <!-- as云桌面测试 ：099a00d0d763bcdd33296ec63123c111  发布： 012673f15f7eef62ce8229f9bdbc99e5 -->
-        <!--as我的电脑测试：d762df8ef7ca9182ea851c778cab80f8-->
+        <!--as我的电脑测试：099a00d0d763bcdd33296ec63123c111-->
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="012673f15f7eef62ce8229f9bdbc99e5" />
         <!-- 定位需要的服务 -->
         <service android:name="com.amap.api.location.APSService" >
-        </service>
-        <service
-            android:name="com.egovcomm.monitor.service.MonitorLocationService"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="com.egovcomm.monitor.service.MonitorLocationService" >
         </service>
 
         <service
