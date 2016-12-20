@@ -99,19 +99,12 @@ public class MyActivityManager {
 
 	/** 重新登录 */
 	public void reLogin(final Context context, boolean isCleanData) {
-		LogUtils.writeLogtoFile("mjk：","进入reLogin方法，并发送广播");
-		Intent intent=new Intent(AppConstant.BROAD_CAST_DESTROY_LOCATION);
-		context.sendBroadcast(intent);//发送停止位置的广播
-		LogUtils.writeLogtoFile("mjk：","进入reLogin方法，发送广播完成");
-
 		if (isCleanData) {
 			SPUtils.cleanLocalData(context);
 		}
-		LogUtils.writeLogtoFile("mjk：","进入reLogin方法，执行打开登录界面方法");
-		Intent reIntent = new Intent(context, SigninActivity.class);
-		reIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		context.startActivity(reIntent);
-		LogUtils.writeLogtoFile("mjk：","进入reLogin方法，完成打开登录界面方法");
+		Intent intent = new Intent(context, SigninActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		context.startActivity(intent);
 
 	}
 

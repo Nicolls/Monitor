@@ -28,7 +28,7 @@ import com.egovcomm.monitor.utils.ErrorUtils.SuccessListener;
 public abstract class BaseFragment extends Fragment implements DataUpdateListener {
 	protected RequestService mEBikeRequestService;
 	private String name;
-	public String TAG=this.getClass().getSimpleName();
+	public String tag=this.getClass().getSimpleName();
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -37,10 +37,11 @@ public abstract class BaseFragment extends Fragment implements DataUpdateListene
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		LogUtils.i(tag, "onCreate");
 		if(getArguments()!=null&&getArguments().get("name")!=null){
 			name=getArguments().get("name").toString();
 		}
-		LogUtils.i(TAG, "name is="+name);
+		LogUtils.i(tag, "name is="+name);
 		mEBikeRequestService = RequestServiceFactory.getInstance(getActivity()
 				.getApplicationContext(), RequestServiceFactory.REQUEST_VOLLEY);
 		LogUtils.i("setUpdateListener", this.getClass().getName());
@@ -49,22 +50,26 @@ public abstract class BaseFragment extends Fragment implements DataUpdateListene
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		LogUtils.i(tag, "onCreateView");
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		LogUtils.i(tag, "onActivityCreated");
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
+		LogUtils.i(tag, "onStart");
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+		LogUtils.i(tag, "onResume");
 	}
 
 	@Override
@@ -75,26 +80,31 @@ public abstract class BaseFragment extends Fragment implements DataUpdateListene
 	@Override
 	public void onPause() {
 		super.onPause();
+		LogUtils.i(tag, "onPause");
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
+		LogUtils.i(tag, "onStop");
 	}
 
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
+		LogUtils.i(tag, "onDestroyView");
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		LogUtils.i(tag, "onDestroy");
 	}
 
 	@Override
 	public void onDetach() {
 		super.onDetach();
+		LogUtils.i(tag, "onDetach");
 	}
 
 	public String getName() {

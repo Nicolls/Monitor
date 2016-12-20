@@ -5,13 +5,11 @@ package com.egovcomm.monitor.utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import android.app.DownloadManager;
 import android.content.Context;
 import android.os.AsyncTask;
 
@@ -59,7 +57,7 @@ public class MediaDownLoadAsyncTask extends AsyncTask<String, Integer, MonitorMe
 					int downloadCount = length / buf.length;
 					int spacing = downloadCount / 100;
 					int m = 0;
-					mediaFile=new File(FileUtils.getAppStorageDirectoryPath()+File.separator+media.getFileName());
+					mediaFile=new File(FileUtils.getAppStorageOriginalDirectoryPath()+File.separator+media.getFileName());
 					mediaFile.createNewFile();
 					FileOutputStream fos = new FileOutputStream(mediaFile);
 					int len = 0;

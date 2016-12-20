@@ -79,7 +79,7 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> {
 			super.loadListView(list);
 			((BaseActivity) getActivity()).hideLoading();
 		} else {
-			LogUtils.e(TAG, "activity为空了!#######");
+			LogUtils.e(tag, "activity为空了!#######");
 		}
 	}
 
@@ -196,7 +196,7 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> {
 						File f = new File(media.getPath());
 						f.delete();
 					} catch (Exception e) {
-						LogUtils.e(TAG, "删除文件失败");
+						LogUtils.e(tag, "删除文件失败");
 					}
 				}
 				showHideBottomBar();
@@ -287,7 +287,7 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> {
 					}
 					//ToastUtils.toast(getActivity(), "点击的是第" + position + "个");
 					MonitorMediaGroup group = groupList.get(position);
-					LogUtils.i(TAG, group.toString());
+					LogUtils.i(tag, group.toString());
 					// 上传
 					uploadMediaGroup(group, list);
 				}

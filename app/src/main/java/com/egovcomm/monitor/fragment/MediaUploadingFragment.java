@@ -79,7 +79,7 @@ public class MediaUploadingFragment extends BaseListFragment<MonitorMediaGroupUp
 			super.loadListView(list);
 			((BaseActivity) getActivity()).hideLoading();
 		} else {
-			LogUtils.e(TAG, "activity为空了!#######");
+			LogUtils.e(tag, "activity为空了!#######");
 		}
 	}
 
@@ -304,7 +304,7 @@ public class MediaUploadingFragment extends BaseListFragment<MonitorMediaGroupUp
 		for(MonitorMediaGroupUpload group:dataList){
 			if(TextUtils.equals(groupUploadId, group.getId())){
 				if(TextUtils.equals(uploadState, MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADING)){//正在上传
-					LogUtils.i(TAG, "更新dataNodify--progress="+progress);
+					LogUtils.i(tag, "更新dataNodify--progress="+progress);
 					group.setProgress(progress);
 					mAdapter.notifyDataSetChanged();
 				}else if(TextUtils.equals(uploadState, MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADED)){//上传完成

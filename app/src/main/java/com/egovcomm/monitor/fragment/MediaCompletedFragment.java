@@ -64,7 +64,7 @@ public class MediaCompletedFragment extends
 
 	@Override
 	public void dataBack(int id, Object obj) {
-		LogUtils.i(TAG, "请求数据，返回了!");
+		LogUtils.i(tag, "请求数据，返回了!");
 		List<MonitorMediaGroupUpload> list=new ArrayList<MonitorMediaGroupUpload>();
 		if(getActivity()!=null){
 			List<MonitorMediaGroupUpload> localList = DBHelper.getInstance(

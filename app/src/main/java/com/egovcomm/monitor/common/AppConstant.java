@@ -8,10 +8,8 @@ public class AppConstant {
 	public static final String FILE_DIR = "com.monitor";
 	/** 用来存储照相，录视频的源文件 */
 	public static final String FILE_DIR_ORIGINAL= "original";
-	/** 用来存储本地照相，录视频等产生的文件 */
-//	public static final String FILE_DIR_LOCAL = "local";
-	/** 用来存储服务器上返回的文件 */
-//	public static final String FILE_DIR_SERVER = "server";
+	/** 用来存储日志件 */
+	public static final String FILE_DIR_LOG= "log";
 	/** 用来存储服务器上返回的文件缩略图 */
 	public static final String FILE_DIR_THUMBNAIL = "thumbnail";
 	/** 概览页面资源利用 率html */
@@ -29,15 +27,6 @@ public class AppConstant {
 
 	/** 统一时间格式化 */
 	public static final String TIME_FORMAT_STYLE = "yyyy-MM-dd HH:mm:ss";
-
-	/** 统一通过startActivityForResult返回成功为result_code_ok=0 */
-	public static final int ACTIVITY_START_FOR_RESULT_CODE_OK = 0;
-	/** 统一通过startActivityForResult返回失败为result_code_fail */
-	public static final int ACTIVITY_START_FOR_RESULT_CODE_FAIL = -1;
-	/** 打开蓝牙 */
-	public static final int ACTIVITY_START_FOR_RESULT_ENABLE_BLUETOOTH = 1001;
-
-
 
 
 }

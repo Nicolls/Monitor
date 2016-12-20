@@ -362,7 +362,7 @@ public class FileUtils {
 	 * 
 	 * @param childPath 统一存储路径下的子路径，像 /local/test 则会在统一路径下新建一个/local/test的文件夹，并返回此目录的路径,如果为空则返回统一路径
 	 * */
-	private static File getAppStorageDirectory(String childPath) {
+	public static File getAppStorageDirectory(String childPath) {
 		File f=null;
 		String storePath="";
 		if (!Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED)) {
@@ -388,8 +388,8 @@ public class FileUtils {
 		}
 		return f;
 	}
-	/**获取存储服务器上文件的路径*/
-	public static String getAppStorageDirectoryPath() {
+	/**获取存储文件的路径*/
+	public static String getAppStorageOriginalDirectoryPath() {
 		File f=getAppStorageDirectory(AppConstant.FILE_DIR_ORIGINAL);
 		if(f!=null){
 			return f.getAbsolutePath();
@@ -398,7 +398,7 @@ public class FileUtils {
 		}
 	}
 	
-	/**获取存储服务器上文件缩略图的路径*/
+	/**获取存储文件缩略图的路径*/
 	public static String getAppStorageThumbnailDirectoryPath() {
 		File f=getAppStorageDirectory(AppConstant.FILE_DIR_THUMBNAIL);
 		if(f!=null){
@@ -407,4 +407,5 @@ public class FileUtils {
 			return "";
 		}
 	}
+
 }

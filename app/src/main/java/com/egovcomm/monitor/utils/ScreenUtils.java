@@ -8,6 +8,10 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
 
+import com.egovcomm.monitor.common.AppConstant;
+
+import java.io.File;
+
 /**
  * 获得屏幕相关的辅助类
  * 

@@ -96,33 +96,32 @@ public class LogUtils {
      *  
      * @return 
      * **/  
-    public static void writeLogtoFile(String tag, String text) {// 新建或打开日志文件  
-        Date nowtime = new Date();  
-        String needWriteFiel = logfile.format(nowtime);  
-        String needWriteMessage = myLogSdf.format(nowtime) + " " + tag + "\n" + text;  
-        File dir=new File(Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+ AppConstant.FILE_DIR+File.separator+"log");
-        if(!dir.exists()){
-        	dir.mkdirs();
-        }
-        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+ AppConstant.FILE_DIR+File.separator+"log", needWriteFiel
-                + MYLOGFILEName);  
-        if(!file.exists()){
-        	try {
-				file.createNewFile();
-			} catch (IOException e) {
-				LogUtils.e("LogUtils", "新建文件出错");
+    public static void writeLogtoFile(String tag, String text) {// 新建或打开日志文件
+		if(isOpenLog){
+			Date nowtime = new Date();
+			String needWriteFiel = logfile.format(nowtime);
+			String needWriteMessage = myLogSdf.format(nowtime) + " " + tag + "\n" + text;
+			File dir=FileUtils.getAppStorageDirectory(File.separator+AppConstant.FILE_DIR_LOG+File.separator);
+			File file = new File(dir.getAbsolutePath(), needWriteFiel+ MYLOGFILEName);
+			if(!file.exists()){
+				try {
+					file.createNewFile();
+				} catch (IOException e) {
+					LogUtils.e("LogUtils", "新建文件出错");
+				}
 			}
-        }
-        try {  
-            FileWriter filerWriter = new FileWriter(file, true);//后面这个参数代表是不是要接上文件中原来的数据，不进行覆盖  
-            BufferedWriter bufWriter = new BufferedWriter(filerWriter);  
-            bufWriter.write(needWriteMessage);  
-            bufWriter.newLine();  
-            bufWriter.close();  
-            filerWriter.close();  
-        } catch (IOException e) {  
-            LogUtils.e("LogUtils", e.getMessage()+""); 
-        }  
+			try {
+				FileWriter filerWriter = new FileWriter(file, true);//后面这个参数代表是不是要接上文件中原来的数据，不进行覆盖
+				BufferedWriter bufWriter = new BufferedWriter(filerWriter);
+				bufWriter.write(needWriteMessage);
+				bufWriter.newLine();
+				bufWriter.close();
+				filerWriter.close();
+			} catch (IOException e) {
+				LogUtils.e("LogUtils", e.getMessage()+"");
+			}
+		}
+
     }  
   
     /** 

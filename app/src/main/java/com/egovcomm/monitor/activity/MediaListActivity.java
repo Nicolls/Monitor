@@ -23,7 +23,6 @@ import android.widget.CompoundButton;
 import com.egovcomm.monitor.R;
 import com.egovcomm.monitor.adapter.EBBaseAdapter;
 import com.egovcomm.monitor.adapter.MediaListAdapter;
-import com.egovcomm.monitor.common.BaseActivity;
 import com.egovcomm.monitor.db.DBHelper;
 import com.egovcomm.monitor.ftp.FTPMediaUtil;
 import com.egovcomm.monitor.ftp.FTPService;
@@ -90,12 +89,12 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> {
 	private boolean isNeedDownLoad(MonitorMedia media) {
 		boolean isNeed = false;
 		// 只有是服务器的并且还没有下载的才去请求
-		if (media.getDownloadState()!=MonitorMedia.DOWNLOAD_STATE_DOWNLOADING&&!FileUtils.isFileExit(FileUtils.getAppStorageDirectoryPath()
+		if (media.getDownloadState()!=MonitorMedia.DOWNLOAD_STATE_DOWNLOADING&&!FileUtils.isFileExit(FileUtils.getAppStorageOriginalDirectoryPath()
 				+ File.separator + media.getFileName())) {// 通过本地服务器路径加上文件名来判断文件是否存在
 			isNeed = true;
 		} else {
 			isNeed = false;
-			media.setPath(FileUtils.getAppStorageDirectoryPath()
+			media.setPath(FileUtils.getAppStorageOriginalDirectoryPath()
 				+ File.separator + media.getFileName());
 			media.setDownloadState(MonitorMedia.DOWNLOAD_STATE_DOWNLOADED);
 
@@ -106,7 +105,7 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> {
 				// 缩略图不存在，则存储一个缩略图
 				String thump = FileUtils.saveMediaThumbnail(
 						getApplicationContext(),
-						FileUtils.getAppStorageDirectoryPath()
+						FileUtils.getAppStorageOriginalDirectoryPath()
 								+ File.separator + media.getFileName(),
 						media.getMediaType(), false);
 				media.setThumbnailPath(thump);

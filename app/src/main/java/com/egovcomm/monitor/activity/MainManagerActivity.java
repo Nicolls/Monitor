@@ -1,5 +1,6 @@
 package com.egovcomm.monitor.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -26,13 +27,21 @@ public class MainManagerActivity extends BaseActivity {
 	
 	public void onProfile(View view){
 //		ToastUtils.toast(getApplicationContext(), "个人中心");
-		openActivity(ProfileActivity.class,null,false);
+		openActivity(ProfileActivity.class,null,false,true,ProfileActivity.REQUEST_CODE_PROFILE);
 	}
 
 
 	@Override
 	public void dateUpdate(int id, Object obj) {
 		
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if(requestCode==ProfileActivity.REQUEST_CODE_PROFILE&&resultCode==RESULT_OK){//需要注销登录
+			openActivity(SigninActivity.class,null,true);
+		}
 	}
 
 	@Override

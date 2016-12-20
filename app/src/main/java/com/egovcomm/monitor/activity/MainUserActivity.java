@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -26,6 +28,7 @@ import com.egovcomm.monitor.model.RspUploadLocation;
 import com.egovcomm.monitor.net.RequestService;
 import com.egovcomm.monitor.utils.LogUtils;
 import com.egovcomm.monitor.utils.SPUtils;
+import com.egovcomm.monitor.utils.ScreenUtils;
 import com.egovcomm.monitor.utils.TimeUtils;
 import com.egovcomm.monitor.utils.ToastUtils;
 
@@ -43,6 +46,7 @@ public class MainUserActivity extends BaseActivity {
 	private long requestTime =System.currentTimeMillis();
 
 	private AppConfig appConfig=new AppConfig();
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -58,9 +62,7 @@ public class MainUserActivity extends BaseActivity {
 		}
 		toastTime =System.currentTimeMillis();
 		requestTime =System.currentTimeMillis();
-		IntentFilter filter=new IntentFilter(AppConstant.BROAD_CAST_DESTROY_LOCATION);
-		registerReceiver(receiver,filter);
-		LogUtils.writeLogtoFile("mjk：","MainUserActivity--onCreate 开始定位");
+		LogUtils.writeLogtoFile("mjk：","MainUserActivity--onCreate");
 		startLocation();//开始定位
 	}
 
@@ -81,17 +83,41 @@ public class MainUserActivity extends BaseActivity {
 
 	public void onProfile(View view) {
 		// ToastUtils.toast(getApplicationContext(), "个人中心");
-		openActivity(ProfileActivity.class,null,false);
+		LogUtils.writeLogtoFile("mjk：","MainUserActivity-打开profile页面");
+		openActivity(ProfileActivity.class,null,false,true,ProfileActivity.REQUEST_CODE_PROFILE);
+
 	}
 
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		unregisterReceiver(receiver);
-		LogUtils.writeLogtoFile("mjk：","MainUserActivity--onDestroy");
+		LogUtils.writeLogtoFile("mjk：","执行MainUser 中的destroy中的exitApp方法");
+		exitApp();
+		LogUtils.writeLogtoFile("mjk：","MainUserActivity--onDestroy结束");
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		LogUtils.writeLogtoFile("mjk：","MainUserActivity--onActivityResult关闭profile返回");
+		if(requestCode==ProfileActivity.REQUEST_CODE_PROFILE&&resultCode==RESULT_OK){//需要注销登录
+			openActivity(SigninActivity.class,null,true);
+			//以下为测试代码
+//			ToastUtils.toast(MainUserActivity.this,"延迟后打开登录页面");
+//			LogUtils.writeLogtoFile("mjk：","发送延迟Handler");
+//			handler.sendEmptyMessageDelayed(0,2000);
+		}
+	}
+
+	private Handler handler=new Handler(){
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			LogUtils.writeLogtoFile("mjk：","收到延迟Handler并打开登录销毁MainUser页面");
+			openActivity(SigninActivity.class,null,true);
+		}
+	};
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 	    if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN){   
@@ -100,7 +126,7 @@ public class MainUserActivity extends BaseActivity {
 	            exitTime = System.currentTimeMillis();   
 	        } else {
 				LogUtils.writeLogtoFile("mjk：","按两次返回键");
-				exitApp();
+				finish();
 	        }
 	        return true;   
 	    }
@@ -127,7 +153,6 @@ public class MainUserActivity extends BaseActivity {
 			e.printStackTrace();
 		}
 		LogUtils.writeLogtoFile("jk：","执行destroyLocation完成");
-		finish();
 	}
 
 	/**
@@ -180,21 +205,6 @@ public class MainUserActivity extends BaseActivity {
 
 	};
 
-	/**监听销毁位置的广播
-	 **/
-	private BroadcastReceiver receiver=new BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			if(intent!=null&&intent.getAction()!=null&&TextUtils.equals(AppConstant.BROAD_CAST_DESTROY_LOCATION, intent.getAction())){
-				LogUtils.i(tag, "收到location广播");
-				LogUtils.writeLogtoFile("mjk：","收到location广播");
-				exitApp();
-			}
-		}
-	};
-
-
 	/**
 	 * 开始定位
 	 *
@@ -203,7 +213,7 @@ public class MainUserActivity extends BaseActivity {
 	 *
 	 */
 	private void startLocation() {
-		LogUtils.i(tag, "开始定位");
+		LogUtils.writeLogtoFile("mjk：","开始定位");
 		// 初始化client
 		locationClient = new AMapLocationClient(this.getApplicationContext());
 		// 设置定位参数

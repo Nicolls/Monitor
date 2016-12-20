@@ -23,6 +23,7 @@ import com.egovcomm.monitor.utils.ToastUtils;
 
 public class ProfileActivity extends BaseActivity implements OnClickListener{
 
+	public static final int REQUEST_CODE_PROFILE=6;
 	protected View mTopBar;
 	protected ImageView mBack;
 	protected TextView mTitle;
@@ -86,9 +87,10 @@ public class ProfileActivity extends BaseActivity implements OnClickListener{
 	}
 	
 	public void onExit(View view){
-		showLoading(true);
+		SPUtils.cleanLocalData(this);
 		LogUtils.writeLogtoFile("mjk：","Profile 点击了注销登录按钮");
-		MyActivityManager.getAppManager().reLogin(this,true);
+		setResult(RESULT_OK);
+		finish();
 	}
 
 	@Override

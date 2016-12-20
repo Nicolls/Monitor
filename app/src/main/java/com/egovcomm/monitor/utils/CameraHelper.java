@@ -20,14 +20,10 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
-import com.egovcomm.monitor.common.AppConstant;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -39,13 +35,10 @@ import android.graphics.Point;
 import android.hardware.Camera;
 import android.hardware.Camera.Size;
 import android.media.CamcorderProfile;
-import android.media.CameraProfile;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Environment;
 import android.util.Log;
-import android.view.TextureView;
 
 /**
  * Camera related utilities.
@@ -476,7 +469,7 @@ public class CameraHelper {
 	 * @return A file object pointing to the newly created file.
 	 */
 	public static File getOutputMediaFile(int type) {
-		File mediaStorageDir=new File(FileUtils.getAppStorageDirectoryPath());
+		File mediaStorageDir=new File(FileUtils.getAppStorageOriginalDirectoryPath());
 		// Create a media file name
 		//String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 		String timeStamp =UUID.randomUUID().toString();

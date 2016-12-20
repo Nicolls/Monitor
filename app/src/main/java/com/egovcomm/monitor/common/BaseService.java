@@ -11,42 +11,41 @@ import android.os.IBinder;
 public class BaseService extends Service{
 
 	protected String tag = "BaseService";
-	protected boolean isLog = true;
 	@Override
 	public void onCreate() {
 		tag = this.getClass().getSimpleName();
 		super.onCreate();
-		LogUtils.i(tag, isLog, "onCreate");
+		LogUtils.i(tag,"onCreate");
 	}
 	@Override
 	public IBinder onBind(Intent intent) {
-		LogUtils.i(tag, isLog, "onBind");
+		LogUtils.i(tag,"onBind");
 		return null;
 	}
 	@Override
 	public void onStart(Intent intent, int startId) {
 		// TODO Auto-generated method stub
 		super.onStart(intent, startId);
-		LogUtils.i(tag, isLog, "onStart");
+		LogUtils.i(tag, "onStart");
 	}
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		LogUtils.i(tag, isLog, "onStartCommand");
+		LogUtils.i(tag,"onStartCommand");
 		return super.onStartCommand(intent, flags, startId);
 	}
 	@Override
 	public void onDestroy() {
-		LogUtils.i(tag, isLog, "onDestroy");
+		LogUtils.i(tag,"onDestroy");
 		super.onDestroy();
 	}
 	@Override
 	public boolean onUnbind(Intent intent) {
-		LogUtils.i(tag, isLog, "onUnbind");
+		LogUtils.i(tag,"onUnbind");
 		return super.onUnbind(intent);
 	}
 	@Override
 	public void onRebind(Intent intent) {
-		LogUtils.i(tag, isLog, "onRebind");
+		LogUtils.i(tag, "onRebind");
 		super.onRebind(intent);
 	}
 
