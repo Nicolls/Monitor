@@ -28,17 +28,20 @@ public interface RequestService {
 	static final int ID_UPLOADMEDIA=4;
 	/**以Ftp方式上传图片，视频*/
 	static final int ID_FTPUPLOADMEDIA=5;
-	/**获取图片，视频集合*/
+	/**获取图片集合*/
 	static final int ID_GETPHOTOMEDIA=6;
 	
-	/**获取图片，视频集合*/
+	/**获取视频集合*/
 	static final int ID_GETVIDEOMEDIA=7;
+
+	/**获取图片，视频集合*/
+	static final int ID_GETMEDIA=8;
 	
 	/**下载图片视频URL*/
-	static final int ID_DOWNLOADMEDIA=8;
+	static final int ID_DOWNLOADMEDIA=9;
 
 	/**更新应用*/
-	static final int ID_UPDATEMONITORAPP=9;
+	static final int ID_UPDATEMONITORAPP=10;
 	
 	
 	/** 方法名 **/
@@ -58,7 +61,9 @@ public interface RequestService {
 	static final String METHOD_GETPHOTOMEDIA="/monitor/media.struts";
 	/**获取视频集合*/
 	static final String METHOD_GETVIDEOMEDIA="/monitor/media.struts";
-	
+	/**获取图片和视频集合*/
+	static final String METHOD_GETMEDIA="/monitor/media.struts";
+
 	/**下载图片视频URL*/
 	static final String METHOD_DOWNLOADMEDIA="/attach/mediaFile/";
 
@@ -117,6 +122,7 @@ public interface RequestService {
 	}
 	 * @Description 
 	 */
+	@Deprecated
 	void getPhotoMedia(String userId,String data, int page, int count);
 	
 	
@@ -132,7 +138,23 @@ public interface RequestService {
 	}
 	 * @Description 
 	 */
+	@Deprecated
 	void getVideoMedia(String userId,String data, int page, int count);
+
+	/**获取图片视频列表数据
+	 * actionType findMedias
+	 * @param userId (选填)：用户id，填写则只获取该用户的数据，不填则不会过滤用户id
+	 * @param page (选填): 第几页，从1开始，不填默认为1
+	 * @param count (选填): 每页多少条数据，不填默认为20
+	 * @param mediaType 数据类型，mediaType=0是图片，mediaType=1是视频,如果为空则获取图片跟视频的数据
+	 * @param data data(选填、json字符串)：数据筛选字段，可以只提交其中一个参数，若两个参数都提交，是“或”关系
+	{
+	createAddr: '创建时所在地址(使用高德地图获取)',
+	remark: '备注'
+	}
+	 * @Description
+	 */
+	void getMedia(String userId,String mediaType,String data, int page, int count);
 	
 	/**通过url下载视频或者照片
 	 * @Description  url: http://[IP]:[PORT]/attach/mediaFile/[文件路径]

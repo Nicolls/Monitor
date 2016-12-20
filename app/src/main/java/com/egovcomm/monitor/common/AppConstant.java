@@ -10,6 +10,8 @@ public class AppConstant {
 	public static final String FILE_DIR_ORIGINAL= "original";
 	/** 用来存储日志件 */
 	public static final String FILE_DIR_LOG= "log";
+	/** 用来存储屏幕录制 */
+	public static final String FILE_DIR_SCREEN= "screen";
 	/** 用来存储服务器上返回的文件缩略图 */
 	public static final String FILE_DIR_THUMBNAIL = "thumbnail";
 	/** 概览页面资源利用 率html */

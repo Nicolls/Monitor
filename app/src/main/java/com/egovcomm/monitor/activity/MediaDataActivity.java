@@ -160,45 +160,50 @@ public class MediaDataActivity extends CommonPagerActivity implements OnClickLis
 	}
 	/**弹出框*/
 	private void showHidePop(boolean show){
-		this.isPopWindowShow=show;
-		if(!this.isPopWindowShow){
-			if(popupWindow!=null){
-				popupWindow.dismiss();
-			}
-			mRightTv.setSelected(false);
-		}else{
-			mRightTv.setSelected(true);
-			popupWindow=new ListPopupWindow(MediaDataActivity.this);
-			popupWindow.setOnDismissListener(new OnDismissListener() {
-				
-				@Override
-				public void onDismiss() {
-					MediaDataActivity.this.isPopWindowShow=false;
-					mRightTv.setSelected(false);
+		try {
+			this.isPopWindowShow=show;
+			if(!this.isPopWindowShow){
+				if(popupWindow!=null){
+					popupWindow.dismiss();
 				}
-			});
-			popupWindow.setListClickListener(new OnPopupListClickLstener() {
-				
-				@Override
-				public void onPopupListClick(ItemEntity entity) {
-					//ToastUtils.toast(getApplicationContext(), entity.getTitle());
-					//ToastUtils.toast(getApplicationContext(), "pop"+entity.getValue());
-					mRightTv.setSelected(false);
-					mRightTv.setText(entity.getTitle());
-					if(currentPage==0){
-						unUploadFragment.setMediaType(entity.getValue());
-					}else if(currentPage==1){
-						uploadingFragment.setMediaType(entity.getValue());
-					}else if(currentPage==2){
-						completedFragment.setMediaType(entity.getValue());
+				mRightTv.setSelected(false);
+			}else{
+				mRightTv.setSelected(true);
+				popupWindow=new ListPopupWindow(MediaDataActivity.this);
+				popupWindow.setOnDismissListener(new OnDismissListener() {
+
+					@Override
+					public void onDismiss() {
+						MediaDataActivity.this.isPopWindowShow=false;
+						mRightTv.setSelected(false);
 					}
-					freshAllData();
-					
-				}
-			});
-			popupWindow.fresh(filterList);
-			popupWindow.showAsDropDown(mTopBar);
+				});
+				popupWindow.setListClickListener(new OnPopupListClickLstener() {
+
+					@Override
+					public void onPopupListClick(ItemEntity entity) {
+						//ToastUtils.toast(getApplicationContext(), entity.getTitle());
+						//ToastUtils.toast(getApplicationContext(), "pop"+entity.getValue());
+						mRightTv.setSelected(false);
+						mRightTv.setText(entity.getTitle());
+						if(currentPage==0){
+							unUploadFragment.setMediaType(entity.getValue());
+						}else if(currentPage==1){
+							uploadingFragment.setMediaType(entity.getValue());
+						}else if(currentPage==2){
+							completedFragment.setMediaType(entity.getValue());
+						}
+						freshAllData();
+
+					}
+				});
+				popupWindow.fresh(filterList);
+				popupWindow.showAsDropDown(mTopBar);
+			}
+		}catch (Exception e){
+			e.printStackTrace();
 		}
+
 	}
 
 	/**广播监听*/
@@ -292,6 +297,10 @@ public class MediaDataActivity extends CommonPagerActivity implements OnClickLis
 			filterList.add(entity);
 		}else if(currentPage==2){
 			filterList.clear();
+			entity=new ItemEntity();
+			entity.setTitle("全部");
+			entity.setValue("");
+			filterList.add(entity);
 			entity=new ItemEntity();
 			entity.setTitle("图片");
 			entity.setValue(MonitorMediaGroup.TYPE_PHOTO);

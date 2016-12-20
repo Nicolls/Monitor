@@ -46,7 +46,7 @@ public class GroupMediaListActivity extends BaseListActivity<RspMediaGroup> {
 	private ListPopupWindow popupWindow;
 	private boolean isPopWindowShow = false;
 	List<ItemEntity> filterList = new ArrayList<ItemEntity>();
-	protected String mediaType = MonitorMediaGroup.TYPE_PHOTO;// 全部数据类型
+	protected String mediaType = "";// 全部数据类型
 
 	// 初始化view
 	@Override
@@ -62,13 +62,13 @@ public class GroupMediaListActivity extends BaseListActivity<RspMediaGroup> {
 
 	private void initData() {
 		mTitle.setText("我的数据");
-		mRightTv.setText("图片");
+		mRightTv.setText("全部");
 		ItemEntity entity = null;
 		filterList.clear();
-//		entity = new ItemEntity();
-//		entity.setTitle("全部");
-//		entity.setValue("");
-//		filterList.add(entity);
+		entity = new ItemEntity();
+		entity.setTitle("全部");
+		entity.setValue("");
+		filterList.add(entity);
 		entity = new ItemEntity();
 		entity.setTitle("图片");
 		entity.setValue(MonitorMediaGroup.TYPE_PHOTO);
@@ -86,7 +86,7 @@ public class GroupMediaListActivity extends BaseListActivity<RspMediaGroup> {
 		RspGroupList group = null;
 		List<RspMediaGroup> list=new ArrayList<RspMediaGroup>();
 		switch (id) {
-		case RequestService.ID_GETPHOTOMEDIA:
+		case RequestService.ID_GETMEDIA:
 			group = (RspGroupList) obj;
 			if (group != null && group.getData() != null
 					&& group.getData().getData() != null) {
@@ -98,18 +98,6 @@ public class GroupMediaListActivity extends BaseListActivity<RspMediaGroup> {
 
 			}
 			break;
-		case RequestService.ID_GETVIDEOMEDIA:
-			group = (RspGroupList) obj;
-			if (group != null && group.getData() != null
-					&& group.getData().getData() != null) {
-				List<RspMediaGroup> listGroup = group.getData().getData();
-				for(RspMediaGroup g:listGroup){
-					g.setThumbnailPath(FileUtils.getAppStorageThumbnailDirectoryPath()+File.separator+g.getId()+".jpg");//用服务器回来的ID做缩略图
-				}
-				list.addAll(listGroup);
-			}
-			break;
-
 		default:
 			break;
 		}
@@ -137,17 +125,7 @@ public class GroupMediaListActivity extends BaseListActivity<RspMediaGroup> {
 //		ToastUtils.toast(GroupMediaListActivity.this,"搜索"+key);
 		String data="{\"createAddr\":\""+key+"\",\"remark\":\""+key+"\"}";
 		//领导的数据，不传ID，返回所有
-		if (TextUtils.equals(mediaType, MonitorMediaGroup.TYPE_PHOTO)) {
-			mEBikeRequestService.getPhotoMedia("",data, pageNow, pageSize);
-		} else if (TextUtils.equals(mediaType, MonitorMediaGroup.TYPE_VIDEO)) {
-			mEBikeRequestService.getVideoMedia("",data, pageNow, pageSize);
-		} 
-//		else {
-//			mEBikeRequestService.getPhotoMedia(SPUtils.getUser(this)
-//					.getUserID(), pageNow, pageSize);
-//			mEBikeRequestService.getVideoMedia(SPUtils.getUser(this)
-//					.getUserID(), pageNow, pageSize);
-//		}
+		mEBikeRequestService.getMedia("",mediaType,data, pageNow, pageSize);
 	}
 
 	// 关键字搜索
@@ -166,7 +144,6 @@ public class GroupMediaListActivity extends BaseListActivity<RspMediaGroup> {
 	@Override
 	public void onListViewItemClick(RspMediaGroup item, int position) {
 		MonitorMediaGroupUpload uploadGroup=new MonitorMediaGroupUpload();
-		item.setMediaType(mediaType);
 		uploadGroup.setMediaGroup(item);
 		uploadGroup.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA);
 		
@@ -174,7 +151,7 @@ public class GroupMediaListActivity extends BaseListActivity<RspMediaGroup> {
 		List<RspMedia> rspList=item.getMediaFiles();
 		//把当前id替换成mediaId
 		for(RspMedia media:rspList){
-			media.setMediaType(mediaType);
+			media.setMediaType(item.getMediaType());
 			media.setGroupUploadId(item.getId());//用serverGroup当做groupid
 			media.setId(media.getMediaId());
 			media.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA);

@@ -58,7 +58,7 @@ public abstract class BaseListFragment<T> extends BaseFragment implements OnClic
 	protected List<T> dataList = new ArrayList<T>();
 	protected int operate = 0;// 0代表刷新，1代表加载更多
 	protected int pageNow = 1;//从1开始
-	protected int pageSize = 10;
+	protected int pageSize = 20;//默认20
 	protected EditText mSearchEt;
 	protected View mSearchBar;
 	protected PullToRefreshLayout mListViewPulltorefreshLayout;
@@ -79,7 +79,7 @@ public abstract class BaseListFragment<T> extends BaseFragment implements OnClic
 	protected Button btnCancel;
 	protected CheckBox cbAllSelected;
 	
-	protected String mediaType="";//数据类型
+	protected String mediaType="";//数据类型,默认为全部
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

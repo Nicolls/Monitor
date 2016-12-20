@@ -56,8 +56,6 @@ public class MediaCompletedFragment extends
 		mListViewPulltorefreshLayout.setPull2RefreshEnable(true);
 		mSearchBar.setVisibility(View.GONE);
 		btnCancel.setVisibility(View.GONE);
-		// btnDeleted.setVisibility(View.GONE);
-		setMediaType(MonitorMediaGroup.TYPE_PHOTO);
 		requestData();
 		return view;
 	}
@@ -90,7 +88,7 @@ public class MediaCompletedFragment extends
 
 			RspGroupList group = null;
 			switch (id) {
-				case RequestService.ID_GETPHOTOMEDIA:
+				case RequestService.ID_GETMEDIA:
 					group = (RspGroupList) obj;
 					if (group != null && group.getData() != null
 							&& group.getData().getData() != null) {
@@ -107,41 +105,23 @@ public class MediaCompletedFragment extends
 							for(RspMedia m:g.getMediaFiles()){
 								MonitorMedia media=m;
 								media.setGroupUploadId(mg.getId());
-								media.setMediaType(MonitorMediaGroup.TYPE_PHOTO);
+								media.setMediaType(g.getMediaType());
 								media.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA);
 								media.setId(m.getMediaId());
 								mediaList.add(media);
+								if(getActivity()!=null&&!FileUtils.isFileExit(FileUtils.getAppStorageThumbnailDirectoryPath()+File.separator+g.getId()+".jpg")){//不存在
+									if (FileUtils.isFileExit(FileUtils
+											.getAppStorageThumbnailDirectoryPath()
+											+ File.separator + media.getFileName())) {//缩略图存在
+										FileUtils.saveMediaGroupThumbnail(getActivity(),media.getThumbnailPath(),g.getId());
+									}
+								}
 							}
 							mg.setMonitorMediaList(mediaList);
 							list.add(mg);
 						}
 					}
 					break;
-				case RequestService.ID_GETVIDEOMEDIA:
-					group = (RspGroupList) obj;
-					if (group != null && group.getData() != null
-							&& group.getData().getData() != null) {
-						List<RspMediaGroup> listGroup = group.getData().getData();
-						for(RspMediaGroup g:listGroup){
-							MonitorMediaGroupUpload mg=new MonitorMediaGroupUpload();
-							mg.setId(g.getId());
-							mg.setThumbnailPath(FileUtils.getAppStorageThumbnailDirectoryPath()+File.separator+g.getId()+".jpg");//用服务器回来的ID做缩略图
-							mg.setMediaGroup(g);
-							mg.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA);
-							List<MonitorMedia> mediaList=new ArrayList<>();
-							for(RspMedia m:g.getMediaFiles()){
-								MonitorMedia media=m;
-								media.setMediaType(MonitorMediaGroup.TYPE_VIDEO);
-								media.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA);
-								media.setGroupUploadId(m.getId());
-								media.setId(m.getMediaId());
-								mediaList.add(media);
-							}
-							mg.setMonitorMediaList(mediaList);
-							list.add(mg);					}
-					}
-					break;
-
 				default:
 					break;
 			}
@@ -158,14 +138,7 @@ public class MediaCompletedFragment extends
 		String data="{\"createAddr\":\"\",\"remark\":\"\"}";
 		if(getActivity()!=null){
 			//普通用户数据，传ID，返回所有
-			if (TextUtils.equals(mediaType, MonitorMediaGroup.TYPE_PHOTO)) {
-				mEBikeRequestService.getPhotoMedia(SPUtils.getUser(getActivity()).getUserID(),data, pageNow, pageSize);
-			} else if (TextUtils.equals(mediaType, MonitorMediaGroup.TYPE_VIDEO)) {
-				mEBikeRequestService.getVideoMedia(SPUtils.getUser(getActivity()).getUserID(),data, pageNow, pageSize);
-			}else{
-				mEBikeRequestService.getPhotoMedia(SPUtils.getUser(getActivity()).getUserID(),data, pageNow, pageSize);
-				mEBikeRequestService.getVideoMedia(SPUtils.getUser(getActivity()).getUserID(),data, pageNow, pageSize);
-			}
+			mEBikeRequestService.getMedia(SPUtils.getUser(getActivity()).getUserID(),mediaType,data, pageNow, pageSize);
 		}
 	}
 

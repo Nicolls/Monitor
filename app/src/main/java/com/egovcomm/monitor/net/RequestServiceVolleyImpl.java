@@ -145,6 +145,18 @@ public class RequestServiceVolleyImpl implements RequestService {
 	}
 
 	@Override
+	public void getMedia(String userId,String mediaType,String data, int page, int count){
+		AppRequest ebReq = new AppRequest(RequestService.METHOD_GETMEDIA);
+		ebReq.setReqeustParam("actionType", "mediaList");
+		ebReq.setReqeustParam("userId", userId+"");
+		ebReq.setReqeustParam("mediaType", mediaType+"");
+		ebReq.setReqeustParam("data", data+"");
+		ebReq.setReqeustParam("page", page+"");
+		ebReq.setReqeustParam("count", count+"");
+		sendRequest(ebReq, RequestService.ID_GETMEDIA, RspGroupList.class);
+	}
+
+	@Override
 	public void downLoadMedia(final Context context,final MonitorMedia media) {
 		AppRequest ebReq = new AppRequest(RequestService.METHOD_DOWNLOADMEDIA + media.getPath());
 		if(media!=null){

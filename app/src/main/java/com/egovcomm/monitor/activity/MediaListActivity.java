@@ -74,7 +74,6 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> {
 		mRightTv.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 		mRightIv.setVisibility(View.GONE);
 		for (MonitorMedia media : mediaList) {
-			media.setMediaType(uploadGroup.getMediaGroup().getMediaType());// 设置类型
 			if (isNeedDownLoad(media)) {
 				//去判断是否下载
 //					mEBikeRequestService.downLoadMedia(getApplicationContext(),
@@ -346,7 +345,6 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> {
 					MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA)) {
 				// 全部下载
 				for (MonitorMedia media : mediaList) {
-					media.setMediaType(uploadGroup.getMediaGroup().getMediaType());// 设置类型
 					if (isNeedDownLoad(media)) {
 						media.setDownloadState(MonitorMedia.DOWNLOAD_STATE_DOWNLOADING);
 						//去判断是否下载

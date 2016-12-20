@@ -24,7 +24,7 @@ public class BaseApplication extends Application{
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		LogUtils.setOpenLog(false);//是否打开日志调试功能
+		LogUtils.setOpenLog(true);//是否打开日志调试功能
 		initData();
 	}
 
