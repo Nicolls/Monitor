@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-    <SurfaceView android:layout_height="match_parent" android:id="@+id/surface" android:layout_width="match_parent"></SurfaceView>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <SurfaceView android:layout_height="match_parent"
+        android:id="@+id/surface"
+        android:layout_width="match_parent">
+
+    </SurfaceView>
     <ImageView 
         android:id="@+id/video_play_im"
         android:layout_width="match_parent"
@@ -55,4 +61,10 @@
             />
         
     </RelativeLayout>
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/video_seekbar"
+        android:layout_above="@id/video_play_bottom_bar"
+        />
 </RelativeLayout>    

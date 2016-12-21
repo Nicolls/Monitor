@@ -8,6 +8,8 @@ import android.annotation.SuppressLint;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.SurfaceHolder;
@@ -15,6 +17,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 
 import com.egovcomm.monitor.R;
 import com.egovcomm.monitor.common.BaseActivity;
@@ -23,6 +26,7 @@ import com.egovcomm.monitor.model.MonitorMedia;
 import com.egovcomm.monitor.model.MonitorMediaGroupUpload;
 import com.egovcomm.monitor.utils.CommonViewUtils;
 import com.egovcomm.monitor.utils.FileUtils;
+import com.egovcomm.monitor.utils.LogUtils;
 import com.egovcomm.monitor.utils.ToastUtils;
 
 /**
@@ -32,7 +36,7 @@ import com.egovcomm.monitor.utils.ToastUtils;
  *
  */
 public class VideoPlayActivity extends BaseActivity implements
-		SurfaceHolder.Callback {
+		SurfaceHolder.Callback,SeekBar.OnSeekBarChangeListener {
 
 	/** Called when the activity is first created. */
 	MediaPlayer player;
@@ -45,7 +49,10 @@ public class VideoPlayActivity extends BaseActivity implements
 	private ImageView videoIcon;
 	private ImageView playImageView;
 	private ImageView mIvDeleted;
-
+	private SeekBar seekBar;
+	private boolean isPlaying=false;
+	private int currentPosition=0;
+	private View playBar;
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -54,6 +61,9 @@ public class VideoPlayActivity extends BaseActivity implements
 		media = getIntent().getParcelableExtra("media");
 		mediaList = getIntent().getParcelableArrayListExtra("mediaList");
 		path = media.getPath();
+		seekBar= (SeekBar) findViewById(R.id.video_seekbar);
+		seekBar.setOnSeekBarChangeListener(this);
+		playBar=findViewById(R.id.video_play_bottom_bar);
 		playImageView = (ImageView) findViewById(R.id.video_play_pause_iv);
 		imageView = (ImageView) findViewById(R.id.video_play_im);
 		videoIcon = (ImageView) findViewById(R.id.view_iv_video_icon);
@@ -66,13 +76,6 @@ public class VideoPlayActivity extends BaseActivity implements
 		surfaceHolder = surface.getHolder(); // SurfaceHolder是SurfaceView的控制接口
 		surfaceHolder.addCallback(this); // 因为这个类实现了SurfaceHolder.Callback接口，所以回调参数直接this
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);// Surface类型
-		surface.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-
-			}
-		});
 		videoIcon.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -95,10 +98,28 @@ public class VideoPlayActivity extends BaseActivity implements
 		} else {
 			mIvDeleted.setVisibility(View.GONE);
 		}
+//		surface.setOnClickListener(new OnClickListener() {//点击隐藏
+//			@Override
+//			public void onClick(View v) {
+//				playBar.setVisibility(View.VISIBLE);
+//				if(isPlaying){
+//					hideBarHandler.sendEmptyMessageDelayed(0,4000);
+//				}
+//			}
+//		});
 	}
+
+	private Handler hideBarHandler=new Handler(){
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			playBar.setVisibility(View.GONE);
+		}
+	};
 
 	public void onDeleted(View view) {
 		if(media!=null){
+			player.stop();
 			DBHelper.getInstance(getApplicationContext()).deleteMonitorMedia(media.getId());
 			try {
 				File f=new File(media.getPath());
@@ -116,10 +137,14 @@ public class VideoPlayActivity extends BaseActivity implements
 		if (view.isSelected()) {
 			imageView.setVisibility(View.GONE);
 			videoIcon.setVisibility(View.GONE);
+			isPlaying=true;
 			player.start();
+			handler.sendEmptyMessage(1);//播放是1
 		} else {
 			videoIcon.setVisibility(View.VISIBLE);
-			player.pause();
+			isPlaying=false;
+			player.pause();//开始是暂停是0
+			handler.sendEmptyMessage(0);//暂停是0
 		}
 	}
 
@@ -141,6 +166,7 @@ public class VideoPlayActivity extends BaseActivity implements
 			public void onCompletion(MediaPlayer mp) {
 				videoIcon.setVisibility(View.VISIBLE);
 				playImageView.setSelected(false);
+				isPlaying=false;
 			}
 		});
 		player.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -149,45 +175,67 @@ public class VideoPlayActivity extends BaseActivity implements
 		try {
 			// 新建Bundle对象
 			player.setDataSource(path);
-			player.prepare();
+			player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+
+			@Override
+			public void onPrepared(MediaPlayer mp) {
+				// 按照初始位置播放
+				player.seekTo(currentPosition);
+				// 设置进度条的最大进度为视频流的最大播放时长
+
+				LogUtils.i(tag,"视频时长为："+player.getDuration()+"");
+				seekBar.setMax(player.getDuration());
+				seekBar.setProgress(currentPosition);
+				}
+			});
+			player.prepareAsync();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 	}
 
-	// public Bitmap getVideoThumbnail(String filePath) {
-	// Bitmap bitmap = null;
-	// MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-	// try {
-	// retriever.setDataSource(filePath);
-	// bitmap = retriever.getFrameAtTime();
-	// } catch (IllegalArgumentException e) {
-	// e.printStackTrace();
-	// } catch (RuntimeException e) {
-	// e.printStackTrace();
-	// } finally {
-	// try {
-	// retriever.release();
-	// } catch (RuntimeException e) {
-	// e.printStackTrace();
-	// }
-	// }
-	// return bitmap;
-	// }
+
+	private Handler handler=new Handler(){
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			if(msg.what==1){
+				LogUtils.i(tag,"播放");
+				if(player!=null&&isPlaying&&player.isPlaying()){
+					int progress=player.getCurrentPosition();
+					LogUtils.i(tag,"当前播放到："+progress+"");
+					seekBar.setProgress(progress);
+					handler.sendEmptyMessageDelayed(1,300);
+				}
+			}else if(msg.what==0){
+				LogUtils.i(tag,"暂停");
+				handler.removeMessages(1);
+			}
+		}
+	};
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder arg0) {
+		LogUtils.i(tag,"surfaceDestroyed");
+		if(player!=null){
+			currentPosition=player.getCurrentPosition();
+			videoIcon.setVisibility(View.VISIBLE);
+			playImageView.setSelected(false);
+			handler.sendEmptyMessage(0);//暂停
+			if (player.isPlaying()) {
+				player.stop();
+			}
+			isPlaying=false;
+			player.release();
 
+
+		}
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if (player.isPlaying()) {
-			player.stop();
-		}
-		player.release();
-		// Activity销毁时停止播放，释放资源。不做这个操作，即使退出还是能听到视频播放的声音
 	}
 
 	@Override
@@ -196,4 +244,26 @@ public class VideoPlayActivity extends BaseActivity implements
 
 	}
 
+	@Override
+	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+		LogUtils.i(tag,"移动到："+progress+"");
+		if (player != null&&!player.isPlaying()) {
+			player.seekTo(progress);
+		}
+	}
+
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {
+		if(player!=null&&isPlaying){
+			player.pause();
+		}
+	}
+
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {
+		if(player!=null&&isPlaying){
+			player.start();
+			handler.sendEmptyMessage(1);//播放是1
+		}
+	}
 }
