@@ -33,6 +33,7 @@ import android.view.KeyEvent;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.egovcomm.monitor.R;
 import com.egovcomm.monitor.common.BaseActivity;
@@ -172,7 +173,7 @@ public class PhotoCaptureActivity extends BaseActivity implements TextureView.Su
 		LogUtils.i(TAG,"onSurfaceTextureAvailable");
 		Point p= new Point(mPreview.getWidth(),mPreview.getHeight());
 		isCameraStateReady=false;
-		CameraHelper.startPreviewCamera(this, p,screenOrientation, CameraHelper.MEDIA_TYPE_IMAGE, new CameraOpenCallBack() {
+		CameraHelper.startPreviewCamera(this, mPreview,(ImageView) findViewById(R.id.photo_iv_focus),screenOrientation, CameraHelper.MEDIA_TYPE_IMAGE, new CameraOpenCallBack() {
 
 			@Override
 			public void openSuccess(Camera camera) {

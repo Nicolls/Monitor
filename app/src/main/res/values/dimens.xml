@@ -44,4 +44,6 @@
     <dimen name="profile_margin_horizontal">30dp</dimen>
     <dimen name="profile_margin_vertical">20dp</dimen>
 
+    <dimen name="focus_size">40dp</dimen>
+
 </resources>

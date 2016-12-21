@@ -45,6 +45,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -556,9 +557,8 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 	@Override
 	public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
 		LogUtils.i(TAG,"onSurfaceTextureAvailable");
-		Point p= new Point(mPreview.getWidth(),mPreview.getHeight());
 		isCameraStateReady=false;
-		CameraHelper.startPreviewCamera(this, p,screenOrientation,
+		CameraHelper.startPreviewCamera(this,mPreview,(ImageView) findViewById(R.id.photo_iv_focus),screenOrientation,
 				CameraHelper.MEDIA_TYPE_VIDEO, new CameraOpenCallBack() {
 
 					@Override

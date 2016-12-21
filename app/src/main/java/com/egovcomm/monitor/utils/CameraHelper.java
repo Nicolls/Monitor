@@ -20,6 +20,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -32,13 +33,20 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.Size;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.TextureView;
+import android.view.View;
+import android.widget.ImageView;
 
 /**
  * Camera related utilities.
@@ -189,7 +197,8 @@ public class CameraHelper {
 	 * 
 	 * size是view的大小，不管怎么样size.x=长，size.y=宽
 	 * */
-	public static void startPreviewCamera(final Context context,final Point size,final int screenOrientation,final int mediaType,final CameraOpenCallBack callBack){
+	public static void startPreviewCamera(final Context context, final TextureView mPreview, final ImageView ivFocus, final int screenOrientation, final int mediaType, final CameraOpenCallBack callBack){
+		final Point size=new Point(mPreview.getWidth(),mPreview.getHeight());
 		new AsyncTask<String, Integer, Camera>() {
 			@Override
 			protected void onPreExecute() {
@@ -264,7 +273,7 @@ public class CameraHelper {
 						}
 			        	
 			        }
-			        
+
 			        camera.setParameters(parameters);
 					//把设置相机SurfaceView的代码移到UI上层来实现
 //			        try {
@@ -281,17 +290,100 @@ public class CameraHelper {
 			}
 
 			@Override
-			protected void onPostExecute(Camera result) {
-				super.onPostExecute(result);
+			protected void onPostExecute(final Camera mCamera) {
+				super.onPostExecute(mCamera);
+				if(mCamera!=null){
+					final android.os.Handler handler=new android.os.Handler(){
+						@Override
+						public void handleMessage(Message msg) {
+							super.handleMessage(msg);
+							ivFocus.setVisibility(View.GONE);
+						}
+					};
+					mPreview.setOnTouchListener(new View.OnTouchListener() {
+						@Override
+						public boolean onTouch(View v, MotionEvent event) {
+							if(event.getAction()==MotionEvent.ACTION_UP){//处理触摸事件
+//								ToastUtils.toast(context,"对焦");
+								handler.removeMessages(0);
+								ivFocus.setX(event.getX()-ivFocus.getWidth()/2);
+								ivFocus.setY(event.getY()-ivFocus.getHeight()/2);
+								ivFocus.setVisibility(View.VISIBLE);
+								Rect focusRect = calculateTapArea(mCamera,event.getRawX(), event.getRawY(), 1f);
+								Rect meteringRect = calculateTapArea(mCamera,event.getRawX(), event.getRawY(), 1.5f);
+								Camera.Parameters parameters = mCamera.getParameters();
+								// likewise for the camera object itself.
+								List<String> focusModes = parameters.getSupportedFocusModes();
+								if(focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)){
+									parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+								}
+
+								if (parameters.getMaxNumFocusAreas() > 0) {
+									List<Camera.Area> focusAreas = new ArrayList<Camera.Area>();
+									focusAreas.add(new Camera.Area(focusRect, 1000));
+
+									parameters.setFocusAreas(focusAreas);
+
+									List<Camera.Area> meteringAreas = new ArrayList<Camera.Area>();
+									meteringAreas.add(new Camera.Area(meteringRect, 1000));
+
+									parameters.setMeteringAreas(meteringAreas);
+
+									mCamera.setParameters(parameters);
+
+								}
+								handler.sendEmptyMessageDelayed(0,1500);
+							}
+
+							return true;
+						}
+					});
+
+				}
 				if(callBack!=null){
-					if(result==null){
+					if(mCamera==null){
 						callBack.openFail("启动录制失败!");
 					}else{
-						callBack.openSuccess(result);
+						callBack.openSuccess(mCamera);
 					}
 				}
 			}
 		}.execute();
+	}
+
+	/**
+	 * Convert touch position x:y to {@link Camera.Area} position -1000:-1000 to 1000:1000.
+	 */
+	private static Rect calculateTapArea(Camera mCamera,float x, float y, float coefficient) {
+		float focusAreaSize = 300;
+		int areaSize = Float.valueOf(focusAreaSize * coefficient).intValue();
+
+		int centerX = (int) (x / getResolution(mCamera).height * 2000 - 1000);
+		int centerY = (int) (y / getResolution(mCamera).width * 2000 - 1000);
+
+		int left = clamp(centerX - areaSize / 2, -1000, 1000);
+		int right = clamp(left + areaSize, -1000, 1000);
+		int top = clamp(centerY - areaSize / 2, -1000, 1000);
+		int bottom = clamp(top + areaSize, -1000, 1000);
+
+		return new Rect(left, top, right, bottom);
+	}
+
+	private static int clamp(int x, int min, int max) {
+		if (x > max) {
+			return max;
+		}
+		if (x < min) {
+			return min;
+		}
+		return x;
+	}
+
+
+	private static Camera.Size getResolution(Camera mCamera) {
+		Camera.Parameters params = mCamera.getParameters();
+		Camera.Size s = params.getPreviewSize();
+		return s;
 	}
 	
 	public static void startVideoRecord(final Context context,final Camera camera,final int screenOrientation,final Point size,final VedioRecordCallBack callBack){

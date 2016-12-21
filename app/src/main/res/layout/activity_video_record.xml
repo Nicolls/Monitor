@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".VideoRecordActivity" >
+     >
 
     <TextureView
         android:id="@+id/surface_view"
@@ -22,6 +22,11 @@
 	    android:background="@drawable/corners_green_bold_empty"
 	    android:text="00:00:00"
 	    />
+	<FrameLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom"
+		>
     <ImageButton
         android:id="@+id/video_btn_record"
         android:layout_width="wrap_content"
@@ -54,6 +59,14 @@
         android:layout_margin="20dp"
         android:background="@null"
         />
-
+		</FrameLayout>
+	<ImageView
+		android:id="@+id/photo_iv_focus"
+		android:layout_width="@dimen/focus_size"
+		android:layout_height="@dimen/focus_size"
+		android:background="@null"
+		android:visibility="gone"
+		android:src="@drawable/focus"
+		/>
 
 </FrameLayout>
