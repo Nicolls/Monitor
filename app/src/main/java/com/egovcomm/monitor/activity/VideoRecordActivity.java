@@ -36,7 +36,9 @@ import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.TextureView;
 import android.view.View;
@@ -46,6 +48,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -439,7 +442,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							createMediaGroup(list);
+							createMediaGroup(list,groupList);
 						}
 					}).setNegativeButton("取消", new OnClickListener() {
 
@@ -452,27 +455,76 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 			dialog.show();
 
 		} else {
-			createMediaGroup(list);
+			createMediaGroup(list,groupList);
 		}
 
 	}
 
 	/** 新建分组 */
-	private void createMediaGroup(final List<MonitorMedia> list) {
+	private void createMediaGroup(final List<MonitorMedia> list, final List<MonitorMediaGroup> groupList) {
 		final EditText et = new EditText(VideoRecordActivity.this);
+		final TextView tip=new TextView(VideoRecordActivity.this);
+		tip.setTextColor(getResources().getColor(R.color.red));
+		tip.setText("提示");
+		tip.setVisibility(View.INVISIBLE);
+		final LinearLayout layout=new LinearLayout(VideoRecordActivity.this);
+		layout.setOrientation(LinearLayout.VERTICAL);
+		et.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+//				LogUtils.i(tag,"afterTextChanged"+s);
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				LogUtils.i(tag,"afterTextChanged"+s.toString());
+				tip.setVisibility(View.INVISIBLE);
+				if(groupList!=null){
+					for(MonitorMediaGroup group:groupList){
+						if(TextUtils.equals(group.getRemark(),s.toString())){//有相同的
+							tip.setVisibility(View.VISIBLE);
+							tip.setText("此分组备注已存在，请更换！");
+							break;
+						}
+					}
+				}
+
+
+			}
+		});
 		et.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 		et.setHint("请输入分组备注");
+
+		layout.addView(tip);
+		layout.addView(et);
+
 		Builder builder = new Builder(VideoRecordActivity.this);
 
 		builder.setTitle("创建上传数据分组");
 		// builder.setMessage("请输入分组名称，按确定完成创建!");
-		builder.setView(et);
+		builder.setView(layout);
 		builder.setCancelable(false);
 		builder.setPositiveButton("创建", new OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.cancel();
+
+				if(groupList!=null){
+					for(MonitorMediaGroup group:groupList){
+						if(TextUtils.equals(group.getRemark(),et.getText().toString())){//有相同的
+							ToastUtils.toast(VideoRecordActivity.this,"此分组备注已存在，请更换！");
+							createMediaGroup(list,groupList);
+							return;
+						}
+					}
+				}
+				LogUtils.i(tag,"创建分组！");
 				// 创建分组
 				MonitorMediaGroup g = new MonitorMediaGroup();
 				User user = SPUtils.getUser(VideoRecordActivity.this);
@@ -500,7 +552,6 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 			}
 		});
 		builder.create().show();
-
 	}
 
 	/** 新建分组 */

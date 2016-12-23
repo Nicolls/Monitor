@@ -70,19 +70,23 @@ public class LoadingDialog extends Dialog {
 	}
 
 	public void show(boolean canCancel) {
-		super.show();
-		cancelable=canCancel;
-		setCancelable(canCancel);
-		if (rotAnim == null) {
-			rotAnim = new RotateAnimation(0, -359, Animation.RELATIVE_TO_SELF, 0.5f,
-					Animation.RELATIVE_TO_SELF, 0.5f);
-			rotAnim.setDuration(1000);
-			rotAnim.setInterpolator(new LinearInterpolator());
-			rotAnim.setRepeatCount(Animation.INFINITE);
-		}
+		try {
+			super.show();
+			cancelable=canCancel;
+			setCancelable(canCancel);
+			if (rotAnim == null) {
+				rotAnim = new RotateAnimation(0, -359, Animation.RELATIVE_TO_SELF, 0.5f,
+						Animation.RELATIVE_TO_SELF, 0.5f);
+				rotAnim.setDuration(1000);
+				rotAnim.setInterpolator(new LinearInterpolator());
+				rotAnim.setRepeatCount(Animation.INFINITE);
+			}
 
-		if (mProgressBar != null) {
-			mProgressBar.startAnimation(rotAnim);
+			if (mProgressBar != null) {
+				mProgressBar.startAnimation(rotAnim);
+			}
+		}catch (Exception e){
+			e.printStackTrace();
 		}
 	}
 

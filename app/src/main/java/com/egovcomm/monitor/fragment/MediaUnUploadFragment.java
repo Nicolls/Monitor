@@ -15,7 +15,9 @@ import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,13 +26,16 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import com.egovcomm.monitor.R;
 import com.egovcomm.monitor.activity.MediaDataActivity;
 import com.egovcomm.monitor.activity.PhotoShowActivity;
 import com.egovcomm.monitor.activity.VideoPlayActivity;
+import com.egovcomm.monitor.activity.VideoRecordActivity;
 import com.egovcomm.monitor.adapter.EBBaseAdapter;
 import com.egovcomm.monitor.adapter.MediaListAdapter;
 import com.egovcomm.monitor.common.BaseActivity;
@@ -298,7 +303,7 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> {
 
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							createMediaGroup(list);
+							createMediaGroup(list,groupList);
 						}
 					}).setNegativeButton("取消", new OnClickListener() {
 
@@ -310,27 +315,76 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> {
 			dialog.show();
 
 		} else {
-			createMediaGroup(list);
+			createMediaGroup(list,groupList);
 		}
 
 	}
 
 	/** 新建分组 */
-	private void createMediaGroup(final List<MonitorMedia> list) {
+	private void createMediaGroup(final List<MonitorMedia> list, final List<MonitorMediaGroup> groupList) {
 		final EditText et = new EditText(getActivity());
+		final TextView tip=new TextView(getActivity());
+		tip.setTextColor(getResources().getColor(R.color.red));
+		tip.setText("提示");
+		tip.setVisibility(View.INVISIBLE);
+		final LinearLayout layout=new LinearLayout(getActivity());
+		layout.setOrientation(LinearLayout.VERTICAL);
+		et.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+//				LogUtils.i(tag,"afterTextChanged"+s);
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				LogUtils.i(tag,"afterTextChanged"+s.toString());
+				tip.setVisibility(View.INVISIBLE);
+				if(groupList!=null){
+					for(MonitorMediaGroup group:groupList){
+						if(TextUtils.equals(group.getRemark(),s.toString())){//有相同的
+							tip.setVisibility(View.VISIBLE);
+							tip.setText("此分组备注已存在，请更换！");
+							break;
+						}
+					}
+				}
+
+
+			}
+		});
 		et.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 		et.setHint("请输入分组备注");
+
+		layout.addView(tip);
+		layout.addView(et);
+
 		Builder builder = new Builder(getActivity());
 
 		builder.setTitle("创建上传数据分组");
-		builder.setCancelable(false);
 		// builder.setMessage("请输入分组名称，按确定完成创建!");
-		builder.setView(et);
+		builder.setView(layout);
+		builder.setCancelable(false);
 		builder.setPositiveButton("创建", new OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.cancel();
+
+				if(groupList!=null){
+					for(MonitorMediaGroup group:groupList){
+						if(TextUtils.equals(group.getRemark(),et.getText().toString())){//有相同的
+							ToastUtils.toast(getActivity(),"此分组备注已存在，请更换！");
+							createMediaGroup(list,groupList);
+							return;
+						}
+					}
+				}
+				LogUtils.i(tag,"创建分组！");
 				// 创建分组
 				MonitorMediaGroup g = new MonitorMediaGroup();
 				User user = SPUtils.getUser(getActivity());
