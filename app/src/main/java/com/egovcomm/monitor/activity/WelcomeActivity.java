@@ -115,7 +115,10 @@ public class WelcomeActivity extends BaseActivity {
 	@Override
 	protected void requestError(int id,Object obj) {
 		hideLoading();
-		if(id==RequestService.ID_UPDATEMONITORAPP||id==RequestService.ID_REQUEST_ERROR){
+		if(id==RequestService.ID_REQUEST_ERROR){
+			openActivity(SigninActivity.class, null, true);
+		}
+		else if(id==RequestService.ID_UPDATEMONITORAPP){
 			requestLogin();
 		}else if(id==RequestService.ID_LOGIN){
 			SPUtils.setUser(this, null);

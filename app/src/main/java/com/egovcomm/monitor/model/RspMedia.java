@@ -1,9 +1,10 @@
 package com.egovcomm.monitor.model;
 
+
 public class RspMedia extends MonitorMedia{
 	private String delFlag;
 	private String ext;
-	private String mediaId;
+	private String mediaId;//这是组ID，没什么用
 	public String getDelFlag() {
 		return delFlag;
 	}
@@ -23,3 +24,4 @@ public class RspMedia extends MonitorMedia{
 		this.mediaId = mediaId;
 	}
 }
+

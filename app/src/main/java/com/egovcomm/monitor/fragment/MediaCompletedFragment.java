@@ -107,12 +107,12 @@ public class MediaCompletedFragment extends
 								media.setGroupUploadId(mg.getId());
 								media.setMediaType(g.getMediaType());
 								media.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA);
-								media.setId(m.getMediaId());
 								mediaList.add(media);
-								if(getActivity()!=null&&!FileUtils.isFileExit(FileUtils.getAppStorageThumbnailDirectoryPath()+File.separator+g.getId()+".jpg")){//不存在
-									if (FileUtils.isFileExit(FileUtils
+								if(getActivity()!=null&&!FileUtils.isFileExit(mg.getThumbnailPath())){//组缩略图不存在，寻找子有没有
+									media.setThumbnailPath(FileUtils
 											.getAppStorageThumbnailDirectoryPath()
-											+ File.separator + media.getFileName())) {//缩略图存在
+											+ File.separator + media.getFileName());
+									if (FileUtils.isFileExit(media.getThumbnailPath())) {//子缩略图存在
 										FileUtils.saveMediaGroupThumbnail(getActivity(),media.getThumbnailPath(),g.getId());
 									}
 								}

@@ -153,7 +153,6 @@ public class GroupMediaListActivity extends BaseListActivity<RspMediaGroup> {
 		for(RspMedia media:rspList){
 			media.setMediaType(item.getMediaType());
 			media.setGroupUploadId(item.getId());//用serverGroup当做groupid
-			media.setId(media.getMediaId());
 			media.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA);
 		}
 		mediaList.addAll(rspList);

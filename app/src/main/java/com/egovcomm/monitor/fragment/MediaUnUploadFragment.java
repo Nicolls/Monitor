@@ -233,6 +233,7 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> implem
 		}
 	}
 
+
 	private void showHideCheckBox(boolean show) {
 		for (MonitorMedia media : dataList) {
 			if (show) {

@@ -18,11 +18,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CompoundButton;
 
 import com.egovcomm.monitor.R;
 import com.egovcomm.monitor.adapter.EBBaseAdapter;
 import com.egovcomm.monitor.adapter.MediaListAdapter;
+import com.egovcomm.monitor.common.BaseActivity;
 import com.egovcomm.monitor.db.DBHelper;
 import com.egovcomm.monitor.ftp.FTPMediaUtil;
 import com.egovcomm.monitor.ftp.FTPService;
@@ -42,7 +44,7 @@ import com.egovcomm.monitor.utils.ToastUtils;
  *
  *         2015年7月3日
  */
-public class MediaListActivity extends BaseListActivity<MonitorMedia> {
+public class MediaListActivity extends BaseListActivity<MonitorMedia> implements AdapterView.OnItemLongClickListener{
 
 	private MonitorMediaGroupUpload uploadGroup;
 	private List<MonitorMedia> mediaList;
@@ -52,6 +54,7 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> {
 	public void initView() {
 		LogUtils.i(tag, "回到子类初始化");
 		mListViewPulltorefreshLayout.setPull2RefreshEnable(false);
+		mListView.setOnItemLongClickListener(this);
 		mSearchBar.setVisibility(View.GONE);
 		btnCancel.setVisibility(View.GONE);
 		uploadGroup = getIntent().getParcelableExtra("uploadGroup");
@@ -82,6 +85,28 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> {
 			}
 		}
 		super.loadListView(mediaList);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		freshData();
+	}
+
+	private void freshData(){
+		if(mediaList!=null&&uploadGroup!=null&&(TextUtils.equals(uploadGroup.getUploadState(),MonitorMediaGroupUpload.UPLOAD_STATE_UPLOAD_FAIL)||
+				TextUtils.equals(uploadGroup.getUploadState(),MonitorMediaGroupUpload.UPLOAD_STATE_UPLOAD_CANCEL)
+		)){
+			for(MonitorMedia media:mediaList){
+				MonitorMedia m=DBHelper.getInstance(this).findMonitorMediaById(media.getId());
+				media.setTime(m.getTime());
+				media.setRemark(m.getRemark());
+				media.setShootingLocation(m.getShootingLocation());
+				media.setReason(m.getReason());
+			}
+			mAdapter.notifyDataSetChanged();
+		}
+
 	}
 
 	/** 是否需要下载，如果需要则直接下载 */
@@ -433,5 +458,22 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> {
 	public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+		if (dataList != null && position < dataList.size()) {
+			MonitorMedia media=dataList.get(position);
+			//只有未上传，上传失败，上传取消，才可以修改数据
+			if(TextUtils.equals(media.getUploadState(),MonitorMediaGroupUpload.UPLOAD_STATE_UN_UPLOAD)||
+					TextUtils.equals(media.getUploadState(),MonitorMediaGroupUpload.UPLOAD_STATE_UPLOAD_CANCEL)||
+					TextUtils.equals(media.getUploadState(),MonitorMediaGroupUpload.UPLOAD_STATE_UPLOAD_FAIL)
+					){
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("media", media);
+				openActivity(MediaModifyActivity.class,map,false);
+			}
+		}
+		return true;
 	}
 }

@@ -349,4 +349,11 @@ public abstract class BaseListFragment<T> extends BaseFragment implements OnClic
 		this.isCanPullUp = isCanPullUp;
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		if(mediaOperateView!=null){
+			mediaOperateView.setVisibility(View.GONE);
+		}
+	}
 }
