@@ -4,11 +4,17 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+
 import com.egovcomm.monitor.R;
 import com.egovcomm.monitor.common.BaseActivity;
 import com.egovcomm.monitor.db.DBHelper;
 import com.egovcomm.monitor.model.MonitorMedia;
 import com.egovcomm.monitor.utils.ToastUtils;
+import com.fourmob.datetimepicker.date.DatePickerDialog;
+import com.sleepbot.datetimepicker.time.RadialPickerLayout;
+import com.sleepbot.datetimepicker.time.TimePickerDialog;
+
+import java.util.Calendar;
 
 /**
  * 视频
@@ -16,7 +22,7 @@ import com.egovcomm.monitor.utils.ToastUtils;
  * @author 胡汉三
  *
  */
-public class MediaModifyActivity extends BaseActivity implements View.OnClickListener{
+public class MediaModifyActivity extends BaseActivity implements View.OnClickListener,DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
 	private MonitorMedia media;
 	private EditText mEtTitle;
@@ -24,6 +30,17 @@ public class MediaModifyActivity extends BaseActivity implements View.OnClickLis
 	private EditText mEtLocation;
 	private EditText mEtReason;
 
+	public static final String DATEPICKER_TAG = "datepicker";
+	public static final String TIMEPICKER_TAG = "timepicker";
+
+	private boolean isVibrate=true;
+
+	final Calendar calendar = Calendar.getInstance();
+	final DatePickerDialog datePickerDialog = DatePickerDialog.newInstance(this, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), isVibrate);
+	final TimePickerDialog timePickerDialog = TimePickerDialog.newInstance(this, calendar.get(Calendar.HOUR_OF_DAY) ,calendar.get(Calendar.MINUTE), false, false);
+
+	private String dateString="";//年月日
+	private String timeString="";//时分
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -35,14 +52,26 @@ public class MediaModifyActivity extends BaseActivity implements View.OnClickLis
 		mEtTime.setOnClickListener(this);
 		mEtLocation= (EditText) findViewById(R.id.modify_et_location);
 		mEtReason= (EditText) findViewById(R.id.modify_et_reason);
-		initData();
+		initData(savedInstanceState);
 	}
 
-	private void initData(){
+	private void initData(Bundle savedInstanceState){
 		mEtTitle.setText(media.getRemark());
 		mEtTime.setText(media.getTime());
 		mEtLocation.setText(media.getShootingLocation());
 		mEtReason.setText(media.getReason());
+
+		if (savedInstanceState != null) {
+			DatePickerDialog dpd = (DatePickerDialog) getSupportFragmentManager().findFragmentByTag(DATEPICKER_TAG);
+			if (dpd != null) {
+				dpd.setOnDateSetListener(this);
+			}
+
+			TimePickerDialog tpd = (TimePickerDialog) getSupportFragmentManager().findFragmentByTag(TIMEPICKER_TAG);
+			if (tpd != null) {
+				tpd.setOnTimeSetListener(this);
+			}
+		}
 	}
 	public void onConfirm(View view){
 		media.setRemark(mEtTitle.getText().toString());
@@ -64,8 +93,32 @@ public class MediaModifyActivity extends BaseActivity implements View.OnClickLis
 
 	@Override
 	public void onClick(View v) {
-		if(v.getId()==R.id.modify_et_time){//改时间
-			ToastUtils.toast(getApplicationContext(),"时间");
+		if(v.getId()==R.id.modify_et_time){//改时间,先改年月日，不要自动消失
+//			ToastUtils.toast(getApplicationContext(),"时间");
+			datePickerDialog.setVibrate(isVibrate);
+			datePickerDialog.setYearRange(1985, 2028);
+			datePickerDialog.setCloseOnSingleTapDay(false);
+			datePickerDialog.show(getSupportFragmentManager(), DATEPICKER_TAG);
 		}
+	}
+
+	@Override
+	public void onDateSet(DatePickerDialog datePickerDialog, int year, int month, int day) {
+//		ToastUtils.toast(MediaModifyActivity.this, "new date:" + year + "-" + month + "-" + day);
+		dateString=year+"-"+month+"-"+day;
+		//设置完日期，设置时间
+		timePickerDialog.setVibrate(isVibrate);
+		timePickerDialog.setCloseOnSingleTapMinute(false);
+		timePickerDialog.show(getSupportFragmentManager(), TIMEPICKER_TAG);
+
+	}
+
+	@Override
+	public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute) {
+		timeString=hourOfDay+":"+minute;
+		String timeValue=dateString+" "+timeString;
+		media.setTime(timeValue);
+		mEtTime.setText(timeValue);
+//		ToastUtils.toast(MediaModifyActivity.this, "new time:" + hourOfDay + "-" + minute);
 	}
 }

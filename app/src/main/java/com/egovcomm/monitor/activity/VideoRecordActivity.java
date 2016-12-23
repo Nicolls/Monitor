@@ -282,7 +282,8 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 						media.setMediaType(MonitorMediaGroup.TYPE_VIDEO);
 						media.setThumbnailPath(thumpFilePath);
 						media.setCreateTime(TimeUtils.getFormatNowTime(TimeUtils.SIMPLE_FORMAT));
-
+						media.setTime(TimeUtils.getFormatNowTime("yyyy-MM-dd HH:mm"));
+						media.setReason("");
 						DBHelper.getInstance(VideoRecordActivity.this).insertMonitorMedia(
 								media);
 						LogUtils.i(tag, "数据库插入视频文件数据成功");
