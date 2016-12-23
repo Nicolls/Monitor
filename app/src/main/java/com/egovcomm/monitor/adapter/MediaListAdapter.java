@@ -153,8 +153,8 @@ public  class MediaListAdapter extends EBBaseAdapter<MonitorMedia> {
 				holder.item_create_time.setVisibility(View.VISIBLE);
 				holder.item_create_time.setText("上传时间："+media.getUploadTime());
 			}
-			holder.item_tv_time.setText("触发时间："+media.getTime());
-			holder.item_tv_reason.setText("事由："+media.getReason());
+			holder.item_tv_time.setText("触发时间："+media.getTime()==null?"":media.getTime());
+			holder.item_tv_reason.setText("事由："+media.getReason()==null?"":media.getReason());
 		}
 
 		return convertView;
