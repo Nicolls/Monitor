@@ -24,7 +24,6 @@ import com.egovcomm.monitor.view.RecycleImageView;
 /**
  * 列表，Item两行数据适配器
  * 
- * @param <T>
  *            数据实体类
  * @author mengjk
  *
@@ -65,7 +64,9 @@ public  class MediaListAdapter extends EBBaseAdapter<MonitorMedia> {
 			TextView item_name = (TextView) convertView.findViewById(R.id.item_name);
 			TextView item_location = (TextView) convertView.findViewById(R.id.item_location);
 			TextView item_size = (TextView) convertView.findViewById(R.id.item_size);
-			TextView item_time = (TextView) convertView.findViewById(R.id.item_time);
+			TextView item_create_time = (TextView) convertView.findViewById(R.id.item_create_time);
+			TextView item_reason= (TextView) convertView.findViewById(R.id.item_reason);
+			TextView item_time= (TextView) convertView.findViewById(R.id.item_time);
 			View item_view_Tip = convertView
 					.findViewById(R.id.view_layout_tip);
 			// Button item_btn_reupload = (Button)
@@ -83,11 +84,13 @@ public  class MediaListAdapter extends EBBaseAdapter<MonitorMedia> {
 			holder.item_name = item_name;
 			holder.item_location = item_location;
 			holder.item_size = item_size;
-			holder.item_time = item_time;
+			holder.item_create_time = item_create_time;
 			holder.item_view_Tip = item_view_Tip;
 			// holder.item_btn_reupload = item_btn_reupload;
 			holder.item_iv_tip = item_iv_tip;
 			holder.item_tv_tip = item_tv_tip;
+			holder.item_tv_reason=item_reason;
+			holder.item_tv_time=item_time;
 			convertView.setTag(holder);
 
 		} else {
@@ -138,18 +141,20 @@ public  class MediaListAdapter extends EBBaseAdapter<MonitorMedia> {
 				holder.item_view_Tip.setVisibility(View.GONE);
 				holder.item_progress.setVisibility(View.GONE);
 			}
-			holder.item_name.setText("文件名："+media.getFileName());
+			holder.item_name.setText("标题："+media.getRemark());
 			holder.item_location.setText("拍摄地点："+media.getShootingLocation());
 			holder.item_size.setText("文件大小："+FileUtils.getFileSize(Long.parseLong(media.getFileSize())));;
 			if (TextUtils.equals(MonitorMediaGroupUpload.UPLOAD_STATE_UN_UPLOAD
 					+ "", media.getUploadState())||TextUtils.equals(MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADING
 							+ "", media.getUploadState())) {// 未上传跟上传中显示创建时间
-				holder.item_time.setVisibility(View.VISIBLE);
-				holder.item_time.setText("创建时间："+media.getCreateTime());
+				holder.item_create_time.setVisibility(View.VISIBLE);
+				holder.item_create_time.setText("创建时间："+media.getCreateTime());
 			}else{//显示上传时间
-				holder.item_time.setVisibility(View.VISIBLE);
-				holder.item_time.setText("上传时间："+media.getUploadTime());
+				holder.item_create_time.setVisibility(View.VISIBLE);
+				holder.item_create_time.setText("上传时间："+media.getUploadTime());
 			}
+			holder.item_tv_time.setText("触发时间："+media.getTime());
+			holder.item_tv_reason.setText("事由："+media.getReason());
 		}
 
 		return convertView;
@@ -168,11 +173,14 @@ public  class MediaListAdapter extends EBBaseAdapter<MonitorMedia> {
 		TextView item_name;
 		TextView item_location;
 		TextView item_size;
-		TextView item_time;
+
+		TextView item_create_time;
 		View item_view_Tip;
 		// Button item_btn_reupload;
 		ImageView item_iv_tip;
 		TextView item_tv_tip;
+		TextView item_tv_time;
+		TextView item_tv_reason;
 	}
 
 }

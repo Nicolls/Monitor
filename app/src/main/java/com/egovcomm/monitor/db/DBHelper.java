@@ -75,7 +75,9 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ MediaEntry.COLUMN_FILE_SIZE + " TEXT," + MediaEntry.COLUMN_PATH + " TEXT,"
 				+ MediaEntry.COLUMN_FILE_SUFFIX + " TEXT," + MediaEntry.COLUMN_FILE_STATE + " TEXT,"
 				+ MediaEntry.COLUMN_ORIENTATIONE + " TEXT," + MediaEntry.COLUMN_UPLOAD_STATE+" TEXT,"
-				+ MediaEntry.COLUMN_MEDIA_TYPE+" TEXT,"+ MediaEntry.COLUMN_PATH_THUMBNAIL+" TEXT,"+ MediaEntry.COLUMN_CREATE_TIME+" TEXT"+");");
+				+ MediaEntry.COLUMN_MEDIA_TYPE+" TEXT,"+ MediaEntry.COLUMN_PATH_THUMBNAIL+" TEXT,"
+				+ MediaEntry.COLUMN_CREATE_TIME+" TEXT,"+ MediaEntry.COLUMN_TIME+" TEXT,"
+				+ MediaEntry.COLUMN_REASON+" TEXT"+");");
 
 		// 位置表
 		sqliteDatabase.execSQL("CREATE TABLE IF NOT EXISTS " + LocationEntry.TABLE_NAME + " (" + LocationEntry._ID
@@ -385,6 +387,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		contentValues.put(MediaEntry.COLUMN_MEDIA_TYPE, media.getMediaType());
 		contentValues.put(MediaEntry.COLUMN_PATH_THUMBNAIL, media.getThumbnailPath());
 		contentValues.put(MediaEntry.COLUMN_CREATE_TIME, media.getCreateTime());
+		contentValues.put(MediaEntry.COLUMN_TIME, media.getTime());
+		contentValues.put(MediaEntry.COLUMN_REASON, media.getReason());
 
 		long id = sqliteDatabase.insert(MediaEntry.TABLE_NAME, null, contentValues);
 		LogUtils.i(TAG, "insertMonitorMedia" + id);
@@ -412,7 +416,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			contentValues.put(MediaEntry.COLUMN_MEDIA_TYPE, media.getMediaType());
 			contentValues.put(MediaEntry.COLUMN_PATH_THUMBNAIL, media.getThumbnailPath());
 			contentValues.put(MediaEntry.COLUMN_CREATE_TIME, media.getCreateTime());
-
+			contentValues.put(MediaEntry.COLUMN_TIME, media.getTime());
+			contentValues.put(MediaEntry.COLUMN_REASON, media.getReason());
 			long id = sqliteDatabase.insert(MediaEntry.TABLE_NAME, null, contentValues);
 			LogUtils.i(TAG, "insertMonitorMedia" + id);
 		}
@@ -440,7 +445,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		contentValues.put(MediaEntry.COLUMN_MEDIA_TYPE, media.getMediaType());
 		contentValues.put(MediaEntry.COLUMN_PATH_THUMBNAIL, media.getThumbnailPath());
 		contentValues.put(MediaEntry.COLUMN_CREATE_TIME, media.getCreateTime());
-
+		contentValues.put(MediaEntry.COLUMN_TIME, media.getTime());
+		contentValues.put(MediaEntry.COLUMN_REASON, media.getReason());
 		int row = sqliteDatabase.update(MediaEntry.TABLE_NAME, contentValues,
 				MediaEntry.COLUMN_UUID + "=?", new String[] { media.getId() + "" });
 		LogUtils.i(TAG, "updateMonitorMedia" + row);
@@ -470,7 +476,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			contentValues.put(MediaEntry.COLUMN_MEDIA_TYPE, media.getMediaType());
 			contentValues.put(MediaEntry.COLUMN_PATH_THUMBNAIL, media.getThumbnailPath());
 			contentValues.put(MediaEntry.COLUMN_CREATE_TIME, media.getCreateTime());
-
+			contentValues.put(MediaEntry.COLUMN_TIME, media.getTime());
+			contentValues.put(MediaEntry.COLUMN_REASON, media.getReason());
 			int row = sqliteDatabase.update(MediaEntry.TABLE_NAME, contentValues,
 					MediaEntry.COLUMN_UUID + "=?", new String[] { media.getId() + "" });
 			LogUtils.i(TAG, "updateMonitorMedia" + row);
@@ -513,6 +520,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			media.setMediaType(result.getString(result.getColumnIndex(MediaEntry.COLUMN_MEDIA_TYPE)));
 			media.setThumbnailPath(result.getString(result.getColumnIndex(MediaEntry.COLUMN_PATH_THUMBNAIL)));
 			media.setCreateTime(result.getString(result.getColumnIndex(MediaEntry.COLUMN_CREATE_TIME)));
+			media.setTime(result.getString(result.getColumnIndex(MediaEntry.COLUMN_TIME)));
+			media.setReason(result.getString(result.getColumnIndex(MediaEntry.COLUMN_REASON)));
 
 			list.add(media);
 		}
@@ -545,7 +554,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			media.setMediaType(result.getString(result.getColumnIndex(MediaEntry.COLUMN_MEDIA_TYPE)));
 			media.setThumbnailPath(result.getString(result.getColumnIndex(MediaEntry.COLUMN_PATH_THUMBNAIL)));
 			media.setCreateTime(result.getString(result.getColumnIndex(MediaEntry.COLUMN_CREATE_TIME)));
-
+			media.setTime(result.getString(result.getColumnIndex(MediaEntry.COLUMN_TIME)));
+			media.setReason(result.getString(result.getColumnIndex(MediaEntry.COLUMN_REASON)));
 			list.add(media);
 		}
 		LogUtils.i(TAG, "listMonitorMediaByGroupUploadId" + list.size());
@@ -577,7 +587,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			media.setMediaType(result.getString(result.getColumnIndex(MediaEntry.COLUMN_MEDIA_TYPE)));
 			media.setThumbnailPath(result.getString(result.getColumnIndex(MediaEntry.COLUMN_PATH_THUMBNAIL)));
 			media.setCreateTime(result.getString(result.getColumnIndex(MediaEntry.COLUMN_CREATE_TIME)));
-
+			media.setTime(result.getString(result.getColumnIndex(MediaEntry.COLUMN_TIME)));
+			media.setReason(result.getString(result.getColumnIndex(MediaEntry.COLUMN_REASON)));
 			break;
 		}
 		LogUtils.i(TAG, "findMonitorMediaById" + monitorMediaId);

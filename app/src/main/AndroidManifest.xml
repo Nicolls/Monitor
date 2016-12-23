@@ -135,6 +135,12 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
         </activity>
+        <activity
+            android:name="com.egovcomm.monitor.activity.MediaModifyActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Base.Theme.AppCompat.Light.Dialog"
+            android:screenOrientation="portrait" >
+        </activity>
 
         <service
             android:name="com.egovcomm.monitor.ftp.FTPService"
@@ -152,7 +158,7 @@
         <!--as我的电脑测试：099a00d0d763bcdd33296ec63123c111-->
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="012673f15f7eef62ce8229f9bdbc99e5" />
+            android:value="099a00d0d763bcdd33296ec63123c111" />
         <!-- 定位需要的服务 -->
         <service android:name="com.amap.api.location.APSService" >
         </service>

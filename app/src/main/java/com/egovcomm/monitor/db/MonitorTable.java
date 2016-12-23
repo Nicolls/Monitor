@@ -57,6 +57,8 @@ public final class MonitorTable {
 		public static final String COLUMN_MEDIA_TYPE = "MEDIA_TYPE";
 		public static final String COLUMN_PATH_THUMBNAIL = "PATH_THUMBNAIL";
 		public static final String COLUMN_CREATE_TIME = "CREATE_TIME";
+		public static final String COLUMN_TIME = "TIME";
+		public static final String COLUMN_REASON = "REASON";
 	}
 
 	/** 位置表 */

@@ -376,11 +376,13 @@ public class FTPConnection implements DataUpdateListener {
 				m.setShootingLocation(media.getShootingLocation());
 				m.setFileName(media.getFileName());
 				m.setUploadTime(media.getUploadTime());
+				m.setTime(media.getTime());
 				m.setFileSize(media.getFileSize());
 				m.setPath(group.getRemoteDirectory() + "/"
 						+ media.getFileName());
 				m.setExt(media.getFileSuffix());
 				m.setRemark(media.getRemark());
+				m.setReason(media.getReason());
 				fileList.add(m);
 			}
 			req.setFileList(fileList);

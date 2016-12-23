@@ -41,6 +41,8 @@ public class MonitorMedia implements Parcelable {
 	private int check=0;//是否被选中 0未被选中，1选中
 	private int downloadState=DOWNLOAD_STATE_NONE;//下载状态
 	private String createTime;//创建时间
+	private String time;//时间
+	private String reason;//事由
 	public MonitorMedia() {}
 	public String formatTime(Date date) {
 		String result = "";
@@ -90,6 +92,8 @@ public class MonitorMedia implements Parcelable {
 		dest.writeInt(check);
 		dest.writeInt(downloadState);
 		dest.writeString(createTime);
+		dest.writeString(time);
+		dest.writeString(reason);
 	}
 
 	public static final Creator<MonitorMedia> CREATOR = new Creator<MonitorMedia>() {
@@ -124,12 +128,14 @@ public class MonitorMedia implements Parcelable {
 		check = in.readInt();
 		downloadState=in.readInt();
 		createTime= in.readString();
+		time= in.readString();
+		reason=in.readString();
 	}
 	
 	@Override
 	public String toString() {
 		String result="id="+id+",userId="+userId+",groupUploadId="+groupUploadId+",shootingLocation="+shootingLocation+",mark="+remark+
-				",uploadTime="+uploadTime+",fileName="+fileName+",fileSize="+fileSize+
+				",uploadTime="+uploadTime+",time="+time+",reason="+reason+",fileName="+fileName+",fileSize="+fileSize+
 				",path="+path+",fileSuffix="+fileSuffix+",fileState="+fileState+",orientation="+orientation+",uploadState="+uploadState+",thumbnailPath"+thumbnailPath+",mediaType="+mediaType+",showCheck="+showCheck+",check="+check+",createTime="+createTime;
 		return result;
 	}
@@ -189,13 +195,18 @@ public class MonitorMedia implements Parcelable {
 	public void setFileState(String fileState) {
 		this.fileState = fileState;
 	}
-	
-//	public MonitorMediaGroupUpload getMediaGroupUpload() {
-//		return mediaGroupUpload;
-//	}
-//	public void setMediaGroupUpload(MonitorMediaGroupUpload mediaGroupUpload) {
-//		this.mediaGroupUpload = mediaGroupUpload;
-//	}
+	public String getTime() {
+		return time;
+	}
+	public void setTime(String time) {
+		this.time = time;
+	}
+	public String getReason() {
+		return reason;
+	}
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
 	public String getUserId() {
 		return userId;
 	}

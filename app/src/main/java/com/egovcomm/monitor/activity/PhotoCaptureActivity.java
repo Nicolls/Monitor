@@ -124,6 +124,8 @@ public class PhotoCaptureActivity extends BaseActivity implements TextureView.Su
 						media.setMediaType(MonitorMediaGroup.TYPE_PHOTO);
 						media.setThumbnailPath(thumpFilePath);
 						media.setCreateTime(TimeUtils.getFormatNowTime(TimeUtils.SIMPLE_FORMAT));
+						media.setTime(TimeUtils.getFormatNowTime(TimeUtils.SIMPLE_FORMAT));
+						media.setReason("");
 
 						DBHelper.getInstance(PhotoCaptureActivity.this).insertMonitorMedia(media);
 						LogUtils.i(tag, "数据库插入图片文件数据成功");

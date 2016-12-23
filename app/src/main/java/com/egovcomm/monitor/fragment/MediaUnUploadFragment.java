@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import com.egovcomm.monitor.R;
 import com.egovcomm.monitor.activity.MediaDataActivity;
+import com.egovcomm.monitor.activity.MediaModifyActivity;
 import com.egovcomm.monitor.activity.PhotoShowActivity;
 import com.egovcomm.monitor.activity.VideoPlayActivity;
 import com.egovcomm.monitor.activity.VideoRecordActivity;
@@ -57,7 +58,7 @@ import com.egovcomm.monitor.utils.ToastUtils;
  *
  *         2015年7月3日
  */
-public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> {
+public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> implements AdapterView.OnItemLongClickListener{
 	private AlertDialog dialog = null;
 
 	@Override
@@ -66,6 +67,7 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> {
 		mListViewPulltorefreshLayout.setPull2RefreshEnable(false);
 		mSearchBar.setVisibility(View.GONE);
 		btnCancel.setVisibility(View.GONE);
+		mListView.setOnItemLongClickListener(this);
 		listViewRefresh();
 		return view;
 	}
@@ -470,4 +472,15 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> {
 
 	}
 
+	@Override
+	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+//		ToastUtils.toast(getActivity(),"onItemLongClick");
+		if (dataList != null && position < dataList.size()) {
+			MonitorMedia media=dataList.get(position);
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("media", media);
+			((BaseActivity)getActivity()).openActivity(MediaModifyActivity.class,map,false);
+		}
+		return true;
+	}
 }
