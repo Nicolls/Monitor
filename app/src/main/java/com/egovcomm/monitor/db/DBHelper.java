@@ -96,24 +96,30 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	// 分组操作
-	/** 插入一个数据 */
+	/** 插入一个数据，如果存在就不插入了 */
 	public long insertMonitorMediaGroup(MonitorMediaGroup mediaGroup) {
-		SQLiteDatabase sqliteDatabase = getWritableDatabase();
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(MediaGropEntry.COLUMN_UUID, mediaGroup.getId());
-		contentValues.put(MediaGropEntry.COLUMN_CREATE_ADDR, mediaGroup.getCreateAddr());
-		contentValues.put(MediaGropEntry.COLUMN_CREATE_TIME, mediaGroup.getCreateTime());
-		contentValues.put(MediaGropEntry.COLUMN_ORG_ID, mediaGroup.getOrgId());
-		contentValues.put(MediaGropEntry.COLUMN_ORG_NAME, mediaGroup.getOrgName());
-		contentValues.put(MediaGropEntry.COLUMN_LATITUDE, mediaGroup.getLatitude());
-		contentValues.put(MediaGropEntry.COLUMN_LONGITUDE, mediaGroup.getLongitude());
-		contentValues.put(MediaGropEntry.COLUMN_REMARK, mediaGroup.getRemark());
-		contentValues.put(MediaGropEntry.COLUMN_MEDIA_TYPE, mediaGroup.getMediaType());
-		contentValues.put(MediaGropEntry.COLUMN_USER_ID, mediaGroup.getUserId());
-		contentValues.put(MediaGropEntry.COLUMN_USER_NAME, mediaGroup.getUserName());
-		contentValues.put(MediaGropEntry.COLUMN_PATH_THUMBNAIL, mediaGroup.getThumbnailPath());
-
-		long id = sqliteDatabase.insert(MediaGropEntry.TABLE_NAME, null, contentValues);
+		long id=-1;
+		MonitorMediaGroup temp=findMonitorMediaGroupById(mediaGroup.getId());
+		if(!TextUtils.equals(mediaGroup.getId(),temp.getId())){//不存在，插入
+			LogUtils.i(TAG,"不存在组，插入新组");
+			SQLiteDatabase sqliteDatabase = getWritableDatabase();
+			ContentValues contentValues = new ContentValues();
+			contentValues.put(MediaGropEntry.COLUMN_UUID, mediaGroup.getId());
+			contentValues.put(MediaGropEntry.COLUMN_CREATE_ADDR, mediaGroup.getCreateAddr());
+			contentValues.put(MediaGropEntry.COLUMN_CREATE_TIME, mediaGroup.getCreateTime());
+			contentValues.put(MediaGropEntry.COLUMN_ORG_ID, mediaGroup.getOrgId());
+			contentValues.put(MediaGropEntry.COLUMN_ORG_NAME, mediaGroup.getOrgName());
+			contentValues.put(MediaGropEntry.COLUMN_LATITUDE, mediaGroup.getLatitude());
+			contentValues.put(MediaGropEntry.COLUMN_LONGITUDE, mediaGroup.getLongitude());
+			contentValues.put(MediaGropEntry.COLUMN_REMARK, mediaGroup.getRemark());
+			contentValues.put(MediaGropEntry.COLUMN_MEDIA_TYPE, mediaGroup.getMediaType());
+			contentValues.put(MediaGropEntry.COLUMN_USER_ID, mediaGroup.getUserId());
+			contentValues.put(MediaGropEntry.COLUMN_USER_NAME, mediaGroup.getUserName());
+			contentValues.put(MediaGropEntry.COLUMN_PATH_THUMBNAIL, mediaGroup.getThumbnailPath());
+			id = sqliteDatabase.insert(MediaGropEntry.TABLE_NAME, null, contentValues);
+		}else{
+			LogUtils.i(TAG,"组已存在!不再插入!");
+		}
 		LogUtils.i(TAG, "insertMonitorMediaGroup" + id);
 		return id;
 	}
@@ -121,6 +127,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	/** 更新一个数据 */
 	public void updateMonitorMediaGroup(MonitorMediaGroup mediaGroup) {
 		//LogUtils.i(TAG, "更新mediaGroup－－" + mediaGroup.toString());
+
 		SQLiteDatabase sqliteDatabase = getWritableDatabase();
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(MediaGropEntry.COLUMN_UUID, mediaGroup.getId());

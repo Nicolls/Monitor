@@ -350,6 +350,7 @@ public class FTPConnection implements DataUpdateListener {
 			service.setUptateListener(this);
 			String data = "";
 			ReqUploadMediaData req = new ReqUploadMediaData();
+			req.setId(group.getMediaGroup().getId());
 			req.setUserId(group.getMediaGroup().getUserId());
 			req.setUserName(group.getMediaGroup().getUserName());
 			req.setOrgId(group.getMediaGroup().getOrgId());
