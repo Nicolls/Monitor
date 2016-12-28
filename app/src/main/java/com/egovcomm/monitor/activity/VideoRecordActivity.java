@@ -64,17 +64,25 @@ import com.egovcomm.monitor.ftp.FTPMediaUtil;
 import com.egovcomm.monitor.model.MonitorMedia;
 import com.egovcomm.monitor.model.MonitorMediaGroup;
 import com.egovcomm.monitor.model.MonitorMediaGroupUpload;
+import com.egovcomm.monitor.model.ReqUploadMediaData;
+import com.egovcomm.monitor.model.RspGroupList;
+import com.egovcomm.monitor.model.RspMedia;
+import com.egovcomm.monitor.model.RspMediaGroup;
+import com.egovcomm.monitor.model.RspUploadMedia;
 import com.egovcomm.monitor.model.User;
+import com.egovcomm.monitor.net.RequestService;
 import com.egovcomm.monitor.utils.CameraHelper;
 import com.egovcomm.monitor.utils.CameraHelper.CameraOpenCallBack;
 import com.egovcomm.monitor.utils.CameraHelper.VedioRecordCallBack;
 import com.egovcomm.monitor.utils.CommonUtil;
 import com.egovcomm.monitor.utils.CommonViewUtils;
 import com.egovcomm.monitor.utils.FileUtils;
+import com.egovcomm.monitor.utils.JsonUtils;
 import com.egovcomm.monitor.utils.LogUtils;
 import com.egovcomm.monitor.utils.SPUtils;
 import com.egovcomm.monitor.utils.TimeUtils;
 import com.egovcomm.monitor.utils.ToastUtils;
+import com.google.gson.Gson;
 
 /**
  * This activity uses the camera/camcorder as the A/V source for the
@@ -99,6 +107,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 	private long recordTime = 0;// 单位是豪秒
 	private int screenOrientation = 0;// 屏幕方向
 	private AlertDialog dialog = null;
+	private MonitorMedia media;
 	private Handler handler = new Handler() {
 
 		@Override
@@ -263,7 +272,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 								getApplicationContext(), file.getAbsolutePath(),
 								MonitorMediaGroup.TYPE_VIDEO + "", true);
 
-						MonitorMedia media = new MonitorMedia();
+						media = new MonitorMedia();
 						media.setId(FileUtils.getFileNameNoEx(file.getName()));
 						media.setFileName(file.getName());
 						media.setFileSize(file.length() + "");// 保存字节数
@@ -287,7 +296,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 						DBHelper.getInstance(VideoRecordActivity.this).insertMonitorMedia(
 								media);
 						LogUtils.i(tag, "数据库插入视频文件数据成功");
-						alertUpload(media);//上传;
+						alertUpload();//上传;
 					} else {
 						mCamera.startPreview();
 						ToastUtils.toast(VideoRecordActivity.this, "保存数据失败");
@@ -321,7 +330,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 	}
 	
 	/** 提示是否上传 */
-	private void alertUpload(final MonitorMedia media) {
+	private void alertUpload() {
 		new Builder(VideoRecordActivity.this).setTitle("保存数据完成，是否上传此视频?").setCancelable(false)
 		.setPositiveButton("是", new OnClickListener() {
 
@@ -329,9 +338,8 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 			public void onClick(DialogInterface dialog, int which) {
 				//上传
 				if(CommonUtil.checkNetWork(VideoRecordActivity.this)){
-					List<MonitorMedia> mediaList=new ArrayList<MonitorMedia>();
-					mediaList.add(media);
-					showGroupList(mediaList);
+					showLoading(true);
+					mEBikeRequestService.groupList(SPUtils.getUser(VideoRecordActivity.this).getUserID(),MonitorMediaGroup.TYPE_VIDEO,1,1000);
 				}else{
 					mCamera.startPreview();
 					ToastUtils.toast(VideoRecordActivity.this, "当前网络不可用，请检查网络正常后再尝试上传");
@@ -390,8 +398,53 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 
 	@Override
 	public void dateUpdate(int id, Object obj) {
-		// TODO Auto-generated method stub
+		hideLoading();
+		List<MonitorMedia> mediaList=new ArrayList<MonitorMedia>();
+		mediaList.add(media);
+		switch (id){
+			case RequestService.ID_GROUPLIST://组数据
+				RspGroupList rspGroupList= (RspGroupList) obj;
+				//把回来的数据插入到数据库，重复的就不会再添加
+				if(rspGroupList!=null&&rspGroupList.getData()!=null&&rspGroupList.getData().getData()!=null&&rspGroupList.getData().getData().size()>0){
+					List<RspMediaGroup> list=rspGroupList.getData().getData();
+					for(MonitorMediaGroup group:list){
+						DBHelper.getInstance(this).insertMonitorMediaGroup(group);
+					}
+					showGroupList(mediaList);
+				}else{//为空，或者没有组，则直接创建分组
+					createMediaGroup(mediaList,null);
+				}
+				break;
+			case RequestService.ID_GROUPCREATE:
+				RspUploadMedia rsp= (RspUploadMedia) obj;
+				if(rsp!=null&&rsp.getData()!=null){
+					// 创建分组
+					MonitorMediaGroup g =rsp.getData();
+					DBHelper.getInstance(VideoRecordActivity.this).insertMonitorMediaGroup(g);
+					confirmMediaUpload(g, mediaList);
+				}else{
+					ToastUtils.toast(this,"创建分组失败!");
+				}
+				break;
+			default:
+				break;
+		}
+	}
 
+	/**请求错误会调用这个方法*/
+	protected void requestError(int id,Object obj){
+		List<MonitorMedia> mediaList=new ArrayList<MonitorMedia>();
+		mediaList.add(media);
+		switch (id){
+			case RequestService.ID_GROUPLIST://请求分组数据，错误，则会直接创建组
+				createMediaGroup(mediaList,null);
+				break;
+			case RequestService.ID_GROUPCREATE://请求创建组失败，则终止
+				ToastUtils.toast(this,"创建分组失败!");
+				break;
+			default:
+				break;
+		}
 	}
 
 
@@ -450,6 +503,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							dialog.cancel();
+							hideLoading();
 							mCamera.startPreview();
 						}
 					}).create();
@@ -487,6 +541,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 				tip.setVisibility(View.INVISIBLE);
 				if(groupList!=null){
 					for(MonitorMediaGroup group:groupList){
+//						LogUtils.i(tag,group.getRemark()+"---"+s.toString());
 						if(TextUtils.equals(group.getRemark(),s.toString())){//有相同的
 							tip.setVisibility(View.VISIBLE);
 							tip.setText("此分组备注已存在，请更换！");
@@ -515,7 +570,6 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.cancel();
-
 				if(groupList!=null){
 					for(MonitorMediaGroup group:groupList){
 						if(TextUtils.equals(group.getRemark(),et.getText().toString())){//有相同的
@@ -526,22 +580,26 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 					}
 				}
 				LogUtils.i(tag,"创建分组！");
-				// 创建分组
-				MonitorMediaGroup g = new MonitorMediaGroup();
+				String data = "";
+				ReqUploadMediaData req = new ReqUploadMediaData();
 				User user = SPUtils.getUser(VideoRecordActivity.this);
-				g.setId(UUID.randomUUID().toString());
-				g.setCreateAddr(BaseApplication.address);
-				g.setCreateTime(TimeUtils.getFormatNowTime(TimeUtils.SIMPLE_FORMAT));
-				g.setLatitude(BaseApplication.latitude+"");
-				g.setLongitude(BaseApplication.longitude+"");
-				g.setMediaType(MonitorMediaGroup.TYPE_VIDEO);
-				g.setOrgId(user.getOrgID());
-				g.setOrgName(user.getOrgName());
-				g.setRemark(et.getText().toString());
-				g.setUserId(user.getUserID());
-				g.setUserName(user.getUserName());
-				DBHelper.getInstance(VideoRecordActivity.this).insertMonitorMediaGroup(g);
-				confirmMediaUpload(g, list);
+				req.setId("");
+				req.setUserId(user.getUserID());
+				req.setUserName(user.getUserName());
+				req.setOrgId(user.getOrgID());
+				req.setOrgName(user.getOrgName());
+				req.setCreateTime(TimeUtils.getFormatNowTime(TimeUtils.SIMPLE_FORMAT));
+				req.setCreateAddr(BaseApplication.address);
+				req.setLongitude(BaseApplication.longitude+"");
+				req.setLatitude(BaseApplication.latitude+"");
+				req.setMediaType(MonitorMediaGroup.TYPE_VIDEO);
+				req.setRemark(et.getText().toString()+"");
+				List<RspMedia> fileList = new ArrayList<RspMedia>();
+				req.setFileList(fileList);
+				data = JsonUtils.objectToJson(req, ReqUploadMediaData.class);
+				LogUtils.i(TAG, "创建他组的数据是：" + data);
+				showLoading(true);
+				mEBikeRequestService.groupCreate(data);
 			}
 		});
 		builder.setNegativeButton("取消", new OnClickListener() {
@@ -549,6 +607,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.cancel();
+				hideLoading();
 				mCamera.startPreview();
 			}
 		});
@@ -576,6 +635,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.cancel();
+				hideLoading();
 				mCamera.startPreview();
 			}
 		});
@@ -586,6 +646,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 	/** 上传分组数据 */
 	private void uploadMediaGroup(MonitorMediaGroup group, List<MonitorMedia> list) {
 		// 存储组
+		hideLoading();
 		MonitorMediaGroupUpload uploadGroup = new MonitorMediaGroupUpload();
 		uploadGroup.setId(UUID.randomUUID().toString());
 		uploadGroup.setMediaGroup(group);

@@ -42,8 +42,14 @@ public interface RequestService {
 
 	/**更新应用*/
 	static final int ID_UPDATEMONITORAPP=10;
-	
-	
+
+	/**创建组*/
+	static final int ID_GROUPCREATE=11;
+
+	/**获取组列表*/
+	static final int ID_GROUPLIST=12;
+
+
 	/** 方法名 **/
 	/** 普通登录 */
 	static final String METHOD_LOGIN="/userAction.struts";
@@ -70,6 +76,13 @@ public interface RequestService {
 	/**更新应用*/
 
 	static final String METHOD_UPDATEMONITORAPP="/userAction.struts";
+
+	/**创建组*/
+	static final String METHOD_GROUPCREATE="/monitor/media.struts";
+
+	/**获取组列表*/
+	static final String METHOD_GROUPLIST="/monitor/media.struts";
+
 	/**
 	 * 
 	 * @param dataUpdateListener 监听器
@@ -173,5 +186,18 @@ public interface RequestService {
 	 */
 	void updateMonitorApp(String installedVersion);
 
+	/**
+	 * userAction.struts?actionType=groupList
+	 * userId=[userId]&page=[page]&count=[count]&mediaType=[mediaType]
+	 * @return void
+	 * @Description 组列表
+	 */
+	void groupList(String userId,String mediaType,int page,int count);
 
+	/**创建组
+	 * actionType uploadMedia
+	 * @param data 上传的组数据json
+	 * @Description
+	 */
+	void groupCreate(String data);
 }

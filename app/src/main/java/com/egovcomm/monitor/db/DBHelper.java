@@ -96,11 +96,11 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	// 分组操作
-	/** 插入一个数据，如果存在就不插入了 */
+	/** 插入一个数据，如果存在就更新 */
 	public long insertMonitorMediaGroup(MonitorMediaGroup mediaGroup) {
 		long id=-1;
-		MonitorMediaGroup temp=findMonitorMediaGroupById(mediaGroup.getId());
-		if(!TextUtils.equals(mediaGroup.getId(),temp.getId())){//不存在，插入
+		long row=updateMonitorMediaGroup(mediaGroup);
+		if(row<=0){//没有更新到哪一行，说明不存在，插入
 			LogUtils.i(TAG,"不存在组，插入新组");
 			SQLiteDatabase sqliteDatabase = getWritableDatabase();
 			ContentValues contentValues = new ContentValues();
@@ -118,15 +118,15 @@ public class DBHelper extends SQLiteOpenHelper {
 			contentValues.put(MediaGropEntry.COLUMN_PATH_THUMBNAIL, mediaGroup.getThumbnailPath());
 			id = sqliteDatabase.insert(MediaGropEntry.TABLE_NAME, null, contentValues);
 		}else{
-			LogUtils.i(TAG,"组已存在!不再插入!");
+			LogUtils.i(TAG,"组已存在!更新组信息不再插入!");
 		}
 		LogUtils.i(TAG, "insertMonitorMediaGroup" + id);
 		return id;
 	}
 
 	/** 更新一个数据 */
-	public void updateMonitorMediaGroup(MonitorMediaGroup mediaGroup) {
-		//LogUtils.i(TAG, "更新mediaGroup－－" + mediaGroup.toString());
+	public long updateMonitorMediaGroup(MonitorMediaGroup mediaGroup) {
+		LogUtils.i(TAG, "更新mediaGroup－－" + mediaGroup.toString());
 
 		SQLiteDatabase sqliteDatabase = getWritableDatabase();
 		ContentValues contentValues = new ContentValues();
@@ -143,9 +143,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		contentValues.put(MediaGropEntry.COLUMN_USER_NAME, mediaGroup.getUserName());
 		contentValues.put(MediaGropEntry.COLUMN_PATH_THUMBNAIL, mediaGroup.getThumbnailPath());
 
-		int row = sqliteDatabase.update(MediaGropEntry.TABLE_NAME, contentValues, MediaGropEntry.COLUMN_UUID + "=?",
+		long row = sqliteDatabase.update(MediaGropEntry.TABLE_NAME, contentValues, MediaGropEntry.COLUMN_UUID + "=?",
 				new String[] { mediaGroup.getId() + "" });
 		LogUtils.i(TAG, "updateMonitorMediaGroup" + row);
+		return row;
 	}
 
 	/** 获取表数据 */

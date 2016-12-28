@@ -7,11 +7,14 @@ package com.egovcomm.monitor.model;
  */
 public class RspUploadMedia extends AppResponse {
 	private static final long serialVersionUID = 1L;
-	private Object data;
-	public Object getData() {
+	private RspMediaGroup data;
+	public RspMediaGroup getData() {
 		return data;
 	}
-	public void setData(Object data) {
+
+	public void setData(RspMediaGroup data) {
 		this.data = data;
 	}
+
+
 }

@@ -128,7 +128,7 @@ public abstract class BaseActivity extends FragmentActivity implements DataUpdat
 
 	/** 隐藏加载框 */
 	public void hideLoading() {
-		if (loading != null) {
+		if (loading != null&&this!=null) {
 			loading.dismiss();
 		}
 	}

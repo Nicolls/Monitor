@@ -46,8 +46,15 @@ import com.egovcomm.monitor.ftp.FTPMediaUtil;
 import com.egovcomm.monitor.model.MonitorMedia;
 import com.egovcomm.monitor.model.MonitorMediaGroup;
 import com.egovcomm.monitor.model.MonitorMediaGroupUpload;
+import com.egovcomm.monitor.model.ReqUploadMediaData;
+import com.egovcomm.monitor.model.RspGroupList;
+import com.egovcomm.monitor.model.RspMedia;
+import com.egovcomm.monitor.model.RspMediaGroup;
+import com.egovcomm.monitor.model.RspUploadMedia;
 import com.egovcomm.monitor.model.User;
+import com.egovcomm.monitor.net.RequestService;
 import com.egovcomm.monitor.utils.FileUtils;
+import com.egovcomm.monitor.utils.JsonUtils;
 import com.egovcomm.monitor.utils.LogUtils;
 import com.egovcomm.monitor.utils.SPUtils;
 import com.egovcomm.monitor.utils.TimeUtils;
@@ -73,8 +80,63 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> implem
 	}
 
 	@Override
-	public void dataBack(int id, Object obj) {
+	public void dataBack(int id, Object obj) {//选择的数据
+		((BaseActivity)getActivity()).hideLoading();
+		List<MonitorMedia> mediaList = new ArrayList<MonitorMedia>();
+		for (MonitorMedia media : dataList) {
+			if (media.getCheck() == 1) {
+				mediaList.add(media);
+			}
+		}
+		switch (id){
+			case RequestService.ID_GROUPLIST://组数据
+				RspGroupList rspGroupList= (RspGroupList) obj;
+				//把回来的数据插入到数据库，重复的就不会再添加
+				if(rspGroupList!=null&&rspGroupList.getData()!=null&&rspGroupList.getData().getData()!=null&&rspGroupList.getData().getData().size()>0){
+					List<RspMediaGroup> list=rspGroupList.getData().getData();
+					for(MonitorMediaGroup group:list){
+						DBHelper.getInstance(getActivity()).insertMonitorMediaGroup(group);
+					}
+					showGroupList(mediaList);
+				}else{//为空，或者没有组，则直接创建分组
+					createMediaGroup(mediaList,null);
+				}
+				break;
+			case RequestService.ID_GROUPCREATE:
+				RspUploadMedia rsp= (RspUploadMedia) obj;
+				if(rsp!=null&&rsp.getData()!=null){
+					// 创建分组
+					MonitorMediaGroup g =rsp.getData();
+					DBHelper.getInstance(getActivity()).insertMonitorMediaGroup(g);
+					confirmMediaUpload(g, mediaList);
+				}else{
+					ToastUtils.toast(getActivity(),"创建分组失败!");
+				}
+				break;
+			default:
+				break;
+		}
 
+	}
+
+	/**请求错误会调用这个方法*/
+	protected void requestError(int id,Object obj){
+		List<MonitorMedia> mediaList = new ArrayList<MonitorMedia>();
+		for (MonitorMedia media : dataList) {
+			if (media.getCheck() == 1) {
+				mediaList.add(media);
+			}
+		}
+		switch (id){
+			case RequestService.ID_GROUPLIST://请求分组数据，错误，则会直接创建组
+				createMediaGroup(mediaList,null);
+				break;
+			case RequestService.ID_GROUPCREATE://请求创建组失败，则终止
+				ToastUtils.toast(getActivity(),"创建分组失败!");
+				break;
+			default:
+				break;
+		}
 	}
 
 	// 刷新
@@ -175,8 +237,9 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> implem
 		case R.id.view_operate_deleted:
 			deletedList(list);
 			break;
-		case R.id.view_operate_upload:
-			showGroupList(list);
+		case R.id.view_operate_upload://要上传，请求组数据
+			((BaseActivity)getActivity()).showLoading(true);
+			mEBikeRequestService.groupList(SPUtils.getUser(getActivity()).getUserID(),mediaType,1,1000);
 			break;
 
 		default:
@@ -388,22 +451,26 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> implem
 					}
 				}
 				LogUtils.i(tag,"创建分组！");
-				// 创建分组
-				MonitorMediaGroup g = new MonitorMediaGroup();
+				String data = "";
+				ReqUploadMediaData req = new ReqUploadMediaData();
 				User user = SPUtils.getUser(getActivity());
-				g.setId(UUID.randomUUID().toString());
-				g.setCreateAddr(BaseApplication.address);
-				g.setCreateTime(TimeUtils.getFormatNowTime(TimeUtils.SIMPLE_FORMAT));
-				g.setLatitude(BaseApplication.latitude+"");
-				g.setLongitude(BaseApplication.longitude+"");
-				g.setMediaType(mediaType);
-				g.setOrgId(user.getOrgID());
-				g.setOrgName(user.getOrgName());
-				g.setRemark(et.getText().toString());
-				g.setUserId(user.getUserID());
-				g.setUserName(user.getUserName());
-				DBHelper.getInstance(getActivity()).insertMonitorMediaGroup(g);
-				confirmMediaUpload(g, list);
+				req.setId("");
+				req.setUserId(user.getUserID());
+				req.setUserName(user.getUserName());
+				req.setOrgId(user.getOrgID());
+				req.setOrgName(user.getOrgName());
+				req.setCreateTime(TimeUtils.getFormatNowTime(TimeUtils.SIMPLE_FORMAT));
+				req.setCreateAddr(BaseApplication.address);
+				req.setLongitude(BaseApplication.longitude+"");
+				req.setLatitude(BaseApplication.latitude+"");
+				req.setMediaType(mediaType);
+				req.setRemark(et.getText().toString()+"");
+				List<RspMedia> fileList = new ArrayList<RspMedia>();
+				req.setFileList(fileList);
+				data = JsonUtils.objectToJson(req, ReqUploadMediaData.class);
+				LogUtils.i(tag, "创建分组的数据是：" + data);
+				((BaseActivity) getActivity()).showLoading(true);
+				mEBikeRequestService.groupCreate(data);
 			}
 		});
 		builder.setNegativeButton("取消", new OnClickListener() {
@@ -411,6 +478,7 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> implem
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.cancel();
+				((BaseActivity) getActivity()).hideLoading();
 			}
 		});
 		builder.create().show();
@@ -438,6 +506,7 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> implem
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.cancel();
+				((BaseActivity) getActivity()).hideLoading();
 			}
 		});
 		builder.create().show();
@@ -446,6 +515,7 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> implem
 
 	/** 上传分组数据 */
 	private void uploadMediaGroup(MonitorMediaGroup group, List<MonitorMedia> list) {
+		((BaseActivity)getActivity()).hideLoading();
 		// 存储组
 		MonitorMediaGroupUpload uploadGroup = new MonitorMediaGroupUpload();
 		uploadGroup.setId(UUID.randomUUID().toString());
