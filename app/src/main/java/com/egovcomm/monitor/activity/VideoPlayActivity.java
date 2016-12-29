@@ -99,7 +99,7 @@ public class VideoPlayActivity extends BaseActivity implements
 						media.getUploadState())) {// 只有未上传，上传失败，上传取消状态的可以被删除
 			mIvDeleted.setVisibility(View.VISIBLE);
 		} else {
-			mIvDeleted.setVisibility(View.GONE);
+			mIvDeleted.setVisibility(View.INVISIBLE);
 		}
 //		surface.setOnClickListener(new OnClickListener() {//点击隐藏
 //			@Override

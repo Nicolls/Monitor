@@ -54,7 +54,7 @@ public class PhotoShowActivity extends BaseActivity {
 				){//只有未上传，上传失败，上传取消状态的可以被删除
 			mIvDeleted.setVisibility(View.VISIBLE);
 		}else{
-			mIvDeleted.setVisibility(View.GONE);
+			mIvDeleted.setVisibility(View.INVISIBLE);
 		}
 		//详情数据
 		if(media!=null){
