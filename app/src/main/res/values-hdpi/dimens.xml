@@ -1,11 +1,6 @@
 <resources>
 
-    <dimen name="item_paddingHorizontal">10dp</dimen>
-    <dimen name="item_paddingVertical">15dp</dimen>
-    <dimen name="item_media_view_width">115dp</dimen>
-    <dimen name="item_media_view_height">90dp</dimen>
-    <dimen name="item_divider_height">15dp</dimen>
-    
+
     <!-- text size -->
     
     <dimen name="text_size_TopBarTitleText">22sp</dimen>
