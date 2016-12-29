@@ -296,6 +296,15 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> implem
 		}
 	}
 
+	/** 显示底部栏，View.visibility */
+	public void hideBottomBar() {
+		if (mediaOperateView != null) {
+			mediaOperateView.setVisibility(View.GONE);
+			cbAllSelected.setChecked(false);
+			showHideCheckBox(false);
+		}
+	}
+
 
 	private void showHideCheckBox(boolean show) {
 		for (MonitorMedia media : dataList) {

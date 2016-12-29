@@ -117,14 +117,14 @@ public class PhotoCaptureActivity extends BaseActivity implements TextureView.Su
 						media.setOrientation(screenOrientation+"");
 						media.setPath(file.getAbsolutePath());
 						media.setRemark("");
-						media.setShootingLocation(BaseApplication.address);
+						media.setShootingLocation(BaseApplication.address==null?"":BaseApplication.address);
 						media.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_UN_UPLOAD+"");
 						media.setUploadTime("");
 						media.setUserId(SPUtils.getUser(PhotoCaptureActivity.this).getUserID());
 						media.setMediaType(MonitorMediaGroup.TYPE_PHOTO);
 						media.setThumbnailPath(thumpFilePath);
 						media.setCreateTime(TimeUtils.getFormatNowTime(TimeUtils.SIMPLE_FORMAT));
-						media.setTime(TimeUtils.getFormatNowTime("yyyy-MM-dd HH:mm"));
+						media.setTime(TimeUtils.getFormatNowTime("yyyy-MM-dd HH:mm")+":00");
 						media.setReason("");
 
 						DBHelper.getInstance(PhotoCaptureActivity.this).insertMonitorMedia(media);

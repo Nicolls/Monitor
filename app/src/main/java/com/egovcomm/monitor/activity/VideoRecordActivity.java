@@ -282,7 +282,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 						media.setOrientation(screenOrientation + "");
 						media.setPath(file.getAbsolutePath());
 						media.setRemark("");
-						media.setShootingLocation(BaseApplication.address);
+						media.setShootingLocation(BaseApplication.address==null?"":BaseApplication.address);
 						media.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_UN_UPLOAD
 								+ "");
 						media.setUploadTime("");
@@ -291,7 +291,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 						media.setMediaType(MonitorMediaGroup.TYPE_VIDEO);
 						media.setThumbnailPath(thumpFilePath);
 						media.setCreateTime(TimeUtils.getFormatNowTime(TimeUtils.SIMPLE_FORMAT));
-						media.setTime(TimeUtils.getFormatNowTime("yyyy-MM-dd HH:mm"));
+						media.setTime(TimeUtils.getFormatNowTime("yyyy-MM-dd HH:mm")+":00");
 						media.setReason("");
 						DBHelper.getInstance(VideoRecordActivity.this).insertMonitorMedia(
 								media);

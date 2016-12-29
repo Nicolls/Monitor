@@ -1,0 +1,57 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+        <TextView
+            android:id="@+id/item_name"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="文件名称" />
+
+        <TextView
+            android:id="@+id/item_location"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="拍摄地点" />
+
+        <TextView
+            android:id="@+id/item_size"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="文件大小" />
+
+        <TextView
+            android:id="@+id/item_create_time"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="创建时间" />
+        <TextView
+            android:id="@+id/item_time"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="触发时间" />
+        <TextView
+            android:id="@+id/item_reason"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:text="事由" />
+    </LinearLayout>

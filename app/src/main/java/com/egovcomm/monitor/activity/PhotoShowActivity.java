@@ -12,12 +12,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.egovcomm.monitor.R;
 import com.egovcomm.monitor.common.BaseActivity;
 import com.egovcomm.monitor.db.DBHelper;
 import com.egovcomm.monitor.model.MonitorMedia;
 import com.egovcomm.monitor.model.MonitorMediaGroupUpload;
+import com.egovcomm.monitor.utils.FileUtils;
 import com.egovcomm.monitor.utils.ToastUtils;
 
 public class PhotoShowActivity extends BaseActivity {
@@ -28,6 +30,7 @@ public class PhotoShowActivity extends BaseActivity {
 	private String path;
 	private View mBottomBar;
 	private ImageView mIvDeleted;
+	private View detailView;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -41,7 +44,7 @@ public class PhotoShowActivity extends BaseActivity {
 		imageView = (ImageView) this.findViewById(R.id.imageView);
 		
 		imageView.setOnTouchListener(new TouchListener());
-		
+		detailView=findViewById(R.id.view_detail_scroll);
 		imageView.setImageBitmap(BitmapFactory.decodeFile(path));
 		mIvDeleted=(ImageView) findViewById(R.id.view_iv_deleted);
 		
@@ -53,7 +56,24 @@ public class PhotoShowActivity extends BaseActivity {
 		}else{
 			mIvDeleted.setVisibility(View.GONE);
 		}
-		
+		//详情数据
+		if(media!=null){
+			((TextView)findViewById(R.id.item_name)).setText("标题："+media.getRemark());
+			((TextView)findViewById(R.id.item_location)).setText("拍摄地点："+media.getShootingLocation());
+			((TextView)findViewById(R.id.item_size)).setText("文件大小："+ FileUtils.getFileSize(Long.parseLong(media.getFileSize())));
+			((TextView)findViewById(R.id.item_create_time)).setText("创建时间："+media.getCreateTime());
+			((TextView)findViewById(R.id.item_time)).setText("触发时间："+(media.getTime()==null?"":media.getTime()));
+			((TextView)findViewById(R.id.item_reason)).setText("事由："+(media.getReason()==null?"":media.getReason()));
+		}
+	}
+
+	//显示详情
+	public void onDetail(View view){
+		if(detailView.getVisibility()==View.VISIBLE){
+			detailView.setVisibility(View.GONE);
+		}else{
+			detailView.setVisibility(View.VISIBLE);
+		}
 	}
 
 	public void onBack(View view){

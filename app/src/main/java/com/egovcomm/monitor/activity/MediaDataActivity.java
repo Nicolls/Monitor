@@ -188,10 +188,13 @@ public class MediaDataActivity extends CommonPagerActivity implements OnClickLis
 						mRightTv.setText(entity.getTitle());
 						if(currentPage==0){
 							unUploadFragment.setMediaType(entity.getValue());
+							unUploadFragment.hideBottomBar();
 						}else if(currentPage==1){
 							uploadingFragment.setMediaType(entity.getValue());
+							uploadingFragment.hideBottomBar();
 						}else if(currentPage==2){
 							completedFragment.setMediaType(entity.getValue());
+							completedFragment.hideBottomBar();
 						}
 						freshAllData();
 

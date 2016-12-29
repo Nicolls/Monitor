@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@color/monitor_black_70_percent"
-        android:padding="15dp" >
+        android:padding="15dp">
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -36,6 +36,34 @@
             android:background="@null"
             android:onClick="onDeleted"
             android:src="@drawable/btn_deleted" />
+
+        <ImageButton
+            android:id="@+id/view_iv_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/view_iv_deleted"
+            android:layout_centerVertical="true"
+            android:background="@null"
+            android:onClick="onDetail"
+            android:layout_marginRight="@dimen/detail_marginRight"
+            android:src="@drawable/btn_detail" />
     </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/detail_height"
+        android:background="@color/monitor_black_85_percent"
+        android:layout_above="@id/photo_show_bottom_bar"
+        android:id="@+id/view_detail_scroll"
+        android:visibility="gone"
+        >
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="15dp"
+            layout="@layout/view_media_detail"
+            />
+    </ScrollView>
+
 
 </RelativeLayout>

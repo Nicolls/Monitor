@@ -223,6 +223,15 @@ public class MediaUploadingFragment extends BaseListFragment<MonitorMediaGroupUp
 		}
 	}
 
+	/** 显示底部栏，View.visibility */
+	public void hideBottomBar() {
+		if (mediaOperateView != null) {
+			mediaOperateView.setVisibility(View.GONE);
+			cbAllSelected.setChecked(false);
+			showHideCheckBox(false);
+		}
+	}
+
 	private void showHideCheckBox(boolean show) {
 		for (MonitorMediaGroupUpload group : dataList) {
 			if (show) {

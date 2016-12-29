@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.egovcomm.monitor.R;
 import com.egovcomm.monitor.common.BaseActivity;
@@ -53,6 +54,7 @@ public class VideoPlayActivity extends BaseActivity implements
 	private boolean isPlaying=false;
 	private int currentPosition=0;
 	private View playBar;
+	private View detailView;
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,7 @@ public class VideoPlayActivity extends BaseActivity implements
 		path = media.getPath();
 		seekBar= (SeekBar) findViewById(R.id.video_seekbar);
 		seekBar.setOnSeekBarChangeListener(this);
+		detailView=findViewById(R.id.view_detail_scroll);
 		playBar=findViewById(R.id.video_play_bottom_bar);
 		playImageView = (ImageView) findViewById(R.id.video_play_pause_iv);
 		imageView = (ImageView) findViewById(R.id.video_play_im);
@@ -107,6 +110,17 @@ public class VideoPlayActivity extends BaseActivity implements
 //				}
 //			}
 //		});
+
+		//详情数据
+		if(media!=null){
+			((TextView)findViewById(R.id.item_name)).setText("标题："+media.getRemark());
+			((TextView)findViewById(R.id.item_location)).setText("拍摄地点："+media.getShootingLocation());
+			((TextView)findViewById(R.id.item_size)).setText("文件大小："+FileUtils.getFileSize(Long.parseLong(media.getFileSize())));
+			((TextView)findViewById(R.id.item_create_time)).setText("创建时间："+media.getCreateTime());
+			((TextView)findViewById(R.id.item_time)).setText("触发时间："+(media.getTime()==null?"":media.getTime()));
+			((TextView)findViewById(R.id.item_reason)).setText("事由："+(media.getReason()==null?"":media.getReason()));
+		}
+
 	}
 
 	private Handler hideBarHandler=new Handler(){
@@ -145,6 +159,14 @@ public class VideoPlayActivity extends BaseActivity implements
 			isPlaying=false;
 			player.pause();//开始是暂停是0
 			handler.sendEmptyMessage(0);//暂停是0
+		}
+	}
+	//显示详情
+	public void onDetail(View view){
+		if(detailView.getVisibility()==View.VISIBLE){
+			detailView.setVisibility(View.GONE);
+		}else{
+			detailView.setVisibility(View.VISIBLE);
 		}
 	}
 

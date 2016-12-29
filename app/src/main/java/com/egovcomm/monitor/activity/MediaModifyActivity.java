@@ -105,7 +105,16 @@ public class MediaModifyActivity extends BaseActivity implements View.OnClickLis
 	@Override
 	public void onDateSet(DatePickerDialog datePickerDialog, int year, int month, int day) {
 //		ToastUtils.toast(MediaModifyActivity.this, "new date:" + year + "-" + month + "-" + day);
-		dateString=year+"-"+month+"-"+day;
+		String yearStr=year+"";
+		String monthStr=month+"";
+		String dayStr=day+"";
+		if(month<10){
+			monthStr="0"+month;
+		}
+		if(day<10){
+			dayStr="0"+day;
+		}
+		dateString=yearStr+"-"+monthStr+"-"+dayStr;
 		//设置完日期，设置时间
 		timePickerDialog.setVibrate(isVibrate);
 		timePickerDialog.setCloseOnSingleTapMinute(false);
@@ -115,8 +124,16 @@ public class MediaModifyActivity extends BaseActivity implements View.OnClickLis
 
 	@Override
 	public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute) {
-		timeString=hourOfDay+":"+minute;
-		String timeValue=dateString+" "+timeString;
+		String hourStr=hourOfDay+"";
+		String minuteStr=minute+"";
+		if(hourOfDay<10){
+			hourStr="0"+hourOfDay;
+		}
+		if(minute<10){
+			minuteStr="0"+minute;
+		}
+		timeString=hourStr+":"+minuteStr;
+		String timeValue=dateString+" "+timeString+":00";
 		media.setTime(timeValue);
 		mEtTime.setText(timeValue);
 //		ToastUtils.toast(MediaModifyActivity.this, "new time:" + hourOfDay + "-" + minute);

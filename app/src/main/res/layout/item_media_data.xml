@@ -55,7 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="middle"
-                android:singleLine="true"
+                android:maxLines="1"
                 android:text="文件名称" />
 
             <TextView
@@ -63,6 +63,7 @@
                 style="@style/ItemText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:maxLines="3"
                 android:text="拍摄地点" />
 
             <TextView
@@ -89,6 +90,8 @@
                 style="@style/ItemText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:maxLines="2"
+                android:ellipsize="end"
                 android:text="事由" />
         </LinearLayout>
     </LinearLayout>

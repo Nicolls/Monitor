@@ -35,4 +35,7 @@
 
     <dimen name="focus_size">45dp</dimen>
 
+    <dimen name="detail_marginRight">30dp</dimen>
+    <dimen name="detail_height">210dp</dimen>
+
 </resources>
