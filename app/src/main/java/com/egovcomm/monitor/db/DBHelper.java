@@ -28,7 +28,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	private final static String TAG = DBHelper.class.getSimpleName();
 	private static DBHelper _instance;
 	private static final String DB_NAME = "monitor.db";
-	private static final int DB_VERSION = 1;
+	private static final int DB_VERSION = 2;
 	private static Context mContext;
 	private static Gson gson = new Gson();
 
