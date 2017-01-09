@@ -455,7 +455,7 @@ public class CameraHelper {
 
 
 		        // Step 4: Set output file
-		        path=getOutputMediaFile(
+		        path=getOutputMediaFile(context,
 		                CameraHelper.MEDIA_TYPE_VIDEO).toString();
 		        mMediaRecorder.setOutputFile(path);
 		        // END_INCLUDE (configure_media_recorder)
@@ -560,8 +560,8 @@ public class CameraHelper {
 	 *            Media type. Can be video or image.
 	 * @return A file object pointing to the newly created file.
 	 */
-	public static File getOutputMediaFile(int type) {
-		File mediaStorageDir=new File(FileUtils.getAppStorageOriginalDirectoryPath());
+	public static File getOutputMediaFile(Context context,int type) {
+		File mediaStorageDir=new File(FileUtils.getAppStorageOriginalDirectoryPath(context));
 		// Create a media file name
 		//String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 		String timeStamp =UUID.randomUUID().toString();
@@ -577,10 +577,10 @@ public class CameraHelper {
 		return mediaFile;
 	}
 	
-	public static File saveData(byte[] data,int mediaType,int screenOrientation){
+	public static File saveData(Context context,byte[] data,int mediaType,int screenOrientation){
 		String path="";
 		File saveFile=null;
-		saveFile=getOutputMediaFile(mediaType);
+		saveFile=getOutputMediaFile(context,mediaType);
 		path=saveFile.getAbsolutePath();
 		if(mediaType==MEDIA_TYPE_IMAGE){
 			Bitmap b = null;

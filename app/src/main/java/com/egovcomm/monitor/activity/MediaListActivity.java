@@ -113,34 +113,34 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> implements
 	private boolean isNeedDownLoad(MonitorMedia media) {
 		boolean isNeed = false;
 		// 只有是服务器的并且还没有下载的才去请求
-		if (media.getDownloadState()!=MonitorMedia.DOWNLOAD_STATE_DOWNLOADING&&!FileUtils.isFileExit(FileUtils.getAppStorageOriginalDirectoryPath()
+		if (media.getDownloadState()!=MonitorMedia.DOWNLOAD_STATE_DOWNLOADING&&!FileUtils.isFileExit(FileUtils.getAppStorageOriginalDirectoryPath(MediaListActivity.this)
 				+ File.separator + media.getFileName())) {// 通过本地服务器路径加上文件名来判断文件是否存在
 			isNeed = true;
 		} else {
 			isNeed = false;
-			media.setPath(FileUtils.getAppStorageOriginalDirectoryPath()
+			media.setPath(FileUtils.getAppStorageOriginalDirectoryPath(MediaListActivity.this)
 				+ File.separator + media.getFileName());
 			media.setDownloadState(MonitorMedia.DOWNLOAD_STATE_DOWNLOADED);
 
 
 			if (!FileUtils.isFileExit(FileUtils
-					.getAppStorageThumbnailDirectoryPath()
+					.getAppStorageThumbnailDirectoryPath(MediaListActivity.this)
 					+ File.separator + media.getFileName())) {
 				// 缩略图不存在，则存储一个缩略图
 				String thump = FileUtils.saveMediaThumbnail(
 						getApplicationContext(),
-						FileUtils.getAppStorageOriginalDirectoryPath()
+						FileUtils.getAppStorageOriginalDirectoryPath(MediaListActivity.this)
 								+ File.separator + media.getFileName(),
 						media.getMediaType(), false);
 				media.setThumbnailPath(thump);
 			} else {
 				media.setThumbnailPath(FileUtils
-						.getAppStorageThumbnailDirectoryPath()
+						.getAppStorageThumbnailDirectoryPath(MediaListActivity.this)
 						+ File.separator + media.getFileName());
 			}
 
 			/**在这里添加如果组没有缩略图则创建一个*/
-			if(uploadGroup!=null&&!FileUtils.isFileExit(FileUtils.getAppStorageThumbnailDirectoryPath()+File.separator+uploadGroup.getId()+".jpg"))	{
+			if(uploadGroup!=null&&!FileUtils.isFileExit(FileUtils.getAppStorageThumbnailDirectoryPath(MediaListActivity.this)+File.separator+uploadGroup.getId()+".jpg"))	{
 				//不存在
 				FileUtils.saveMediaGroupThumbnail(this,media.getThumbnailPath(),uploadGroup.getId());
 			}

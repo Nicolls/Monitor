@@ -184,12 +184,12 @@ public class FileUtils {
 		File f=new File(path);
 		
 		if(isLocalFile){
-			File fdir=new File(getAppStorageThumbnailDirectoryPath());
+			File fdir=new File(getAppStorageThumbnailDirectoryPath(context));
 			if(fdir!=null){
 				thumpPath=fdir.getAbsolutePath()+File.separator+getFileNameNoEx(f.getName())+".jpg";
 			}
 		}else{
-			File fdir=new File(getAppStorageThumbnailDirectoryPath());
+			File fdir=new File(getAppStorageThumbnailDirectoryPath(context));
 			if(fdir!=null){
 				thumpPath=fdir.getAbsolutePath()+File.separator+getFileNameNoEx(f.getName())+".jpg";
 			}
@@ -223,7 +223,7 @@ public class FileUtils {
 		//写入
 		try {
 			File mediaFile=new File(mediaThmbnailPath);
-			File fdir=new File(getAppStorageThumbnailDirectoryPath());
+			File fdir=new File(getAppStorageThumbnailDirectoryPath(context));
 			File groupFile=new File(fdir.getAbsolutePath()+File.separator+groupId+".jpg");
 			if(!groupFile.exists()){
 				groupFile.createNewFile();
@@ -357,25 +357,53 @@ public class FileUtils {
 		
 		return isExit;
 	}
+
+	/* Checks if external storage is available for read and write */
+	public static boolean isExternalStorageWritable() {
+		String state = Environment.getExternalStorageState();
+		if (Environment.MEDIA_MOUNTED.equals(state)) {
+			return true;
+		}
+		return false;
+	}
 	
 	/**统一获取要保存的文件路径
 	 * 
 	 * @param childPath 统一存储路径下的子路径，像 /local/test 则会在统一路径下新建一个/local/test的文件夹，并返回此目录的路径,如果为空则返回统一路径
 	 * */
-	public static File getAppStorageDirectory(String childPath) {
+	public static File getAppStorageDirectory(Context context,String childPath) {
 		File f=null;
 		String storePath="";
-		if (!Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED)) {
-			storePath=Environment.getDataDirectory().getAbsolutePath();
-		}else{
-			storePath=Environment.getExternalStorageDirectory().getAbsolutePath();
-		}
+		long _10MB=10*1024*1024L;//10MB
+		try {
 
-		if(!TextUtils.isEmpty(childPath)){
-			if(childPath.startsWith("/")){
-				f = new File(storePath+File.separator+AppConstant.FILE_DIR+childPath);
+		if (!isExternalStorageWritable()) {//外部存储不可用，则获取内部的存储
+			if(context!=null){
+				long size=context.getFilesDir().getFreeSpace();//单位是Byte
+				LogUtils.i("FileUtils","剩余存储大小："+size);//单位是Byte
+				if(size<_10MB){//小于10MB则提示存储空间不足
+					ToastUtils.toast(context,"存储空间不足!请适当清理文件");
+				}
+				storePath=context.getFilesDir().getAbsolutePath();
+			}
+		}else{//外部存储可用
+			if(context!=null){//获取一个应用卸载时会自动删除的目录
+				long size=context.getFilesDir().getFreeSpace();
+				LogUtils.i("FileUtils","剩余存储大小："+size);//单位是Byte
+				if(size<_10MB){//小于10MB则提示存储空间不足
+					ToastUtils.toast(context,"存储空间不足!请适当清理文件");
+				}
+				storePath=context.getExternalFilesDir(null).getAbsolutePath();
 			}else{
-				f = new File(storePath+File.separator+AppConstant.FILE_DIR+File.separator+childPath);
+				storePath=Environment.getExternalStorageDirectory().getAbsolutePath();
+			}
+		}
+		LogUtils.i("FileUtils","本应用存储文件的目录是："+storePath);
+		if(!TextUtils.isEmpty(childPath)){
+			if(childPath.startsWith(File.separator)){
+				f = new File(storePath+childPath);
+			}else{
+				f = new File(storePath+File.separator+childPath);
 			}
 		}
 		
@@ -386,11 +414,14 @@ public class FileUtils {
 				return null;
 			}
 		}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 		return f;
 	}
 	/**获取存储文件的路径*/
-	public static String getAppStorageOriginalDirectoryPath() {
-		File f=getAppStorageDirectory(AppConstant.FILE_DIR_ORIGINAL);
+	public static String getAppStorageOriginalDirectoryPath(Context context) {
+		File f=getAppStorageDirectory(context,AppConstant.FILE_DIR_ORIGINAL);
 		if(f!=null){
 			return f.getAbsolutePath();
 		}else{
@@ -399,8 +430,8 @@ public class FileUtils {
 	}
 	
 	/**获取存储文件缩略图的路径*/
-	public static String getAppStorageThumbnailDirectoryPath() {
-		File f=getAppStorageDirectory(AppConstant.FILE_DIR_THUMBNAIL);
+	public static String getAppStorageThumbnailDirectoryPath(Context context) {
+		File f=getAppStorageDirectory(context,AppConstant.FILE_DIR_THUMBNAIL);
 		if(f!=null){
 			return f.getAbsolutePath();
 		}else{

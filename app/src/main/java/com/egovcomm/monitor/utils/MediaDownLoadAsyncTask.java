@@ -57,7 +57,7 @@ public class MediaDownLoadAsyncTask extends AsyncTask<String, Integer, MonitorMe
 					int downloadCount = length / buf.length;
 					int spacing = downloadCount / 100;
 					int m = 0;
-					mediaFile=new File(FileUtils.getAppStorageOriginalDirectoryPath()+File.separator+media.getFileName());
+					mediaFile=new File(FileUtils.getAppStorageOriginalDirectoryPath(context)+File.separator+media.getFileName());
 					mediaFile.createNewFile();
 					FileOutputStream fos = new FileOutputStream(mediaFile);
 					int len = 0;
@@ -76,7 +76,7 @@ public class MediaDownLoadAsyncTask extends AsyncTask<String, Integer, MonitorMe
 					
 					media.setPath(mediaFile.getPath());
 					media.setThumbnailPath(FileUtils.saveMediaThumbnail(context, mediaFile.getPath(), media.getMediaType(), false));
-					if(!FileUtils.isFileExit(FileUtils.getAppStorageThumbnailDirectoryPath()+File.separator+media.getGroupUploadId()+".jpg")){
+					if(!FileUtils.isFileExit(FileUtils.getAppStorageThumbnailDirectoryPath(context)+File.separator+media.getGroupUploadId()+".jpg")){
 						FileUtils.saveMediaGroupThumbnail(context, media.getThumbnailPath(), media.getGroupUploadId());
 					}
 				}

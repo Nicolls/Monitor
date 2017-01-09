@@ -70,7 +70,7 @@ public class MediaUploadingFragment extends BaseListFragment<MonitorMediaGroupUp
 			Iterator<MonitorMediaGroupUpload> it = list.iterator();
 			while (it.hasNext()) {
 				MonitorMediaGroupUpload group = it.next();
-				group.setThumbnailPath(FileUtils.getAppStorageThumbnailDirectoryPath()+File.separator+group.getId()+".jpg");//用组ID做缩略图
+				group.setThumbnailPath(FileUtils.getAppStorageThumbnailDirectoryPath(getActivity())+File.separator+group.getId()+".jpg");//用组ID做缩略图
 
 				if (!TextUtils.isEmpty(mediaType)&&!TextUtils.equals(mediaType, group.getMediaGroup().getMediaType())) {
 					it.remove();

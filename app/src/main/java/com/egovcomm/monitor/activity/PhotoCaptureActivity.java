@@ -102,7 +102,7 @@ public class PhotoCaptureActivity extends BaseActivity implements TextureView.Su
 				
 				@Override
 				public void onPictureTaken(byte[] data, Camera camera) {
-					File file=CameraHelper.saveData(data, CameraHelper.MEDIA_TYPE_IMAGE, CameraHelper.SCREEN_PORTRAIT);
+					File file=CameraHelper.saveData(PhotoCaptureActivity.this,data, CameraHelper.MEDIA_TYPE_IMAGE, CameraHelper.SCREEN_PORTRAIT);
 					String thumpFilePath=FileUtils.saveMediaThumbnail(getApplicationContext(), file.getAbsolutePath(), MonitorMediaGroup.TYPE_PHOTO+"",true);
 					mCamera.stopPreview();
 					mCamera.startPreview();

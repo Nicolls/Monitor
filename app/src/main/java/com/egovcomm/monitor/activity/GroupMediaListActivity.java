@@ -18,6 +18,7 @@ import android.widget.PopupWindow.OnDismissListener;
 import com.egovcomm.monitor.R;
 import com.egovcomm.monitor.adapter.EBBaseAdapter;
 import com.egovcomm.monitor.adapter.GroupListAdapter;
+import com.egovcomm.monitor.common.BaseApplication;
 import com.egovcomm.monitor.db.DBHelper;
 import com.egovcomm.monitor.model.ItemEntity;
 import com.egovcomm.monitor.model.MonitorMedia;
@@ -92,7 +93,7 @@ public class GroupMediaListActivity extends BaseListActivity<RspMediaGroup> {
 					&& group.getData().getData() != null) {
 				List<RspMediaGroup> listGroup = group.getData().getData();
 				for(RspMediaGroup g:listGroup){
-					g.setThumbnailPath(FileUtils.getAppStorageThumbnailDirectoryPath()+File.separator+g.getId()+".jpg");//用服务器回来的ID做缩略图
+					g.setThumbnailPath(FileUtils.getAppStorageThumbnailDirectoryPath(GroupMediaListActivity.this)+File.separator+g.getId()+".jpg");//用服务器回来的ID做缩略图
 				}
 				list.addAll(listGroup);
 

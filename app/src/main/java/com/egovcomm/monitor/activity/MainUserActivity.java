@@ -62,7 +62,7 @@ public class MainUserActivity extends BaseActivity {
 		}
 		toastTime =System.currentTimeMillis();
 		requestTime =System.currentTimeMillis();
-		LogUtils.writeLogtoFile("mjk：","MainUserActivity--onCreate");
+//		LogUtils.writeLogtoFile(MainUserActivity.this,"mjk：","MainUserActivity--onCreate");
 		startLocation();//开始定位
 	}
 
@@ -83,7 +83,7 @@ public class MainUserActivity extends BaseActivity {
 
 	public void onProfile(View view) {
 		// ToastUtils.toast(getApplicationContext(), "个人中心");
-		LogUtils.writeLogtoFile("mjk：","MainUserActivity-打开profile页面");
+//		LogUtils.writeLogtoFile(MainUserActivity.this,"mjk：","MainUserActivity-打开profile页面");
 		openActivity(ProfileActivity.class,null,false,true,ProfileActivity.REQUEST_CODE_PROFILE);
 
 	}
@@ -92,20 +92,20 @@ public class MainUserActivity extends BaseActivity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		LogUtils.writeLogtoFile("mjk：","执行MainUser 中的destroy中的exitApp方法");
+//		LogUtils.writeLogtoFile(MainUserActivity.this,"mjk：","执行MainUser 中的destroy中的exitApp方法");
 		exitApp();
-		LogUtils.writeLogtoFile("mjk：","MainUserActivity--onDestroy结束");
+//		LogUtils.writeLogtoFile(MainUserActivity.this,"mjk：","MainUserActivity--onDestroy结束");
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		LogUtils.writeLogtoFile("mjk：","MainUserActivity--onActivityResult关闭profile返回");
+//		LogUtils.writeLogtoFile(MainUserActivity.this,"mjk：","MainUserActivity--onActivityResult关闭profile返回");
 		if(requestCode==ProfileActivity.REQUEST_CODE_PROFILE&&resultCode==RESULT_OK){//需要注销登录
 			openActivity(SigninActivity.class,null,true);
 			//以下为测试代码
 //			ToastUtils.toast(MainUserActivity.this,"延迟后打开登录页面");
-//			LogUtils.writeLogtoFile("mjk：","发送延迟Handler");
+//			LogUtils.writeLogtoFile(MainUserActivity.this,"mjk：","发送延迟Handler");
 //			handler.sendEmptyMessageDelayed(0,2000);
 		}
 	}
@@ -114,32 +114,32 @@ public class MainUserActivity extends BaseActivity {
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
-			LogUtils.writeLogtoFile("mjk：","收到延迟Handler并打开登录销毁MainUser页面");
+//			LogUtils.writeLogtoFile(MainUserActivity.this,"mjk：","收到延迟Handler并打开登录销毁MainUser页面");
 			openActivity(SigninActivity.class,null,true);
 		}
 	};
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-	    if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN){   
-	        if((System.currentTimeMillis()-exitTime) > AppConstant.SPACE_TIME){  
-	            Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();                                
-	            exitTime = System.currentTimeMillis();   
+	    if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN){
+	        if((System.currentTimeMillis()-exitTime) > AppConstant.SPACE_TIME){
+	            Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
+	            exitTime = System.currentTimeMillis();
 	        } else {
-				LogUtils.writeLogtoFile("mjk：","按两次返回键");
+//				LogUtils.writeLogtoFile(MainUserActivity.this,"mjk：","按两次返回键");
 				finish();
 	        }
-	        return true;   
+	        return true;
 	    }
 	    return super.onKeyDown(keyCode, event);
 	}
 
 	/**注销退出应用*/
 	private void exitApp(){
-		LogUtils.writeLogtoFile("mjk：","进入exitApp方法");
+//		LogUtils.writeLogtoFile(MainUserActivity.this,"mjk：","进入exitApp方法");
 		BaseApplication.status = BaseApplication.STATUS_OFFLINE;
-		LogUtils.writeLogtoFile("mjk：","发送最后一次位置");
+//		LogUtils.writeLogtoFile(MainUserActivity.this,"mjk：","发送最后一次位置");
 		uploadLocation();// 结束的时候发送最后一次位置
-		LogUtils.writeLogtoFile("jk：","开始执行destroyLocation");
+//		LogUtils.writeLogtoFile(MainUserActivity.this,"mjk：","开始执行destroyLocation");
 		try {
 			new Thread(){
 
@@ -152,7 +152,7 @@ public class MainUserActivity extends BaseActivity {
 		}catch (Exception e){
 			e.printStackTrace();
 		}
-		LogUtils.writeLogtoFile("jk：","执行destroyLocation完成");
+//		LogUtils.writeLogtoFile(MainUserActivity.this,"mjk：","执行destroyLocation完成");
 	}
 
 	/**
@@ -165,7 +165,7 @@ public class MainUserActivity extends BaseActivity {
 	private AMapLocationClientOption getDefaultOption() {
 		AMapLocationClientOption mOption = new AMapLocationClientOption();
 		mOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);// 可选，设置定位模式，可选的模式有高精度、仅设备、仅网络。默认为高精度模式
-		mOption.setGpsFirst(false);// 可选，设置是否gps优先，只在高精度模式下有效。默认关闭
+		mOption.setGpsFirst(true);// 可选，设置是否gps优先，只在高精度模式下有效。默认关闭
 		mOption.setHttpTimeOut(30000);// 可选，设置网络请求超时时间。默认为30秒。在仅设备模式下无效
 		mOption.setInterval(3000);// 可选，设置定位间隔。默认为3秒
 		mOption.setNeedAddress(true);// 可选，设置是否返回逆地理地址信息。默认是true
@@ -213,7 +213,7 @@ public class MainUserActivity extends BaseActivity {
 	 *
 	 */
 	private void startLocation() {
-		LogUtils.writeLogtoFile("mjk：","开始定位");
+//		LogUtils.writeLogtoFile(MainUserActivity.this,"mjk：","开始定位");
 		// 初始化client
 		locationClient = new AMapLocationClient(this.getApplicationContext());
 		// 设置定位参数

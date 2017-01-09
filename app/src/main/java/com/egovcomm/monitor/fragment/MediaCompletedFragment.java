@@ -79,7 +79,7 @@ public class MediaCompletedFragment extends
 				MonitorMediaGroupUpload group = it.next();
 				group.setShowCheck(0);
 				group.setCheck(0);
-				group.setThumbnailPath(FileUtils.getAppStorageThumbnailDirectoryPath()+File.separator+group.getId()+".jpg");//用组ID做缩略图
+				group.setThumbnailPath(FileUtils.getAppStorageThumbnailDirectoryPath(getActivity())+File.separator+group.getId()+".jpg");//用组ID做缩略图
 				if (!TextUtils.isEmpty(mediaType)&&!TextUtils.equals(mediaType, group.getMediaGroup()
 						.getMediaType())) {
 					it.remove();
@@ -96,7 +96,7 @@ public class MediaCompletedFragment extends
 						for(RspMediaGroup g:listGroup){
 							MonitorMediaGroupUpload mg=new MonitorMediaGroupUpload();
 							mg.setId(g.getId());
-							mg.setThumbnailPath(FileUtils.getAppStorageThumbnailDirectoryPath()+File.separator+g.getId()+".jpg");//用服务器回来的ID做缩略图
+							mg.setThumbnailPath(FileUtils.getAppStorageThumbnailDirectoryPath(getActivity())+File.separator+g.getId()+".jpg");//用服务器回来的ID做缩略图
 							mg.setMediaGroup(g);
 							mg.setUploadState(MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA);
 							mg.setShowCheck(0);
@@ -110,7 +110,7 @@ public class MediaCompletedFragment extends
 								mediaList.add(media);
 								if(getActivity()!=null&&!FileUtils.isFileExit(mg.getThumbnailPath())){//组缩略图不存在，寻找子有没有
 									media.setThumbnailPath(FileUtils
-											.getAppStorageThumbnailDirectoryPath()
+											.getAppStorageThumbnailDirectoryPath(getActivity())
 											+ File.separator + media.getFileName());
 									if (FileUtils.isFileExit(media.getThumbnailPath())) {//子缩略图存在
 										FileUtils.saveMediaGroupThumbnail(getActivity(),media.getThumbnailPath(),g.getId());

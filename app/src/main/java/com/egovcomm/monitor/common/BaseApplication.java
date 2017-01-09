@@ -2,10 +2,13 @@ package com.egovcomm.monitor.common;
 
 import com.egovcomm.monitor.ftp.FTPConnection;
 import com.egovcomm.monitor.model.AppRequest;
+import com.egovcomm.monitor.utils.FileUtils;
 import com.egovcomm.monitor.utils.LogUtils;
 import com.egovcomm.monitor.utils.SPUtils;
+import com.egovcomm.monitor.utils.ToastUtils;
 
 import android.app.Application;
+import android.text.TextUtils;
 
 /**
  * Application基类
@@ -28,6 +31,7 @@ public class BaseApplication extends Application{
 		initData();
 	}
 
+
 	private void initData(){
 		isUpdating=false;
 		LogUtils.i("BaseApplication", "初始化数据!!!!!");
@@ -43,6 +47,15 @@ public class BaseApplication extends Application{
 		FTPConnection.port=ftpPort;
 		FTPConnection.userName=ftpUserName;
 		FTPConnection.password=ftpPassword;
+
+		//创建默认文件夹
+		String originalPath=FileUtils.getAppStorageOriginalDirectoryPath(this);
+		String thumbnailPath=FileUtils.getAppStorageThumbnailDirectoryPath(this);
+		LogUtils.i("application","初始化application－源目录："+originalPath);
+		LogUtils.i("application","初始化application－缩略图目录："+thumbnailPath);
+		if(TextUtils.isEmpty(originalPath)||TextUtils.isEmpty(thumbnailPath)){
+			ToastUtils.toast(this,"存储不可用，请检查设备状态!");
+		}
 	}
 
 }

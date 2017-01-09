@@ -57,7 +57,7 @@ public class ProfileActivity extends BaseActivity implements OnClickListener{
 		mBack.setOnClickListener(this);
 		mRightTv.setOnClickListener(this);
 		mRightIv.setOnClickListener(this);
-		LogUtils.writeLogtoFile("mjk：","Profile onCreate");
+//		LogUtils.writeLogtoFile(ProfileActivity.this,"mjk：","Profile onCreate");
 
 		initData();
 	}
@@ -88,7 +88,7 @@ public class ProfileActivity extends BaseActivity implements OnClickListener{
 	
 	public void onExit(View view){
 		SPUtils.cleanLocalData(this);
-		LogUtils.writeLogtoFile("mjk：","Profile 点击了注销登录按钮");
+//		LogUtils.writeLogtoFile(ProfileActivity.this,"mjk：","Profile 点击了注销登录按钮");
 		setResult(RESULT_OK);
 		finish();
 	}
@@ -96,7 +96,7 @@ public class ProfileActivity extends BaseActivity implements OnClickListener{
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		LogUtils.writeLogtoFile("mjk：","Profile onDestroy");
+//		LogUtils.writeLogtoFile(ProfileActivity.this,"mjk：","Profile onDestroy");
 	}
 
 	@Override
