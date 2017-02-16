@@ -46,7 +46,7 @@ public class TestActivity extends BaseActivity {
 	}
 	
 	public void onUploadLocation(View view){
-		mEBikeRequestService.uploadLocation(23.8978, 35.8739, 1);
+		mEBikeRequestService.uploadLocation(23.8978, 35.8739, "",1,"");
 	}
 	
 	@Override

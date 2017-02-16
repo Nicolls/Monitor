@@ -104,12 +104,14 @@ public class RequestServiceVolleyImpl implements RequestService {
 	}
 
 	@Override
-	public void uploadLocation(double longitude, double latitude, int status) {
+	public void uploadLocation(double longitude, double latitude, String addr,int status,String mediaId) {
 		AppRequest ebReq = new AppRequest(RequestService.METHOD_UPLOADLOCATION);
 		ebReq.setReqeustParam("actionType", "updateLocation");
 		ebReq.setReqeustParam("longitude", longitude+"");
 		ebReq.setReqeustParam("latitude", latitude+"");
+		ebReq.setReqeustParam("addr", addr+"");
 		ebReq.setReqeustParam("status", status+"");
+		ebReq.setReqeustParam("mediaId", mediaId+"");
 		sendRequest(ebReq, RequestService.ID_UPLOADLOCATION, RspUploadLocation.class);
 	}
 

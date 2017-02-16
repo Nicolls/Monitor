@@ -109,10 +109,11 @@ public interface RequestService {
 	 * actionType updateLocation
 	 * @param longitude 经度。不能使用时分秒的形式提交（23°01′13.93″），只能以小数形式提交，例：23.03
 	 * @param latitude 纬度。不能使用时分秒的形式提交（113°45′6.35），只能以小数形式提交, 例：113.7
+	 * @param addr 地址描述信息。
 	 * @param status 状态，1为在线，2为正在拍传
 	 * @Description 
 	 */
-	void uploadLocation(double longitude, double latitude, int status);
+	void uploadLocation(double longitude, double latitude, String addr,int status,String mediaId);
 	
 	/**设置上传到ftp的视频照片关联
 	 * actionType uploadMedia

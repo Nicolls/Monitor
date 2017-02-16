@@ -38,14 +38,11 @@ public class MainUserActivity extends BaseActivity {
 
 	private long exitTime =0;
 
-	private static final int REQUEST_SPACE_TIME=8;//上传位置时间间隔，秒
-	private static final int FRAIL_LOCATION_TIP_SPACE_TIME=5;//上传位置时间间隔，秒
-
 	private AMapLocationClient locationClient = null;
 	private long toastTime =System.currentTimeMillis();
 	private long requestTime =System.currentTimeMillis();
 
-	private AppConfig appConfig=new AppConfig();
+//	private AppConfig appConfig=new AppConfig();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,13 +50,13 @@ public class MainUserActivity extends BaseActivity {
 		setContentView(R.layout.activity_main_user);
 		FTPMediaUtil.startFTPService(getApplicationContext());// ftp服务
 		BaseApplication.status = BaseApplication.STATUS_ONLINE;
-		appConfig= SPUtils.getAppConfig(this);
-		if(appConfig.getLocaltionFailTipSpaceTime()<=0){
-			appConfig.setLocaltionFailTipSpaceTime(FRAIL_LOCATION_TIP_SPACE_TIME);
-		}
-		if(appConfig.getUploadLocationSpaceTime()<=0){
-			appConfig.setUploadLocationSpaceTime(REQUEST_SPACE_TIME);
-		}
+//		appConfig= SPUtils.getAppConfig(this);
+//		if(appConfig.getLocaltionFailTipSpaceTime()<=0){
+//			appConfig.setLocaltionFailTipSpaceTime(FAIL_LOCATION_TIP_SPACE_TIME);
+//		}
+//		if(appConfig.getUploadLocationSpaceTime()<=0){
+//			appConfig.setUploadLocationSpaceTime(REQUEST_SPACE_TIME);
+//		}
 		toastTime =System.currentTimeMillis();
 		requestTime =System.currentTimeMillis();
 //		LogUtils.writeLogtoFile(MainUserActivity.this,"mjk：","MainUserActivity--onCreate");
@@ -187,14 +184,14 @@ public class MainUserActivity extends BaseActivity {
 				BaseApplication.latitude = loc.getLatitude();
 				BaseApplication.address = loc.getAddress() + "";
 				long currentTime=System.currentTimeMillis();
-				if((currentTime- requestTime)>=appConfig.getUploadLocationSpaceTime()*1000){
+				if((currentTime- requestTime)>=BaseApplication.uploadLocationSpaceTime*1000){
 					//上传位置
 					requestTime =currentTime;
 					uploadLocation();
 				}
 			} else {//失败
 				long currentTime=System.currentTimeMillis();
-				if((currentTime- toastTime)>=appConfig.getLocaltionFailTipSpaceTime()*1000){
+				if((currentTime- toastTime)>=BaseApplication.FAIL_LOCATION_TIP_SPACE_TIME*1000){
 					ToastUtils.toast(MainUserActivity.this,"获取位置信息失败");
 					toastTime =currentTime;
 				}
@@ -266,7 +263,7 @@ public class MainUserActivity extends BaseActivity {
 	private void uploadLocation() {
 		if (mEBikeRequestService != null) {
 			mEBikeRequestService.uploadLocation(BaseApplication.longitude,
-					BaseApplication.latitude, BaseApplication.status);
+					BaseApplication.latitude,BaseApplication.address, BaseApplication.status,BaseApplication.mediaId);
 		}
 	}
 

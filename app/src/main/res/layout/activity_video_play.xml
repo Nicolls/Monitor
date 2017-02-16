@@ -85,11 +85,11 @@
         android:background="@color/monitor_black_85_percent"
         android:layout_above="@id/video_play_bottom_bar"
         android:visibility="gone"
+        android:padding="15dp"
         >
         <include
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="15dp"
             layout="@layout/view_media_detail"
             />
     </ScrollView>

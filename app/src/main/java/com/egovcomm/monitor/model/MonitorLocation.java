@@ -15,14 +15,15 @@ public class MonitorLocation implements Parcelable {
 	private static final String TAG=MonitorLocation.class.getSimpleName();
 	static SimpleDateFormat format = new SimpleDateFormat(
 			"yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-	private long id = -1;
+	private String id ="";
 	private String userId;
-	private String departmentId;
+	private String mediaId;
 	private String createTime;
-	private double longitude;
-	private double latitude;
-	private String mark;
-	private int state;
+	private String longitude;
+	private String latitude;
+	private String remark;
+	private String state;
+	private String address;
 	public MonitorLocation() {}
 	public String formatTime(Date date) {
 		String result = "";
@@ -51,14 +52,15 @@ public class MonitorLocation implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeLong(id);
+		dest.writeString(id);
 		dest.writeString(userId);
-		dest.writeString(departmentId);
+		dest.writeString(mediaId);
 		dest.writeString(createTime);
-		dest.writeDouble(longitude);
-		dest.writeDouble(latitude);
-		dest.writeString(mark);
-		dest.writeInt(state);
+		dest.writeString(longitude);
+		dest.writeString(latitude);
+		dest.writeString(remark);
+		dest.writeString(state);
+		dest.writeString(address);
 	}
 
 	public static final Creator<MonitorLocation> CREATOR = new Creator<MonitorLocation>() {
@@ -72,28 +74,29 @@ public class MonitorLocation implements Parcelable {
 	};
 
 	private MonitorLocation(Parcel in) {
-		id = in.readLong();
+		id = in.readString();
 		userId=in.readString();
-		departmentId = in.readString();
+		mediaId = in.readString();
 		createTime = in.readString();
-		longitude = in.readDouble();
-		latitude = in.readDouble();
-		mark = in.readString();
-		state = in.readInt();
+		longitude = in.readString();
+		latitude = in.readString();
+		remark = in.readString();
+		state = in.readString();
+		address = in.readString();
 	}
 	
 	@Override
 	public String toString() {
-		String result="id="+id+",userId="+userId+",departmentId="+departmentId+
+		String result="id="+id+",userId="+userId+",mediaId="+mediaId+
 				",createTime="+createTime+
-				",longitude="+longitude+",latitude="+latitude+",mark="+mark
-				+",state="+state;
+				",longitude="+longitude+",latitude="+latitude+",remark="+remark
+				+",state="+state+",address="+address;
 		return result;
 	}
-	public long getId() {
+	public String getId() {
 		return id;
 	}
-	public void setId(long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	public String getUserId() {
@@ -102,41 +105,53 @@ public class MonitorLocation implements Parcelable {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-	public String getDepartmentId() {
-		return departmentId;
-	}
-	public void setDepartmentId(String departmentId) {
-		this.departmentId = departmentId;
-	}
 	public String getCreateTime() {
 		return createTime;
 	}
 	public void setCreateTime(String createTime) {
 		this.createTime = createTime;
 	}
-	public double getLongitude() {
+	public String getLongitude() {
 		return longitude;
 	}
-	public void setLongitude(double longitude) {
+	public void setLongitude(String longitude) {
 		this.longitude = longitude;
 	}
-	public double getLatitude() {
+	public String getLatitude() {
 		return latitude;
 	}
-	public void setLatitude(double latitude) {
+	public void setLatitude(String latitude) {
 		this.latitude = latitude;
 	}
-	public String getMark() {
-		return mark;
-	}
-	public void setMark(String mark) {
-		this.mark = mark;
-	}
-	public int getState() {
+	public String getState() {
 		return state;
 	}
-	public void setState(int state) {
+	public void setState(String state) {
 		this.state = state;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getMediaId() {
+		return mediaId;
+	}
+
+	public void setMediaId(String mediaId) {
+		this.mediaId = mediaId;
 	}
 
 }

@@ -19,6 +19,7 @@ package com.egovcomm.monitor.activity;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.UUID;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -40,6 +41,7 @@ import com.egovcomm.monitor.common.BaseActivity;
 import com.egovcomm.monitor.common.BaseApplication;
 import com.egovcomm.monitor.db.DBHelper;
 import com.egovcomm.monitor.db.MonitorTable;
+import com.egovcomm.monitor.model.MonitorLocation;
 import com.egovcomm.monitor.model.MonitorMedia;
 import com.egovcomm.monitor.model.MonitorMediaGroup;
 import com.egovcomm.monitor.model.MonitorMediaGroupUpload;
@@ -71,7 +73,7 @@ public class PhotoCaptureActivity extends BaseActivity implements TextureView.Su
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_capture);
-        BaseApplication.status=BaseApplication.STATUS_WORKING;
+//        BaseApplication.status=BaseApplication.STATUS_WORKING;
         mPreview = (TextureView) findViewById(R.id.surface_view);
 		mPreview.setSurfaceTextureListener(this);
         captureButton = (ImageButton) findViewById(R.id.photo_btn_record);
@@ -126,8 +128,25 @@ public class PhotoCaptureActivity extends BaseActivity implements TextureView.Su
 						media.setCreateTime(TimeUtils.getFormatNowTime(TimeUtils.SIMPLE_FORMAT));
 						media.setTime(TimeUtils.getFormatNowTime("yyyy-MM-dd HH:mm")+":00");
 						media.setReason("");
-
+						media.setLongitude(BaseApplication.longitude+"");
+						media.setLatitude(BaseApplication.latitude+"");
+						//插入数据
 						DBHelper.getInstance(PhotoCaptureActivity.this).insertMonitorMedia(media);
+						uploadLocation(media.getId());
+						/*
+						//插入数据的位置信息
+						MonitorLocation location=new MonitorLocation();
+						location.setId(UUID.randomUUID().toString());
+						location.setMediaId(media.getId());
+						location.setUserId(SPUtils.getUser(getApplicationContext()).getUserID());
+						location.setLongitude(BaseApplication.longitude+"");
+						location.setLatitude(BaseApplication.latitude+"");
+						location.setAddress(BaseApplication.address);
+						location.setCreateTime(TimeUtils.getFormatNowTime(TimeUtils.SIMPLE_FORMAT));
+						location.setRemark("");
+						location.setState("");
+						DBHelper.getInstance(PhotoCaptureActivity.this).insertMonitorLocation(location);
+						*/
 						LogUtils.i(tag, "数据库插入图片文件数据成功");
 					}else{
 						LogUtils.e(tag, "保存文件失败");
@@ -167,7 +186,7 @@ public class PhotoCaptureActivity extends BaseActivity implements TextureView.Su
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		BaseApplication.status=BaseApplication.STATUS_ONLINE;
+//		BaseApplication.status=BaseApplication.STATUS_ONLINE;
 	}
 
 	@Override
@@ -238,4 +257,12 @@ public class PhotoCaptureActivity extends BaseActivity implements TextureView.Su
 		return super.onKeyDown(keyCode, event);
 	}
 
+
+	/** 上传位置信息 */
+	private void uploadLocation(String mediaId) {
+		if (mEBikeRequestService != null) {
+			mEBikeRequestService.uploadLocation(BaseApplication.longitude,
+					BaseApplication.latitude,BaseApplication.address, BaseApplication.STATUS_WORKING,mediaId);
+		}
+	}
 }

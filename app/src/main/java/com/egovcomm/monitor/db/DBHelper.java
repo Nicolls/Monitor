@@ -17,6 +17,7 @@ import com.egovcomm.monitor.db.MonitorTable.LocationEntry;
 import com.egovcomm.monitor.db.MonitorTable.MediaEntry;
 import com.egovcomm.monitor.db.MonitorTable.MediaGropEntry;
 import com.egovcomm.monitor.db.MonitorTable.MediaGropUploadEntry;
+import com.egovcomm.monitor.model.MonitorLocation;
 import com.egovcomm.monitor.model.MonitorMedia;
 import com.egovcomm.monitor.model.MonitorMediaGroup;
 import com.egovcomm.monitor.model.MonitorMediaGroupUpload;
@@ -28,7 +29,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	private final static String TAG = DBHelper.class.getSimpleName();
 	private static DBHelper _instance;
 	private static final String DB_NAME = "monitor.db";
-	private static final int DB_VERSION = 3;
+	private static final int DB_VERSION = 4;
 	private static Context mContext;
 	private static Gson gson = new Gson();
 
@@ -77,14 +78,17 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ MediaEntry.COLUMN_ORIENTATIONE + " TEXT," + MediaEntry.COLUMN_UPLOAD_STATE+" TEXT,"
 				+ MediaEntry.COLUMN_MEDIA_TYPE+" TEXT,"+ MediaEntry.COLUMN_PATH_THUMBNAIL+" TEXT,"
 				+ MediaEntry.COLUMN_CREATE_TIME+" TEXT,"+ MediaEntry.COLUMN_TIME+" TEXT,"
-				+ MediaEntry.COLUMN_REASON+" TEXT"+");");
+				+ MediaEntry.COLUMN_REASON + " TEXT,"+ MediaEntry.COLUMN_LONGITUDE + " TEXT,"
+				+ MediaEntry.COLUMN_LATITUDE+" TEXT"+");");
 
 		// 位置表
 		sqliteDatabase.execSQL("CREATE TABLE IF NOT EXISTS " + LocationEntry.TABLE_NAME + " (" + LocationEntry._ID
 				+ " INTEGER PRIMARY KEY AUTOINCREMENT," + LocationEntry.COLUMN_USER_ID + " TEXT,"
-				+ LocationEntry.COLUMN_DEPARTMENT_ID + " TEXT," + LocationEntry.COLUMN_CREATE_TIME + " TEXT,"
+				+ LocationEntry.COLUMN_UUID + " TEXT,"
+				+ LocationEntry.COLUMN_MEDIA_ID + " TEXT," + LocationEntry.COLUMN_CREATE_TIME + " TEXT,"
 				+ LocationEntry.COLUMN_LONGITUDE + " TEXT," + LocationEntry.COLUMN_LATITUDE + " TEXT,"
-				+ LocationEntry.COLUMN_REMARK + " TEXT," + LocationEntry.COLUMN_STATE + " TEXT" + ");");
+				+ LocationEntry.COLUMN_REMARK + " TEXT,"+ LocationEntry.COLUMN_STATE + " TEXT,"
+				+ LocationEntry.COLUMN_ADDRESS + " TEXT" + ");");
 	}
 
 	@Override
@@ -397,6 +401,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		contentValues.put(MediaEntry.COLUMN_CREATE_TIME, media.getCreateTime());
 		contentValues.put(MediaEntry.COLUMN_TIME, media.getTime());
 		contentValues.put(MediaEntry.COLUMN_REASON, media.getReason());
+		contentValues.put(MediaEntry.COLUMN_LATITUDE, media.getLatitude());
+		contentValues.put(MediaEntry.COLUMN_LONGITUDE, media.getLongitude());
 
 		long id = sqliteDatabase.insert(MediaEntry.TABLE_NAME, null, contentValues);
 		LogUtils.i(TAG, "insertMonitorMedia" + id);
@@ -426,6 +432,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			contentValues.put(MediaEntry.COLUMN_CREATE_TIME, media.getCreateTime());
 			contentValues.put(MediaEntry.COLUMN_TIME, media.getTime());
 			contentValues.put(MediaEntry.COLUMN_REASON, media.getReason());
+			contentValues.put(MediaEntry.COLUMN_LATITUDE, media.getLatitude());
+			contentValues.put(MediaEntry.COLUMN_LONGITUDE, media.getLongitude());
 			long id = sqliteDatabase.insert(MediaEntry.TABLE_NAME, null, contentValues);
 			LogUtils.i(TAG, "insertMonitorMedia" + id);
 		}
@@ -455,6 +463,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		contentValues.put(MediaEntry.COLUMN_CREATE_TIME, media.getCreateTime());
 		contentValues.put(MediaEntry.COLUMN_TIME, media.getTime());
 		contentValues.put(MediaEntry.COLUMN_REASON, media.getReason());
+		contentValues.put(MediaEntry.COLUMN_LATITUDE, media.getLatitude());
+		contentValues.put(MediaEntry.COLUMN_LONGITUDE, media.getLongitude());
 		int row = sqliteDatabase.update(MediaEntry.TABLE_NAME, contentValues,
 				MediaEntry.COLUMN_UUID + "=?", new String[] { media.getId() + "" });
 		LogUtils.i(TAG, "updateMonitorMedia" + row);
@@ -486,6 +496,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			contentValues.put(MediaEntry.COLUMN_CREATE_TIME, media.getCreateTime());
 			contentValues.put(MediaEntry.COLUMN_TIME, media.getTime());
 			contentValues.put(MediaEntry.COLUMN_REASON, media.getReason());
+			contentValues.put(MediaEntry.COLUMN_LATITUDE, media.getLatitude());
+			contentValues.put(MediaEntry.COLUMN_LONGITUDE, media.getLongitude());
 			int row = sqliteDatabase.update(MediaEntry.TABLE_NAME, contentValues,
 					MediaEntry.COLUMN_UUID + "=?", new String[] { media.getId() + "" });
 			LogUtils.i(TAG, "updateMonitorMedia" + row);
@@ -530,7 +542,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			media.setCreateTime(result.getString(result.getColumnIndex(MediaEntry.COLUMN_CREATE_TIME)));
 			media.setTime(result.getString(result.getColumnIndex(MediaEntry.COLUMN_TIME)));
 			media.setReason(result.getString(result.getColumnIndex(MediaEntry.COLUMN_REASON)));
-
+			media.setLongitude(result.getString(result.getColumnIndex(MediaEntry.COLUMN_LONGITUDE)));
+			media.setLatitude(result.getString(result.getColumnIndex(MediaEntry.COLUMN_LATITUDE)));
 			list.add(media);
 		}
 		LogUtils.i(TAG, "listUnUploadMonitorMediaByUserId" + list.size());
@@ -564,6 +577,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			media.setCreateTime(result.getString(result.getColumnIndex(MediaEntry.COLUMN_CREATE_TIME)));
 			media.setTime(result.getString(result.getColumnIndex(MediaEntry.COLUMN_TIME)));
 			media.setReason(result.getString(result.getColumnIndex(MediaEntry.COLUMN_REASON)));
+			media.setLongitude(result.getString(result.getColumnIndex(MediaEntry.COLUMN_LONGITUDE)));
+			media.setLatitude(result.getString(result.getColumnIndex(MediaEntry.COLUMN_LATITUDE)));
 			list.add(media);
 		}
 		LogUtils.i(TAG, "listMonitorMediaByGroupUploadId" + list.size());
@@ -597,6 +612,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			media.setCreateTime(result.getString(result.getColumnIndex(MediaEntry.COLUMN_CREATE_TIME)));
 			media.setTime(result.getString(result.getColumnIndex(MediaEntry.COLUMN_TIME)));
 			media.setReason(result.getString(result.getColumnIndex(MediaEntry.COLUMN_REASON)));
+			media.setLongitude(result.getString(result.getColumnIndex(MediaEntry.COLUMN_LONGITUDE)));
+			media.setLatitude(result.getString(result.getColumnIndex(MediaEntry.COLUMN_LATITUDE)));
 			break;
 		}
 		LogUtils.i(TAG, "findMonitorMediaById" + monitorMediaId);
@@ -617,6 +634,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 		int row = sqlDb.delete(MediaEntry.TABLE_NAME, MediaEntry.COLUMN_UUID + " in (" + sb.toString()
 				+ ")", null);
+		//删除完数据后把该数据的位置信息也删除
+		for(MonitorMedia media:monitorMediaList){
+			deleteMonitorLocation(media.getId());
+		}
+
 		LogUtils.i(TAG, "deleteMonitorMediaList-row=" + row);
 	}
 
@@ -626,6 +648,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		int row = sqlDb
 				.delete(MediaEntry.TABLE_NAME, MediaEntry.COLUMN_UUID + " = '" + monitorMediaId+"'", null);
 		LogUtils.i(TAG, "deleteMonitorMedia-row=" + row);
+		//删除完数据后把该数据的位置信息也删除
+		deleteMonitorLocation(monitorMediaId);
 		return row;
 	}
 	
@@ -637,9 +661,92 @@ public class DBHelper extends SQLiteOpenHelper {
 		LogUtils.i(TAG, "deleteMonitorMedia-row=" + row);
 	}
 	
-	
+	//位置相关
+	/** 插入一个数据 */
+	public long insertMonitorLocation(MonitorLocation location) {
+		long id=-1;
+		SQLiteDatabase sqliteDatabase = getWritableDatabase();
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(LocationEntry.COLUMN_UUID, location.getId());
+		contentValues.put(LocationEntry.COLUMN_USER_ID, location.getUserId());
+		contentValues.put(LocationEntry.COLUMN_MEDIA_ID, location.getMediaId());
+		contentValues.put(LocationEntry.COLUMN_CREATE_TIME,location.getCreateTime());
+		contentValues.put(LocationEntry.COLUMN_LATITUDE, location.getLatitude()+"");
+		contentValues.put(LocationEntry.COLUMN_LONGITUDE, location.getLongitude()+"");
+		contentValues.put(LocationEntry.COLUMN_REMARK,location.getRemark());
+		contentValues.put(LocationEntry.COLUMN_STATE,location.getState()+"");
+		contentValues.put(LocationEntry.COLUMN_ADDRESS,location.getAddress());
+		id = sqliteDatabase.insert(LocationEntry.TABLE_NAME, null, contentValues);
+		LogUtils.i(TAG, "insertMonitorLocation" + id);
+		return id;
+	}
 
-	
+	/** 更新一个数据 */
+	public long updateMonitorLocation(MonitorLocation location) {
+		LogUtils.i(TAG, "更新MonitorLocation－－" + location.toString());
+
+		SQLiteDatabase sqliteDatabase = getWritableDatabase();
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(LocationEntry.COLUMN_UUID, location.getId());
+		contentValues.put(LocationEntry.COLUMN_USER_ID, location.getUserId());
+		contentValues.put(LocationEntry.COLUMN_MEDIA_ID, location.getMediaId());
+		contentValues.put(LocationEntry.COLUMN_CREATE_TIME,location.getCreateTime());
+		contentValues.put(LocationEntry.COLUMN_LATITUDE, location.getLatitude()+"");
+		contentValues.put(LocationEntry.COLUMN_LONGITUDE, location.getLongitude()+"");
+		contentValues.put(LocationEntry.COLUMN_REMARK,location.getRemark());
+		contentValues.put(LocationEntry.COLUMN_STATE,location.getState()+"");
+		contentValues.put(LocationEntry.COLUMN_ADDRESS,location.getAddress());
+
+		long row = sqliteDatabase.update(LocationEntry.TABLE_NAME, contentValues, LocationEntry.COLUMN_UUID + "=?",
+				new String[] { location.getId() + "" });
+		LogUtils.i(TAG, "updateMonitorLocation" + row);
+		return row;
+	}
+
+	/** 获取表数据 */
+	public List<MonitorLocation> listMonitorLocation(String userId,String mediaId) {
+		SQLiteDatabase sqliteDatabase = getReadableDatabase();
+		String sql="";
+		String[] params=null;
+		if(TextUtils.isEmpty(mediaId)){
+			sql="SELECT * FROM " + LocationEntry.TABLE_NAME + " WHERE "
+					+ LocationEntry.COLUMN_USER_ID + "=?";
+			params= new String[] { userId + ""};
+		}else{
+			sql="SELECT * FROM " + LocationEntry.TABLE_NAME + " WHERE "
+					+ LocationEntry.COLUMN_USER_ID + "=? and "+LocationEntry.COLUMN_MEDIA_ID+"=?";
+			params= new String[] { userId + "",mediaId+""};
+		}
+		Cursor result = sqliteDatabase.rawQuery(sql,params);
+		List<MonitorLocation> list = new ArrayList<MonitorLocation>();
+		while (result.moveToNext()) {
+			MonitorLocation location = new MonitorLocation();
+			location.setId(result.getString(result.getColumnIndex(LocationEntry.COLUMN_UUID)));
+			location.setUserId(result.getString(result.getColumnIndex(LocationEntry.COLUMN_USER_ID)));
+			location.setMediaId(result.getString(result.getColumnIndex(LocationEntry.COLUMN_MEDIA_ID)));
+			location.setCreateTime(result.getString(result.getColumnIndex(LocationEntry.COLUMN_CREATE_TIME)));
+			location.setLongitude(result.getString(result.getColumnIndex(LocationEntry.COLUMN_LONGITUDE)));
+			location.setLatitude(result.getString(result.getColumnIndex(LocationEntry.COLUMN_LATITUDE)));
+			location.setRemark(result.getString(result.getColumnIndex(LocationEntry.COLUMN_REMARK)));
+			location.setState(result.getString(result.getColumnIndex(LocationEntry.COLUMN_STATE)));
+			location.setAddress(result.getString(result.getColumnIndex(LocationEntry.COLUMN_ADDRESS)));
+			list.add(location);
+		}
+		LogUtils.i(TAG, "listMonitorLocation" + list.size());
+		result.close();
+		return list;
+	}
+
+	/** 删除数据 */
+	public int deleteMonitorLocation(String mediaId) {
+		SQLiteDatabase sqlDb = getWritableDatabase();
+		int row = sqlDb
+				.delete(LocationEntry.TABLE_NAME, LocationEntry.COLUMN_MEDIA_ID + " = '" + mediaId+"'", null);
+		LogUtils.i(TAG, "deleteMonitorLocation-row=" + row);
+		return row;
+	}
+
+
 	//排序相关
 	
 	private void sortUploadGroupListByTime(List<MonitorMediaGroupUpload> list){

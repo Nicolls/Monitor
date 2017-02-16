@@ -56,11 +56,11 @@
         android:layout_above="@id/photo_show_bottom_bar"
         android:id="@+id/view_detail_scroll"
         android:visibility="gone"
+        android:padding="15dp"
         >
         <include
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="15dp"
             layout="@layout/view_media_detail"
             />
     </ScrollView>

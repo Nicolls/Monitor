@@ -61,6 +61,7 @@ import com.egovcomm.monitor.common.BaseApplication;
 import com.egovcomm.monitor.db.DBHelper;
 import com.egovcomm.monitor.db.MonitorTable;
 import com.egovcomm.monitor.ftp.FTPMediaUtil;
+import com.egovcomm.monitor.model.MonitorLocation;
 import com.egovcomm.monitor.model.MonitorMedia;
 import com.egovcomm.monitor.model.MonitorMediaGroup;
 import com.egovcomm.monitor.model.MonitorMediaGroupUpload;
@@ -93,6 +94,7 @@ import com.google.gson.Gson;
  */
 public class VideoRecordActivity extends BaseActivity implements TextureView.SurfaceTextureListener{
 
+	private static final long REQUEST_CAMERA_UPLOAD_LOCATION_SPACE_TIME=4;//视频拍摄间隔3秒上传一次位置
 	private Camera mCamera;
 	private TextureView mPreview;
 	private MediaRecorder mMediaRecorder;
@@ -104,6 +106,7 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 	private ImageButton recordButton;
 	private TextView timeTv;
 	private String path = "";
+	private String mediaId = "";
 	private long recordTime = 0;// 单位是豪秒
 	private int screenOrientation = 0;// 屏幕方向
 	private AlertDialog dialog = null;
@@ -124,7 +127,6 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_video_record);
-		BaseApplication.status = BaseApplication.STATUS_WORKING;
 		mIBVideoData = (ImageButton) findViewById(R.id.video_btn_data);
 		mPreview = (TextureView) findViewById(R.id.surface_view);
 		mPreview.setSurfaceTextureListener(this);
@@ -143,7 +145,6 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 
 	/** 计时线程 */
 	private synchronized void startTimeThread() {
-
 		new Thread(new Runnable() {
 
 			@Override
@@ -151,6 +152,22 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 				while (isRecording) {
 					recordTime += 10;
 					if (recordTime % 1000 == 0) {
+						//记录数据位置信息 ，每1秒记录一个位置
+						/*
+						if(!TextUtils.isEmpty(mediaId)){
+							//插入数据的位置信息
+							MonitorLocation location=new MonitorLocation();
+							location.setId(UUID.randomUUID().toString());
+							location.setMediaId(mediaId);
+							location.setUserId(SPUtils.getUser(getApplicationContext()).getUserID());
+							location.setLongitude(BaseApplication.longitude+"");
+							location.setLatitude(BaseApplication.latitude+"");
+							location.setAddress(BaseApplication.address);
+							location.setCreateTime(TimeUtils.getFormatNowTime(TimeUtils.SIMPLE_FORMAT));
+							location.setRemark("");
+							location.setState("");
+							DBHelper.getInstance(VideoRecordActivity.this).insertMonitorLocation(location);
+						}*/
 						Message msg = Message.obtain();
 						msg.obj = TimeUtils.formatTimeMillisToHMS(recordTime);
 						if (handler != null) {
@@ -214,6 +231,10 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 					recordButton.setSelected(false);
 					isRecording = false;
 					mCamera.stopPreview();
+					BaseApplication.uploadLocationSpaceTime=BaseApplication.REQUEST_UPLOAD_LOCATION_SPACE_TIME;
+					BaseApplication.status = BaseApplication.STATUS_ONLINE;
+					BaseApplication.mediaId="";
+
 					alertSaveData();
 				} else {
 					recordButton.setSelected(true);
@@ -229,12 +250,22 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 									public void startSuccess(
 											MediaRecorder mediaRecorder,
 											String videoPath) {
+
 										recordTime = 0;
 										isRecording = true;
 										mMediaRecorder = mediaRecorder;
 										// ToastUtils.toast(getApplicationContext(),
 										// "开始录制：" + videoPath);
 										path = videoPath;
+										if(!TextUtils.isEmpty(path)){
+											File file=new File(path);
+											if(file!=null&&file.exists()){
+												mediaId=FileUtils.getFileNameNoEx(file.getName());
+												BaseApplication.uploadLocationSpaceTime=REQUEST_CAMERA_UPLOAD_LOCATION_SPACE_TIME;
+												BaseApplication.mediaId=mediaId;
+												BaseApplication.status = BaseApplication.STATUS_WORKING;
+											}
+										}
 										isRecording = true;
 										startTimeThread();
 										isCameraStateReady=true;
@@ -293,6 +324,8 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 						media.setCreateTime(TimeUtils.getFormatNowTime(TimeUtils.SIMPLE_FORMAT));
 						media.setTime(TimeUtils.getFormatNowTime("yyyy-MM-dd HH:mm")+":00");
 						media.setReason("");
+						media.setLongitude(BaseApplication.longitude+"");
+						media.setLatitude(BaseApplication.latitude+"");
 						DBHelper.getInstance(VideoRecordActivity.this).insertMonitorMedia(
 								media);
 						LogUtils.i(tag, "数据库插入视频文件数据成功");
@@ -314,6 +347,9 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 			public void onClick(DialogInterface dialog, int which) {
 				mIBVideoData.setVisibility(View.VISIBLE);
 				isCameraStateReady=true;
+				if(!TextUtils.isEmpty(mediaId)){//如果有创建则删除位置信息
+					DBHelper.getInstance(VideoRecordActivity.this).deleteMonitorLocation(mediaId);
+				}
 				if(!TextUtils.isEmpty(path)){
 					try {
 						File f=new File(path);
@@ -389,6 +425,9 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 		if (isRecording && !TextUtils.isEmpty(path)) {// 如果正在录制，则删除掉
 			File f = new File(path);
 			f.delete();
+			if(!TextUtils.isEmpty(mediaId)){//如果有创建则删除位置信息
+				DBHelper.getInstance(VideoRecordActivity.this).deleteMonitorLocation(mediaId);
+			}
 			LogUtils.i(TAG, "删除视频文件" + path);
 		}
 		recordButton.setSelected(false);
@@ -451,7 +490,9 @@ public class VideoRecordActivity extends BaseActivity implements TextureView.Sur
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		BaseApplication.uploadLocationSpaceTime=BaseApplication.REQUEST_UPLOAD_LOCATION_SPACE_TIME;
 		BaseApplication.status = BaseApplication.STATUS_ONLINE;
+		BaseApplication.mediaId="";
 	}
 	
 	

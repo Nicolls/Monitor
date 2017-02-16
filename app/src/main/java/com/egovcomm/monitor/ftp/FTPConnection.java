@@ -95,7 +95,8 @@ public class FTPConnection implements DataUpdateListener {
 	 * @throws IOException
 	 */
 	private void initConnect(String host, int port, String user, String password) throws IOException {
-		System.out.println("初始化链接" + workingDirectory);
+		LogUtils.i(TAG,"初始化链接!");
+		LogUtils.i(TAG,"服务器："+host+" 端口："+port+" 用户名："+user+" 密码："+password);
 		ftp.connect(host, port);
 
 		int reply = ftp.getReplyCode();
@@ -384,6 +385,8 @@ public class FTPConnection implements DataUpdateListener {
 				m.setExt(media.getFileSuffix());
 				m.setRemark(media.getRemark());
 				m.setReason(media.getReason());
+				m.setLongitude(media.getLongitude());
+				m.setLatitude(media.getLatitude());
 				fileList.add(m);
 			}
 			req.setFileList(fileList);

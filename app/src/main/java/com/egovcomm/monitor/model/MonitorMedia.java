@@ -43,6 +43,8 @@ public class MonitorMedia implements Parcelable {
 	private String createTime;//创建时间
 	private String time;//时间
 	private String reason;//事由
+	private String longitude;//经度
+	private String latitude;//纬度
 	public MonitorMedia() {}
 	public String formatTime(Date date) {
 		String result = "";
@@ -94,6 +96,8 @@ public class MonitorMedia implements Parcelable {
 		dest.writeString(createTime);
 		dest.writeString(time);
 		dest.writeString(reason);
+		dest.writeString(longitude);
+		dest.writeString(latitude);
 	}
 
 	public static final Creator<MonitorMedia> CREATOR = new Creator<MonitorMedia>() {
@@ -130,13 +134,15 @@ public class MonitorMedia implements Parcelable {
 		createTime= in.readString();
 		time= in.readString();
 		reason=in.readString();
+		longitude = in.readString();
+		latitude = in.readString();
 	}
 	
 	@Override
 	public String toString() {
 		String result="id="+id+",userId="+userId+",groupUploadId="+groupUploadId+",shootingLocation="+shootingLocation+",mark="+remark+
 				",uploadTime="+uploadTime+",time="+time+",reason="+reason+",fileName="+fileName+",fileSize="+fileSize+
-				",path="+path+",fileSuffix="+fileSuffix+",fileState="+fileState+",orientation="+orientation+",uploadState="+uploadState+",thumbnailPath"+thumbnailPath+",mediaType="+mediaType+",showCheck="+showCheck+",check="+check+",createTime="+createTime;
+				",path="+path+",fileSuffix="+fileSuffix+",fileState="+fileState+",orientation="+orientation+",uploadState="+uploadState+",thumbnailPath"+thumbnailPath+",mediaType="+mediaType+",showCheck="+showCheck+",check="+check+",createTime="+createTime+",longitude="+longitude+",latitude="+latitude;
 		return result;
 	}
 	public String getId() {
@@ -273,5 +279,16 @@ public class MonitorMedia implements Parcelable {
 	public void setCreateTime(String createTime) {
 		this.createTime = createTime;
 	}
-
+	public String getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+	public String getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
 }

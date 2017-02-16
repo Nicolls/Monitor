@@ -60,6 +60,8 @@ public class PhotoShowActivity extends BaseActivity {
 		if(media!=null){
 			((TextView)findViewById(R.id.item_name)).setText("标题："+media.getRemark());
 			((TextView)findViewById(R.id.item_location)).setText("拍摄地点："+media.getShootingLocation());
+			((TextView)findViewById(R.id.item_longitude)).setText("经度："+media.getLongitude());
+			((TextView)findViewById(R.id.item_latitude)).setText("纬度："+media.getLatitude());
 			((TextView)findViewById(R.id.item_size)).setText("文件大小："+ FileUtils.getFileSize(Long.parseLong(media.getFileSize())));
 			((TextView)findViewById(R.id.item_create_time)).setText(media.getCreateTime()==null?"上传时间："+media.getUploadTime():"创建时间："+media.getCreateTime());
 			((TextView)findViewById(R.id.item_time)).setText("触发时间："+(media.getTime()==null?"":media.getTime()));

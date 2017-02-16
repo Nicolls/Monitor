@@ -14,6 +14,9 @@ import android.text.TextUtils;
  * Application基类
  * */
 public class BaseApplication extends Application{
+	public static final int REQUEST_UPLOAD_LOCATION_SPACE_TIME=8;//上传位置时间间隔，秒
+	public static final int FAIL_LOCATION_TIP_SPACE_TIME=5;//上传位置时间间隔，秒
+
 	public static final int STATUS_OFFLINE=0;
 	public static final int STATUS_ONLINE=1;
 	public static final int STATUS_WORKING=2;
@@ -22,7 +25,9 @@ public class BaseApplication extends Application{
 	public static double latitude;
 	public static String address;
 	public static int status=STATUS_OFFLINE;//状态，0离线，1在线，2，拍传
+	public static String mediaId="";//正在拍传的媒体ID,只有当status=2时才会有值
 
+	public static long uploadLocationSpaceTime=REQUEST_UPLOAD_LOCATION_SPACE_TIME;//上传位置间隔时间
 	public static boolean isUpdating=false;//是否在更新状态
 	@Override
 	public void onCreate() {

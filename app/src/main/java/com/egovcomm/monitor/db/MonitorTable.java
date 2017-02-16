@@ -59,6 +59,8 @@ public final class MonitorTable {
 		public static final String COLUMN_CREATE_TIME = "CREATE_TIME";
 		public static final String COLUMN_TIME = "TIME";
 		public static final String COLUMN_REASON = "REASON";
+		public static final String COLUMN_LONGITUDE = "LONGITUDE";
+		public static final String COLUMN_LATITUDE = "LATITUDE";
 	}
 
 	/** 位置表 */
@@ -66,12 +68,13 @@ public final class MonitorTable {
 		public static final String TABLE_NAME = "location";
 		public static final String COLUMN_UUID = "UUID";
 		public static final String COLUMN_USER_ID = "USER_ID";
-		public static final String COLUMN_DEPARTMENT_ID = "DEPARTMENT_ID";
+		public static final String COLUMN_MEDIA_ID = "MEDIA_ID";
 		public static final String COLUMN_CREATE_TIME = "CREATE_TIME";
 		public static final String COLUMN_LONGITUDE = "LONGITUDE";
 		public static final String COLUMN_LATITUDE = "LATITUDE";
 		public static final String COLUMN_REMARK = "REMARK";
 		public static final String COLUMN_STATE = "STATE";
+		public static final String COLUMN_ADDRESS = "COLUMN_ADDRESS";
 	}
 
 }
