@@ -132,6 +132,7 @@ public class PhotoCaptureActivity extends BaseActivity implements TextureView.Su
 						media.setLatitude(BaseApplication.latitude+"");
 						//插入数据
 						DBHelper.getInstance(PhotoCaptureActivity.this).insertMonitorMedia(media);
+						LogUtils.i(tag,"插入数据完成!!!!!!!!!!!!!!!!@@@@@@@@@@@@@@@@@");
 						uploadLocation(media.getId());
 						/*
 						//插入数据的位置信息
@@ -260,7 +261,9 @@ public class PhotoCaptureActivity extends BaseActivity implements TextureView.Su
 
 	/** 上传位置信息 */
 	private void uploadLocation(String mediaId) {
+		LogUtils.i(tag,"开始上传位置－－"+mediaId);
 		if (mEBikeRequestService != null) {
+//			ToastUtils.toast(this,"开始上传位置－－"+mediaId+"--"+BaseApplication.latitude);
 			mEBikeRequestService.uploadLocation(BaseApplication.longitude,
 					BaseApplication.latitude,BaseApplication.address, BaseApplication.STATUS_WORKING,mediaId);
 		}
