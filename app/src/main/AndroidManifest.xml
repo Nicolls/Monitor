@@ -62,7 +62,7 @@
             android:name="com.egovcomm.monitor.activity.WelcomeActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
-            <intent-filter>
+           <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -141,6 +141,14 @@
             android:theme="@style/Base.Theme.AppCompat.Light.Dialog"
             android:screenOrientation="portrait" >
         </activity>
+
+        <!--从系统中选择数据-->
+
+        <activity
+            android:name="com.egovcomm.monitor.activity.SystemMediaUploadActivity"
+            android:label="@string/app_name">
+        </activity>
+
 
         <service
             android:name="com.egovcomm.monitor.ftp.FTPService"

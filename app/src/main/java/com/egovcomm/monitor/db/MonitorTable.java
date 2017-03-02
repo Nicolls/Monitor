@@ -6,6 +6,7 @@ public final class MonitorTable {
 	// To prevent someone from accidentally instantiating the contract class,
 	// give it an empty constructor.
 	public static final String NULL_VALUE="0";
+	public static final String SYSTEM_VALUE="-1";//用来表示是从系统中提取的
 	private MonitorTable() {
 	}
 

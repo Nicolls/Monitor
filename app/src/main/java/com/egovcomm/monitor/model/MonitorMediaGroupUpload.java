@@ -29,6 +29,9 @@ public class MonitorMediaGroupUpload implements Parcelable {
 	public static final String UPLOAD_STATE_UPLOAD_FAIL="3";
 	/**获取已取消的*/
 	public static final String UPLOAD_STATE_UPLOAD_CANCEL="4";
+
+	/**系统相册中的文件*/
+	public static final String UPLOAD_STATE_SYSTEM="5";
 	
 	/**获取服务器上返回的*/
 	public static final String UPLOAD_STATE_SERVER_DATA="5";

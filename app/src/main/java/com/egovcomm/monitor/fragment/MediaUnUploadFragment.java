@@ -35,6 +35,7 @@ import com.egovcomm.monitor.R;
 import com.egovcomm.monitor.activity.MediaDataActivity;
 import com.egovcomm.monitor.activity.MediaModifyActivity;
 import com.egovcomm.monitor.activity.PhotoShowActivity;
+import com.egovcomm.monitor.activity.SystemMediaUploadActivity;
 import com.egovcomm.monitor.activity.VideoPlayActivity;
 import com.egovcomm.monitor.activity.VideoRecordActivity;
 import com.egovcomm.monitor.adapter.EBBaseAdapter;
@@ -73,7 +74,7 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> implem
 		View view = super.onCreateView(inflater, container, savedInstanceState);
 		mListViewPulltorefreshLayout.setPull2RefreshEnable(false);
 		mSearchBar.setVisibility(View.GONE);
-		btnCancel.setVisibility(View.GONE);
+		btnCancel.setText("相册");
 		mListView.setOnItemLongClickListener(this);
 		listViewRefresh();
 		return view;
@@ -232,7 +233,9 @@ public class MediaUnUploadFragment extends BaseListFragment<MonitorMedia> implem
 		switch (v.getId()) {
 
 		case R.id.view_operate_cancel:
-
+			HashMap<String,Object> map=new HashMap<String, Object>();
+			map.put("mediaType",mediaType);
+			((BaseActivity)getActivity()).openActivity(SystemMediaUploadActivity.class,map,false);
 			break;
 		case R.id.view_operate_deleted:
 			deletedList(list);

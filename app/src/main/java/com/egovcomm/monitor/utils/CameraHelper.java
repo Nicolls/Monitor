@@ -18,8 +18,11 @@ package com.egovcomm.monitor.utils;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -455,7 +458,7 @@ public class CameraHelper {
 
 
 		        // Step 4: Set output file
-		        path=getOutputMediaFile(context,
+		        path=FileUtils.getOutputMediaFile(context,
 		                CameraHelper.MEDIA_TYPE_VIDEO).toString();
 		        mMediaRecorder.setOutputFile(path);
 		        // END_INCLUDE (configure_media_recorder)
@@ -551,71 +554,8 @@ public class CameraHelper {
 		return null;
 	}
 
-	/**
-	 * Creates a media file in the {@code Environment.DIRECTORY_PICTURES}
-	 * directory. The directory is persistent and available to other
-	 * applications like gallery.
-	 *
-	 * @param type
-	 *            Media type. Can be video or image.
-	 * @return A file object pointing to the newly created file.
-	 */
-	public static File getOutputMediaFile(Context context,int type) {
-		File mediaStorageDir=new File(FileUtils.getAppStorageOriginalDirectoryPath(context));
-		// Create a media file name
-		//String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-		String timeStamp =UUID.randomUUID().toString();
-		File mediaFile;
-		if (type == MEDIA_TYPE_IMAGE) {
-			mediaFile = new File(mediaStorageDir.getPath() + File.separator  + timeStamp + ".jpg");
-		} else if (type == MEDIA_TYPE_VIDEO) {
-			mediaFile = new File(mediaStorageDir.getPath() + File.separator  + timeStamp + ".mp4");
-		} else {
-			return null;
-		}
 
-		return mediaFile;
-	}
-	
-	public static File saveData(Context context,byte[] data,int mediaType,int screenOrientation){
-		String path="";
-		File saveFile=null;
-		saveFile=getOutputMediaFile(context,mediaType);
-		path=saveFile.getAbsolutePath();
-		if(mediaType==MEDIA_TYPE_IMAGE){
-			Bitmap b = null;
-			if(null != data){
-				b = BitmapFactory.decodeByteArray(data, 0, data.length);
-			}
-			if(null != b){
-				if(screenOrientation==SCREEN_PORTRAIT){
-					b = getRotateBitmap(b, 90.0f);
-				}
-				try {
-					FileOutputStream fos=new FileOutputStream(saveFile);
-					BufferedOutputStream bos = new BufferedOutputStream(fos);
-					b.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-					bos.flush();
-					bos.close();
-					
-				} catch (Exception e) {
-					LogUtils.e(TAG, "保存图片数据的时候有问题");
-				}
-			}
-			
-			
-		}else if(mediaType==MEDIA_TYPE_VIDEO){
-			
-		}
-		
-		return saveFile;
-	}
-	
-	public static Bitmap getRotateBitmap(Bitmap b, float rotateDegree){
-		Matrix matrix = new Matrix();
-		matrix.postRotate((float)rotateDegree);
-		Bitmap rotaBitmap = Bitmap.createBitmap(b, 0, 0, b.getWidth(), b.getHeight(), matrix, false);
-		return rotaBitmap;
-	}
+
+
 
 }

@@ -258,7 +258,7 @@ public abstract class BaseListFragment<T> extends BaseFragment implements OnClic
 
 	/** 加载listView */
 	protected void loadListView(List<T> list) {
-		if (operate == 0) {// 刷新
+		if (operate == 0&&dataList!=null) {// 刷新
 			dataList.clear();
 		}
 		if (list == null || list.size() < pageSize) {// 没有更多数据了
@@ -271,9 +271,12 @@ public abstract class BaseListFragment<T> extends BaseFragment implements OnClic
 			key="";
 			setPageSize(MAX_PAGE_SIZE);
 		}
-		dataList.addAll(list);
+		if(dataList!=null&&list!=null){
+			dataList.addAll(list);
+		}
 
-		if (dataList.size() <= 0) {
+
+		if (dataList==null||dataList.size() <= 0) {
 			mNoMoreData.setVisibility(View.VISIBLE);
 		} else {
 			mNoMoreData.setVisibility(View.GONE);

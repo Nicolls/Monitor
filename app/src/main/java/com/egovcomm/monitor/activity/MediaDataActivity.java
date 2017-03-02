@@ -54,6 +54,7 @@ public class MediaDataActivity extends CommonPagerActivity implements OnClickLis
 	private ListPopupWindow popupWindow;
 	private boolean isPopWindowShow=false;
 	List<ItemEntity> filterList=new ArrayList<ItemEntity>();
+	public static final String ACTION_CHANGE_FRAGMENT_PAGER="ACTION_CHANGE_FRAGMENT_PAGER";//切换页
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -62,7 +63,7 @@ public class MediaDataActivity extends CommonPagerActivity implements OnClickLis
 		mBack.setOnClickListener(this);
 		mRightTv.setOnClickListener(this);
 		mRightIv.setOnClickListener(this);
-		
+
 		dataList.clear();
 		mTabBar.setVisibility(View.VISIBLE);
 		mPagerTab.setVisibility(View.GONE);
@@ -211,7 +212,9 @@ public class MediaDataActivity extends CommonPagerActivity implements OnClickLis
 
 	/**广播监听*/
 	public void setBroadCastListener(){
-		IntentFilter filter=new IntentFilter(FTPService.FTP_BROAD_CAST_ACTION_MEDIA_UPLOAD);
+		IntentFilter filter=new IntentFilter();
+		filter.addAction(FTPService.FTP_BROAD_CAST_ACTION_MEDIA_UPLOAD);
+		filter.addAction(ACTION_CHANGE_FRAGMENT_PAGER);
 		registerReceiver(receiver, filter);
 	}
 	
@@ -221,30 +224,34 @@ public class MediaDataActivity extends CommonPagerActivity implements OnClickLis
 		
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if(intent!=null&&intent.getAction()!=null&&TextUtils.equals(FTPService.FTP_BROAD_CAST_ACTION_MEDIA_UPLOAD, intent.getAction())){
+			if (intent != null && intent.getAction() != null && TextUtils.equals(FTPService.FTP_BROAD_CAST_ACTION_MEDIA_UPLOAD, intent.getAction())) {
 				LogUtils.i(TAG, "收到FTP广播");
-				int code=intent.getIntExtra(FTPService.FTP_KEY_CODE,FTPService.FTP_CODE_SUCCESS);
-				String groupId=intent.getStringExtra(FTPService.FTP_KEY_GROUP_ID);
-				String mediaId=intent.getStringExtra(FTPService.FTP_KEY_MEDIA_ID);
-				String message=intent.getStringExtra(FTPService.FTP_KEY_MESSAGE);
-				int progress=intent.getIntExtra(FTPService.FTP_KEY_PROGRESS,0);
-				LogUtils.i(TAG, code+"-"+groupId+"-"+mediaId+"-"+message+"-"+progress);
-				if(code==FTPService.FTP_CODE_UPLOADING_GROUP){//正在上传
-					if(uploadingFragment!=null){
+				int code = intent.getIntExtra(FTPService.FTP_KEY_CODE, FTPService.FTP_CODE_SUCCESS);
+				String groupId = intent.getStringExtra(FTPService.FTP_KEY_GROUP_ID);
+				String mediaId = intent.getStringExtra(FTPService.FTP_KEY_MEDIA_ID);
+				String message = intent.getStringExtra(FTPService.FTP_KEY_MESSAGE);
+				int progress = intent.getIntExtra(FTPService.FTP_KEY_PROGRESS, 0);
+				LogUtils.i(TAG, code + "-" + groupId + "-" + mediaId + "-" + message + "-" + progress);
+				if (code == FTPService.FTP_CODE_UPLOADING_GROUP) {//正在上传
+					if (uploadingFragment != null) {
 						uploadingFragment.dataNodify(groupId, MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADING, progress);
 					}
-				}else if(code==FTPService.FTP_CODE_UPLOAD_GROUP_SUCCESS){//上传完成
-					if(uploadingFragment!=null){
+				} else if (code == FTPService.FTP_CODE_UPLOAD_GROUP_SUCCESS) {//上传完成
+					if (uploadingFragment != null) {
 						uploadingFragment.dataNodify(groupId, MonitorMediaGroupUpload.UPLOAD_STATE_UPLOADED, progress);
 					}
-				}else if(code==FTPService.FTP_CODE_UPLOAD_GROUP_ERROR){//上传失败
-					if(MediaDataActivity.this!=null){
-						ToastUtils.toast(MediaDataActivity.this,"上传失败，请检查网络设置");
+				} else if (code == FTPService.FTP_CODE_UPLOAD_GROUP_ERROR) {//上传失败
+					if (MediaDataActivity.this != null) {
+						ToastUtils.toast(MediaDataActivity.this, "上传失败，请检查网络设置");
 					}
-					if(uploadingFragment!=null){
+					if (uploadingFragment != null) {
 						uploadingFragment.dataNodify(groupId, MonitorMediaGroupUpload.UPLOAD_STATE_UPLOAD_FAIL, progress);
 					}
 				}
+			} else if (intent != null && intent.getAction() != null && TextUtils.equals(ACTION_CHANGE_FRAGMENT_PAGER, intent.getAction())) {//切换页
+
+				int index=intent.getIntExtra("index",0);
+				changeFragmentPager(index);
 			}
 		}
 	};

@@ -551,6 +551,52 @@ public class DBHelper extends SQLiteOpenHelper {
 		return list;
 	}
 
+	/** 获取表数据 ,系统中提取的按创建时间，其他按上传时间排序*/
+	public List<MonitorMedia> listBySystemMonitorMediaByUserId(String userId,String mediaType) {
+		SQLiteDatabase sqliteDatabase = getReadableDatabase();
+		String sql="";
+		String[] args;
+		if(!TextUtils.isEmpty(mediaType)){
+			sql="SELECT * FROM " + MediaEntry.TABLE_NAME + " WHERE "
+					+ MediaEntry.COLUMN_USER_ID + "=?"+" and "+MediaEntry.COLUMN_UPLOAD_GROUP_ID+"=? and "+MediaEntry.COLUMN_MEDIA_TYPE+"=? ORDER BY "+MediaEntry.COLUMN_CREATE_TIME+" DESC ";
+			args=new String[] { userId + "",MonitorTable.SYSTEM_VALUE,mediaType};
+		}else{
+			sql="SELECT * FROM " + MediaEntry.TABLE_NAME + " WHERE "
+					+ MediaEntry.COLUMN_USER_ID + "=?"+" and "+MediaEntry.COLUMN_UPLOAD_GROUP_ID+"=? ORDER BY "+MediaEntry.COLUMN_CREATE_TIME+" DESC ";
+			args=new String[] { userId + "",MonitorTable.SYSTEM_VALUE};
+		}
+
+		Cursor result = sqliteDatabase.rawQuery(sql, args);
+		List<MonitorMedia> list = new ArrayList<MonitorMedia>();
+		while (result.moveToNext()) {
+			MonitorMedia media = new MonitorMedia();
+			media.setId(result.getString(result.getColumnIndex(MediaEntry.COLUMN_UUID)));
+			media.setShootingLocation(result.getString(result.getColumnIndex(MediaEntry.COLUMN_SHOOTING_LOCATION)));
+			media.setFileName(result.getString(result.getColumnIndex(MediaEntry.COLUMN_FILE_NAME)));
+			media.setPath(result.getString(result.getColumnIndex(MediaEntry.COLUMN_PATH)));
+			media.setFileSize(result.getString(result.getColumnIndex(MediaEntry.COLUMN_FILE_SIZE)));
+			media.setFileState(result.getString(result.getColumnIndex(MediaEntry.COLUMN_FILE_STATE)));
+			media.setFileSuffix(result.getString(result.getColumnIndex(MediaEntry.COLUMN_FILE_SUFFIX)));
+			media.setRemark(result.getString(result.getColumnIndex(MediaEntry.COLUMN_REMARK)));
+			media.setGroupUploadId(result.getString(result.getColumnIndex(MediaEntry.COLUMN_UPLOAD_GROUP_ID)));
+			media.setUploadTime(result.getString(result.getColumnIndex(MediaEntry.COLUMN_UPLOAD_TIME)));
+			media.setUserId(result.getString(result.getColumnIndex(MediaEntry.COLUMN_USER_ID)));
+			media.setOrientation(result.getString(result.getColumnIndex(MediaEntry.COLUMN_ORIENTATIONE)));
+			media.setUploadState(result.getString(result.getColumnIndex(MediaEntry.COLUMN_UPLOAD_STATE)));
+			media.setMediaType(result.getString(result.getColumnIndex(MediaEntry.COLUMN_MEDIA_TYPE)));
+			media.setThumbnailPath(result.getString(result.getColumnIndex(MediaEntry.COLUMN_PATH_THUMBNAIL)));
+			media.setCreateTime(result.getString(result.getColumnIndex(MediaEntry.COLUMN_CREATE_TIME)));
+			media.setTime(result.getString(result.getColumnIndex(MediaEntry.COLUMN_TIME)));
+			media.setReason(result.getString(result.getColumnIndex(MediaEntry.COLUMN_REASON)));
+			media.setLongitude(result.getString(result.getColumnIndex(MediaEntry.COLUMN_LONGITUDE)));
+			media.setLatitude(result.getString(result.getColumnIndex(MediaEntry.COLUMN_LATITUDE)));
+			list.add(media);
+		}
+		LogUtils.i(TAG, "listUnUploadMonitorMediaByUserId" + list.size());
+		result.close();
+		return list;
+	}
+
 	/** 获取表数据 ,未上传按创建时间，其他按上传时间排序*/
 	public List<MonitorMedia> listMonitorMediaByGroupUploadId(String groupUploadID) {
 		SQLiteDatabase sqliteDatabase = getReadableDatabase();

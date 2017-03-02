@@ -76,13 +76,18 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> implements
 		}
 		mRightTv.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 		mRightIv.setVisibility(View.GONE);
+		boolean isHasDownload=false;
 		for (MonitorMedia media : mediaList) {
 			if (isNeedDownLoad(media)) {
+				isHasDownload=true;
 				//去判断是否下载
 //					mEBikeRequestService.downLoadMedia(getApplicationContext(),
 //							media);
 //					item.setDownloadState(MonitorMedia.DOWNLOAD_STATE_YES);
 			}
+		}
+		if(!isHasDownload){//如果没有要下载的，则把下载隐藏掉
+			mRightTv.setVisibility(View.GONE);
 		}
 		super.loadListView(mediaList);
 	}
@@ -369,13 +374,19 @@ public class MediaListActivity extends BaseListActivity<MonitorMedia> implements
 			if (TextUtils.equals(uploadGroup.getUploadState(),
 					MonitorMediaGroupUpload.UPLOAD_STATE_SERVER_DATA)) {
 				// 全部下载
+				boolean isHasDownload=false;
 				for (MonitorMedia media : mediaList) {
 					if (isNeedDownLoad(media)) {
+						isHasDownload=true;
 						media.setDownloadState(MonitorMedia.DOWNLOAD_STATE_DOWNLOADING);
 						//去判断是否下载
 						mEBikeRequestService.downLoadMedia(getApplicationContext(),
 								media);
 					}
+				}
+				if(!isHasDownload){//如果没有要下载的，则把下载隐藏掉
+					ToastUtils.toast(MediaListActivity.this,"文件已全部加载完成!");
+					mRightTv.setVisibility(View.GONE);
 				}
 				mAdapter.notifyDataSetChanged();
 			} else if (TextUtils.equals(uploadGroup.getUploadState(),

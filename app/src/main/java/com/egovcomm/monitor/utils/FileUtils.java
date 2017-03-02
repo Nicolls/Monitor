@@ -3,12 +3,15 @@
  */
 package com.egovcomm.monitor.utils;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.text.DecimalFormat;
 import java.util.UUID;
@@ -17,6 +20,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
 import android.os.Environment;
@@ -244,8 +248,94 @@ public class FileUtils {
 		}
 		return groupThumbnailPath;
 	}
-	
 
+	/**
+	 * Creates a media file in the {@code Environment.DIRECTORY_PICTURES}
+	 * directory. The directory is persistent and available to other
+	 * applications like gallery.
+	 *
+	 * @param type
+	 *            Media type. Can be video or image.
+	 * @return A file object pointing to the newly created file.
+	 */
+	public static File getOutputMediaFile(Context context,int type) {
+		File mediaStorageDir=new File(FileUtils.getAppStorageOriginalDirectoryPath(context));
+		// Create a media file name
+		//String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+		String timeStamp =UUID.randomUUID().toString();
+		File mediaFile;
+		if (type == CameraHelper.MEDIA_TYPE_IMAGE) {
+			mediaFile = new File(mediaStorageDir.getPath() + File.separator  + timeStamp + ".jpg");
+		} else if (type == CameraHelper.MEDIA_TYPE_VIDEO) {
+			mediaFile = new File(mediaStorageDir.getPath() + File.separator  + timeStamp + ".mp4");
+		} else {
+			return null;
+		}
+
+		return mediaFile;
+	}
+
+	public static File saveData(Context context,byte[] data,int mediaType,int screenOrientation){
+		String path="";
+		File saveFile=null;
+		saveFile=getOutputMediaFile(context,mediaType);
+		path=saveFile.getAbsolutePath();
+		if(mediaType==CameraHelper.MEDIA_TYPE_IMAGE){
+			Bitmap b = null;
+			if(null != data){
+				b = BitmapFactory.decodeByteArray(data, 0, data.length);
+			}
+			if(null != b){
+				if(screenOrientation==CameraHelper.SCREEN_PORTRAIT){
+					b = getRotateBitmap(b, 90.0f);
+				}
+				try {
+					FileOutputStream fos=new FileOutputStream(saveFile);
+					BufferedOutputStream bos = new BufferedOutputStream(fos);
+					b.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+					bos.flush();
+					bos.close();
+
+				} catch (Exception e) {
+					LogUtils.e(TAG, "保存图片数据的时候有问题");
+				}
+			}
+
+
+		}else if(mediaType==CameraHelper.MEDIA_TYPE_VIDEO){
+
+		}
+
+		return saveFile;
+	}
+
+	public static Bitmap getRotateBitmap(Bitmap b, float rotateDegree){
+		Matrix matrix = new Matrix();
+		matrix.postRotate((float)rotateDegree);
+		Bitmap rotaBitmap = Bitmap.createBitmap(b, 0, 0, b.getWidth(), b.getHeight(), matrix, false);
+		return rotaBitmap;
+	}
+
+	/**复制文件*/
+	public static void copyFile(File source, File dest)
+			throws IOException {
+		InputStream input = null;
+		OutputStream output = null;
+		try {
+			input = new FileInputStream(source);
+			output = new FileOutputStream(dest);
+			byte[] buf = new byte[1024];
+			int bytesRead;
+			while ((bytesRead = input.read(buf)) > 0) {
+				output.write(buf, 0, bytesRead);
+			}
+		} catch (Exception e){
+			LogUtils.e(TAG,e.getMessage());
+		}finally {
+			input.close();
+			output.close();
+		}
+	}
 
 
 	/*

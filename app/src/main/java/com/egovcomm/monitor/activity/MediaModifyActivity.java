@@ -1,5 +1,6 @@
 package com.egovcomm.monitor.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -19,7 +20,6 @@ import java.util.Calendar;
 /**
  * 视频
  *
- * @author 胡汉三
  *
  */
 public class MediaModifyActivity extends BaseActivity implements View.OnClickListener,DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
@@ -79,6 +79,9 @@ public class MediaModifyActivity extends BaseActivity implements View.OnClickLis
 		media.setShootingLocation(mEtLocation.getText().toString());
 		media.setReason(mEtReason.getText().toString());
 		DBHelper.getInstance(this).updateMonitorMedia(media);
+		Intent intent=new Intent();
+		intent.putExtra("media",media);
+		setResult(RESULT_OK,intent);
 		finish();
 	}
 	public void onCancel(View view){

@@ -27,25 +27,29 @@
             android:layout_centerVertical="true"
             android:textColor="@color/monitor_text_gray"
             android:button="@drawable/checkbox_selector" />
-        
-        <Button
-            android:id="@+id/view_operate_deleted"
-            style="@style/ButtonMediaOperate"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="120dp"
-            android:text="删除" />
+            android:orientation="horizontal"
+            >
+            <Button
+                android:id="@+id/view_operate_deleted"
+                style="@style/ButtonMediaOperate"
+                android:text="删除" />
 
-        <Button
-            android:id="@+id/view_operate_upload"
-            style="@style/ButtonMediaOperate"
-            android:layout_alignParentRight="true"
-            android:text="上传" />
+            <Button
+                android:id="@+id/view_operate_upload"
+                style="@style/ButtonMediaOperate"
+                android:text="上传" />
 
-        <Button
-            android:id="@+id/view_operate_cancel"
-            style="@style/ButtonMediaOperate"
-            android:layout_alignParentRight="true"
-            android:text="取消上传" />
+            <Button
+                android:id="@+id/view_operate_cancel"
+                style="@style/ButtonMediaOperate"
+                android:text="取消上传" />
+
+        </LinearLayout>
+
     </RelativeLayout>
 
 </LinearLayout>

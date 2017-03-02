@@ -14,8 +14,9 @@
         android:src="@drawable/back"
         android:layout_centerVertical="true"
         android:padding="@dimen/view_top_bar_padding"
-        /> 
-    
+        />
+
+
     <TextView
         android:id="@+id/top_bar_title"
         android:layout_width="wrap_content"
