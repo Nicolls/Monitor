@@ -21,10 +21,11 @@ import com.egovcomm.monitor.model.MonitorMedia;
 import com.egovcomm.monitor.model.MonitorMediaGroupUpload;
 import com.egovcomm.monitor.utils.FileUtils;
 import com.egovcomm.monitor.utils.ToastUtils;
+import com.egovcomm.monitor.view.ZoomImageView;
 
 public class PhotoShowActivity extends BaseActivity {
 
-	private ImageView imageView;
+	private ZoomImageView imageView;
 	private MonitorMedia media;
 	private List<MonitorMedia> mediaList;
 	private String path;
@@ -35,17 +36,20 @@ public class PhotoShowActivity extends BaseActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_photo_show);
+
+
+
 		media=getIntent().getParcelableExtra("media");
 		mediaList=getIntent().getParcelableArrayListExtra("mediaList");
 		path=media.getPath();
-		
+
 		mBottomBar=findViewById(R.id.photo_show_bottom_bar);
 		
-		imageView = (ImageView) this.findViewById(R.id.imageView);
-		
-		imageView.setOnTouchListener(new TouchListener());
-		detailView=findViewById(R.id.view_detail_scroll);
+		imageView = (ZoomImageView) this.findViewById(R.id.imageView);
 		imageView.setImageBitmap(BitmapFactory.decodeFile(path));
+
+		detailView=findViewById(R.id.view_detail_scroll);
+
 		mIvDeleted=(ImageView) findViewById(R.id.view_iv_deleted);
 		
 		if(TextUtils.equals(MonitorMediaGroupUpload.UPLOAD_STATE_UN_UPLOAD, media.getUploadState())
@@ -67,6 +71,7 @@ public class PhotoShowActivity extends BaseActivity {
 			((TextView)findViewById(R.id.item_time)).setText("触发时间："+(media.getTime()==null?"":media.getTime()));
 			((TextView)findViewById(R.id.item_reason)).setText("事由："+(media.getReason()==null?"":media.getReason()));
 		}
+
 	}
 
 	//显示详情

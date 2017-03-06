@@ -776,7 +776,7 @@ public class SystemMediaUploadActivity extends BaseListActivity<MonitorMedia> im
 
 			builder.setTitle("提示");
 			builder.setMessage("请选择操作!");
-			builder.setCancelable(false);
+			builder.setCancelable(true);
 			builder.setPositiveButton("删除", new OnClickListener() {
 
 				@Override

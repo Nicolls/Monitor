@@ -15,7 +15,8 @@
         android:paddingLeft="10dp" 
         android:paddingRight="10dp" 
         android:paddingTop="15dp" 
-        android:paddingBottom="15dp" 
+        android:paddingBottom="15dp"
+        android:background="@color/white"
         >
 
         <CheckBox
@@ -32,18 +33,19 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:orientation="horizontal"
+            android:background="@color/white"
             >
-            <Button
+            <TextView
                 android:id="@+id/view_operate_deleted"
                 style="@style/ButtonMediaOperate"
                 android:text="删除" />
 
-            <Button
+            <TextView
                 android:id="@+id/view_operate_upload"
                 style="@style/ButtonMediaOperate"
                 android:text="上传" />
 
-            <Button
+            <TextView
                 android:id="@+id/view_operate_cancel"
                 style="@style/ButtonMediaOperate"
                 android:text="取消上传" />

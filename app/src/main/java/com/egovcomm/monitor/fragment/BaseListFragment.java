@@ -74,9 +74,9 @@ public abstract class BaseListFragment<T> extends BaseFragment implements OnClic
 	private ListPopupWindow mPopupWindow;
 
 	protected View mediaOperateView;
-	protected Button btnDeleted;
-	protected Button btnUpload;
-	protected Button btnCancel;
+	protected TextView btnDeleted;
+	protected TextView btnUpload;
+	protected TextView btnCancel;
 	protected CheckBox cbAllSelected;
 	
 	protected String mediaType="";//数据类型,默认为全部
@@ -103,9 +103,9 @@ public abstract class BaseListFragment<T> extends BaseFragment implements OnClic
 		mediaOperateView=view.findViewById(R.id.view_media_operate);
 		cbAllSelected=(CheckBox) view.findViewById(R.id.view_operate_checkbox);
 		cbAllSelected.setOnCheckedChangeListener(this);
-		btnDeleted=(Button) view.findViewById(R.id.view_operate_deleted);
-		btnUpload=(Button) view.findViewById(R.id.view_operate_upload);
-		btnCancel=(Button) view.findViewById(R.id.view_operate_cancel);
+		btnDeleted=(TextView) view.findViewById(R.id.view_operate_deleted);
+		btnUpload=(TextView) view.findViewById(R.id.view_operate_upload);
+		btnCancel=(TextView) view.findViewById(R.id.view_operate_cancel);
 		btnDeleted.setOnClickListener(this);
 		btnUpload.setOnClickListener(this);
 		btnCancel.setOnClickListener(this);

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Monitor.iml" filepath="$PROJECT_DIR$/Monitor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ablumchoose/ablumchoose.iml" filepath="$PROJECT_DIR$/ablumchoose/ablumchoose.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/datetimepicker-library/datetimepicker-library.iml" filepath="$PROJECT_DIR$/datetimepicker-library/datetimepicker-library.iml" />
     </modules>

@@ -75,9 +75,9 @@ public abstract class BaseListActivity<T> extends BaseActivity implements OnClic
 	protected ImageView mRightIv;
 	
 	protected View mediaOperateView;
-	protected Button btnDeleted;
-	protected Button btnUpload;
-	protected Button btnCancel;
+	protected TextView btnDeleted;
+	protected TextView btnUpload;
+	protected TextView btnCancel;
 	protected CheckBox cbAllSelected;
 	protected View mTopBar;
 	protected ProgressBar mProgressBar;
@@ -107,9 +107,9 @@ public abstract class BaseListActivity<T> extends BaseActivity implements OnClic
 		mediaOperateView=findViewById(R.id.view_media_operate);
 		cbAllSelected=(CheckBox) findViewById(R.id.view_operate_checkbox);
 		cbAllSelected.setOnCheckedChangeListener(this);
-		btnDeleted=(Button)findViewById(R.id.view_operate_deleted);
-		btnUpload=(Button) findViewById(R.id.view_operate_upload);
-		btnCancel=(Button) findViewById(R.id.view_operate_cancel);
+		btnDeleted=(TextView)findViewById(R.id.view_operate_deleted);
+		btnUpload=(TextView) findViewById(R.id.view_operate_upload);
+		btnCancel=(TextView) findViewById(R.id.view_operate_cancel);
 		btnDeleted.setOnClickListener(this);
 		btnUpload.setOnClickListener(this);
 		btnCancel.setOnClickListener(this);
